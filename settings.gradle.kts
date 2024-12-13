@@ -1,0 +1,32 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "podcastapp"
+include(":app")
+include(":features:main:data")
+include(":features:main:domain")
+include(":features:main:ui")
+include(":features:podcast_details:data")
+include(":features:podcast_details:domain")
+include(":features:podcast_details:ui")
+include(":core:network")
+include(":core:common")
+include(":core:feature_api")
