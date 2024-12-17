@@ -21,6 +21,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "podcastapp"
 include(":app")
+include(":features:auth:data")
+include(":features:auth:domain")
+include(":features:auth:ui")
 include(":features:main:data")
 include(":features:main:domain")
 include(":features:main:ui")
