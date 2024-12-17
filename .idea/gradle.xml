@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/common" />
+            <option value="$PROJECT_DIR$/core/feature_api" />
+            <option value="$PROJECT_DIR$/core/network" />
+            <option value="$PROJECT_DIR$/features" />
+            <option value="$PROJECT_DIR$/features/auth" />
+            <option value="$PROJECT_DIR$/features/auth/data" />
+            <option value="$PROJECT_DIR$/features/auth/domain" />
+            <option value="$PROJECT_DIR$/features/auth/ui" />
+            <option value="$PROJECT_DIR$/features/main" />
+            <option value="$PROJECT_DIR$/features/main/data" />
+            <option value="$PROJECT_DIR$/features/main/domain" />
+            <option value="$PROJECT_DIR$/features/main/ui" />
+            <option value="$PROJECT_DIR$/features/podcast_details" />
+            <option value="$PROJECT_DIR$/features/podcast_details/data" />
+            <option value="$PROJECT_DIR$/features/podcast_details/domain" />
+            <option value="$PROJECT_DIR$/features/podcast_details/ui" />
+          </set>
+        </option>
+        <option name="resolveExternalAnnotations" value="false" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
