@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkModule {
     @Provides
     fun provideApiService(): ApiService {
-        return Retrofit.Builder().baseUrl("baseurl")
+        return Retrofit.Builder().baseUrl("http://localhost/api")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

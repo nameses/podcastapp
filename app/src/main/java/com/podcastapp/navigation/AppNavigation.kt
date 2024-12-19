@@ -14,5 +14,8 @@ fun AppNavGraph(
         navigationProvider.podcastApi.registerGraph(
             navController, this
         )
+        navigationProvider.authApi.registerGraph(
+            navController, this
+        )
     }
 }

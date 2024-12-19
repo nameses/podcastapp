@@ -67,6 +67,7 @@ dependencies {
     implementation(project(":features:main:ui"))
     implementation(project(":core:common"))
     implementation(project(":core:feature_api"))
+    implementation(project(":features:auth:ui"))
 
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)

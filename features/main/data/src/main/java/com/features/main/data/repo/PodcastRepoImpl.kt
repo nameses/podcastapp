@@ -15,5 +15,4 @@ class PodcastRepoImpl
             PodcastType.Featured -> podcastDataProvider.getPodcastListFeatured().toDomainPodcastList()
         }
     }
-
 }
