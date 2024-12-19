@@ -11,22 +11,21 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface ApiService {
-
-    @GET("/podcasts")
-    suspend fun GetPodcastListByQuery(
-        @Query("query") q: String
-    ): PodcastListResponse
-
-    @GET("/podcasts/featured")
-    suspend fun GetPodcastListFeatured(): PodcastListResponse
-
-    @GET("/podcasts/popular")
-    suspend fun GetPodcastListPopular(): PodcastListResponse
-
-    @POST("/login")
+//auth
+    @POST("/auth/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<AuthResponse>
 
-    @POST("/register")
+    @POST("/auth/register")
     suspend fun register(@Body registerRequest: RegisterRequest): Response<AuthResponse>
 
+//podcasts
+    @GET("/podcasts/get-featured")
+    suspend fun GetPodcastListFeatured(): PodcastListResponse
+
+    @GET("/podcasts/get-popular")
+    suspend fun GetPodcastListPopular(): PodcastListResponse
+
+//episodes
+//   @GET("/podcasts/get-featured")
+//    suspend fun SearchEpisodes(): PodcastListResponse
 }
