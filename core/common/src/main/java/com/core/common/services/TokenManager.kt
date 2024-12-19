@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,6 +35,33 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
     suspend fun clearToken() {
         dataStore.edit { preferences ->
             preferences.remove(AUTH_TOKEN_KEY)
+        }
+    }
+
+    /**
+     * Checks if token is stored in datastore
+     */
+    suspend fun containsJwtToken(): Boolean {
+        return token.map { it != null }.firstOrNull() ?: false
+    }
+
+    /**
+     * Check if in JWT-token format
+     */
+    private fun verifyJwtToken(token: String): Boolean {
+        val parts = token.split(".")
+        return parts.size == 3 && parts.all { isBase64Encoded(it) }
+    }
+
+    /**
+     * Check if string is Base64 encoded
+     */
+    private fun isBase64Encoded(value: String): Boolean {
+        return try {
+            android.util.Base64.decode(value, android.util.Base64.URL_SAFE)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
         }
     }
 }

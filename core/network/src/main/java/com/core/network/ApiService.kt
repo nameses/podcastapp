@@ -1,5 +1,6 @@
 package com.core.network
 
+import com.core.common.annotations.Authorized
 import com.core.network.model.AuthResponse
 import com.core.network.model.LoginRequest
 import com.core.network.model.PodcastListResponse
@@ -19,13 +20,16 @@ interface ApiService {
     suspend fun register(@Body registerRequest: RegisterRequest): Response<AuthResponse>
 
 //podcasts
+    @Authorized
     @GET("/podcasts/get-featured")
     suspend fun GetPodcastListFeatured(): PodcastListResponse
 
+    @Authorized
     @GET("/podcasts/get-popular")
     suspend fun GetPodcastListPopular(): PodcastListResponse
 
 //episodes
+//    @Authorized
 //   @GET("/podcasts/get-featured")
 //    suspend fun SearchEpisodes(): PodcastListResponse
 }
