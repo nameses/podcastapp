@@ -15,7 +15,7 @@ class AuthRepoImpl
 @Inject constructor(private val authDataProvider: AuthDataProviders) : AuthRepository {
     override suspend fun login(email: String, password: String): AuthResult {
         return try {
-            val response = authDataProvider.login(LoginRequest(email,password))
+            val response = authDataProvider.login(LoginRequest(email, password))
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
@@ -34,35 +34,39 @@ class AuthRepoImpl
                 )
             }
         } catch (e: Exception) {
-            AuthResult.Error(message = e.localizedMessage ?: "An unexpected error occurred", errors = null)
+            AuthResult.Error(
+                message = e.localizedMessage ?: "An unexpected error occurred",
+                errors = null
+            )
         }
     }
 
-//    override suspend fun register(username: String, email: String, password: String): AuthData {
-//        return try {
-//            val response = authDataProvider.register(RegisterRequest(username, email, password))
-//
-//            when {
-//                response.isSuccessful -> {
-//                    // Successful response (200 OK)
-//                    response.body()?.data?.let {
-//                        Result.Success(it)
-//                    } ?: Result.Failure("Unexpected empty response")
-//                }
-//
-//                response.code() == 401 || response.code() == 404 -> {
-//                    // Handle specific error codes like 401 Unauthorized or 404 Not Found
-//                    Result.Failure("Unauthorized or not found")
-//                }
-//
-//                else -> {
-//                    // Handle other error codes
-//                    Result.Failure("Unexpected error: ${response.code()}")
-//                }
-//            }
-//        } catch (e: Exception) {
-//            // Handle network or unexpected errors
-//            Result.Failure("Network error: ${e.localizedMessage}")
-//        }
-//    }
+    override suspend fun register(username: String, email: String, password: String): AuthResult {
+        return try {
+            val response = authDataProvider.register(RegisterRequest(username, email, password))
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    AuthResult.Success(body.toDomainAuthData())
+                } else {
+                    AuthResult.Error("Unexpected response", null)
+                }
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorResponse = errorBody?.let {
+                    Gson().fromJson(it, AuthErrorResponse::class.java)
+                }
+                AuthResult.Error(
+                    message = errorResponse?.message ?: "Unknown error",
+                    errors = errorResponse?.errors
+                )
+            }
+        } catch (e: Exception) {
+            AuthResult.Error(
+                message = e.localizedMessage ?: "An unexpected error occurred",
+                errors = null
+            )
+        }
+    }
 }
