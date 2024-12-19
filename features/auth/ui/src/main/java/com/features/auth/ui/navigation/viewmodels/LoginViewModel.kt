@@ -3,6 +3,7 @@ package com.features.auth.ui.navigation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.core.common.UiEvent
+import com.core.common.services.TokenManager
 import com.features.auth.domain.use_cases.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val tokenManager: TokenManager
+) : ViewModel() {
     private val _authState = MutableStateFlow(AuthStateHolder())
     val authState: StateFlow<AuthStateHolder> get() = _authState
 
@@ -24,6 +28,9 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
                 }
 
                 is UiEvent.Success -> {
+                    if (it.data?.success == true) {
+                        it.data?.token?.let { tokenManager.saveToken(it) }
+                    }
                     _authState.value = AuthStateHolder(data = it.data)
                 }
 
