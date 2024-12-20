@@ -1,5 +1,8 @@
 package com.core.common.navigation_constants
 
+object AppStartPoint{
+    const val startPoint = "login"
+}
 object MainFeature{
     const val nestedRoute = ""
     const val mainScreenRoute = "main"

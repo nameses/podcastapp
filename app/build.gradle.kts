@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.podcastapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.podcastapp"
@@ -65,8 +65,13 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(project(":features:main:ui"))
+    implementation(project(":features:main:data"))
+    implementation(project(":features:main:domain"))
     implementation(project(":core:common"))
+    implementation(project(":core:network"))
     implementation(project(":core:feature_api"))
+    implementation(project(":features:auth:data"))
+    implementation(project(":features:auth:domain"))
     implementation(project(":features:auth:ui"))
 
     kapt(libs.dagger.hilt.android.compiler)

@@ -1,7 +1,6 @@
 package com.features.auth.data.repo
 
 import com.core.network.dataproviders.AuthDataProviders
-import com.core.network.model.AuthData
 import com.core.network.model.AuthErrorResponse
 import com.core.network.model.LoginRequest
 import com.core.network.model.RegisterRequest
