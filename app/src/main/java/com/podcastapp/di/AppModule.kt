@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 @Module
 object AppModule {
     @Provides
-    fun provideNavigationProvider(podcastApi: PodcastApi, authApi: AuthApi):NavigationProvider{
+    fun provideNavigationProvider(podcastApi: PodcastApi, authApi: AuthApi): NavigationProvider {
         return NavigationProvider(podcastApi, authApi)
     }
 }

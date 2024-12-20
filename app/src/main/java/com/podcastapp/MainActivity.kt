@@ -15,10 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.core.common.navigation_constants.AuthFeature
+import com.core.common.navigation_constants.MainFeature
+import com.core.common.services.TokenManager
 import com.podcastapp.navigation.AppNavGraph
 import com.podcastapp.navigation.NavigationProvider
 import com.podcastapp.ui.theme.PodcastappTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +30,8 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigationProvider: NavigationProvider
+    @Inject
+    lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PodcastappTheme {
                 val navController = rememberNavController()
-                App(navHostController = navController, navigationProvider)
+                App(navHostController = navController, navigationProvider, tokenManager)
             }
         }
     }
@@ -41,8 +47,8 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun App(navHostController: NavHostController, navigationProvider: NavigationProvider) {
+fun App(navHostController: NavHostController, navigationProvider: NavigationProvider,tokenManager : TokenManager) {
     Scaffold(modifier = Modifier.fillMaxSize()) {
-        AppNavGraph(navController = navHostController, navigationProvider = navigationProvider)
+        AppNavGraph(navController = navHostController, navigationProvider = navigationProvider, tokenManager = tokenManager)
     }
 }
