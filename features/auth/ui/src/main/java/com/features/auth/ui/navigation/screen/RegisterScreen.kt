@@ -28,19 +28,25 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
+import com.features.auth.ui.navigation.viewmodels.AuthStateHolder
 import com.features.auth.ui.navigation.viewmodels.LoginViewModel
 import com.features.auth.ui.navigation.viewmodels.RegisterViewModel
 
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    onSuccess: () -> Unit,
 ) {
     val authState by viewModel.authState.collectAsState()
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+
+    if (authState.isSuccess) {
+        onSuccess()
+    }
 
     Column(
         modifier = Modifier

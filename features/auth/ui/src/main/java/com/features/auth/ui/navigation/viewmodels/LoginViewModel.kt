@@ -31,7 +31,7 @@ class LoginViewModel @Inject constructor(
                     if (it.data?.success == true) {
                         it.data?.token?.let { tokenManager.saveToken(it) }
                     }
-                    _authState.value = AuthStateHolder(data = it.data)
+                    _authState.value = AuthStateHolder(isSuccess = true, data = it.data)
                 }
 
                 is UiEvent.Error -> {

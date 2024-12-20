@@ -33,12 +33,17 @@ import com.features.auth.ui.navigation.viewmodels.LoginViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onSuccess: () -> Unit,
 ) {
     val authState by viewModel.authState.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    if (authState.isSuccess) {
+        onSuccess()
+    }
 
     Column(
         modifier = Modifier

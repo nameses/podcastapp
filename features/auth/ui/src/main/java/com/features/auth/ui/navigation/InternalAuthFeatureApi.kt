@@ -4,6 +4,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.core.common.navigation_constants.AuthFeature
+import com.core.common.navigation_constants.MainFeature
 import com.core.feature_api.FeatureApi
 import com.features.auth.ui.navigation.screen.LoginScreen
 import com.features.auth.ui.navigation.screen.RegisterScreen
@@ -23,7 +24,8 @@ object InternalAuthFeatureApi : FeatureApi {
                 val viewModel = hiltViewModel<LoginViewModel>()
                 LoginScreen(
                     viewModel = viewModel,
-                    onSignUpClick = { navController.navigate(AuthFeature.registerScreen) })
+                    onSignUpClick = { navController.navigate(AuthFeature.registerScreen) },
+                    onSuccess = { navController.navigate(MainFeature.nestedRoute) })
             }
         }
 
@@ -35,7 +37,8 @@ object InternalAuthFeatureApi : FeatureApi {
                 val viewModel = hiltViewModel<RegisterViewModel>()
                 RegisterScreen(
                     viewModel = viewModel,
-                    onLoginClick = { navController.navigate(AuthFeature.loginScreen) })
+                    onLoginClick = { navController.navigate(AuthFeature.loginScreen) },
+                    onSuccess = { navController.navigate(MainFeature.nestedRoute) })
             }
         }
     }
