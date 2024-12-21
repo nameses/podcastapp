@@ -1,5 +1,11 @@
 package com.podcastapp.ui.common
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -8,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -22,8 +29,7 @@ fun BottomNavigationBar(
     navController: NavHostController,
     currentDestination: String,
     modifier: Modifier = Modifier,
-    iconSize: Dp = 32.dp,
-    labelStyle: TextStyle = MaterialTheme.typography.bodySmall
+    iconSize: Dp = 32.dp
 ) {
     val items = listOf(
         BottomNavItem("Home", Icons.Default.Home, MainFeature.mainScreenRoute),
@@ -31,16 +37,29 @@ fun BottomNavigationBar(
     )
 
     BottomAppBar(modifier = modifier) {
-        items.forEach { item ->
-            IconButton(
-                onClick = {
-                    if (currentDestination != item.route) {
-                        navController.navigate(item.route)
-                    }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEach { item ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            if (currentDestination != item.route) {
+                                navController.navigate(item.route)
+                            }
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = item.title,
+                        modifier = Modifier.size(iconSize)
+                    )
                 }
-            ) {
-                Icon(imageVector = item.icon, contentDescription = item.title)
-                //Text(text = item.title)
             }
         }
     }
