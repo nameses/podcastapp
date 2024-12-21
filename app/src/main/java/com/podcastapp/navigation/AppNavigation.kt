@@ -3,9 +3,8 @@ package com.podcastapp.navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
-import com.core.common.navigation_constants.AppStartPoint
-import com.core.common.navigation_constants.AuthFeature
-import com.core.common.navigation_constants.MainFeature
+import com.core.common.constants.AuthFeature
+import com.core.common.constants.MainFeature
 import com.core.common.services.TokenManager
 import kotlinx.coroutines.runBlocking
 
