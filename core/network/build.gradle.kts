@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.7.2")
     implementation(project(":core:common"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
