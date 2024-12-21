@@ -1,4 +1,4 @@
-package com.core.network.model
+package com.core.network.model.user
 
 data class LoginRequest(
     val email: String,
@@ -18,10 +18,5 @@ data class AuthResponse(
 
 data class AuthData(
     val token: String
-)
-
-data class AuthErrorResponse(
-    val message: String,
-    val errors: Map<String, List<String>>
 )
 

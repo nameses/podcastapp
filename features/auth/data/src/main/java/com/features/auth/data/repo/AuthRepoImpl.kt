@@ -1,9 +1,9 @@
 package com.features.auth.data.repo
 
 import com.core.network.dataproviders.AuthDataProviders
-import com.core.network.model.AuthErrorResponse
-import com.core.network.model.LoginRequest
-import com.core.network.model.RegisterRequest
+import com.core.network.model.common.ValidationErrorResponse
+import com.core.network.model.user.LoginRequest
+import com.core.network.model.user.RegisterRequest
 import com.features.auth.data.mapper.toDomainAuthData
 import com.features.auth.domain.model.AuthResult
 import com.features.auth.domain.repo.AuthRepository
@@ -25,7 +25,7 @@ class AuthRepoImpl
             } else {
                 val errorBody = response.errorBody()?.string()
                 val errorResponse = errorBody?.let {
-                    Gson().fromJson(it, AuthErrorResponse::class.java)
+                    Gson().fromJson(it, ValidationErrorResponse::class.java)
                 }
                 AuthResult.Error(
                     message = errorResponse?.message ?: "Unknown error",
@@ -54,7 +54,7 @@ class AuthRepoImpl
             } else {
                 val errorBody = response.errorBody()?.string()
                 val errorResponse = errorBody?.let {
-                    Gson().fromJson(it, AuthErrorResponse::class.java)
+                    Gson().fromJson(it, ValidationErrorResponse::class.java)
                 }
                 AuthResult.Error(
                     message = errorResponse?.message ?: "Unknown error",

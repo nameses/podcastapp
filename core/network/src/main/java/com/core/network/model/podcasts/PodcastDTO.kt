@@ -1,4 +1,4 @@
-package com.core.network.model
+package com.core.network.model.podcasts
 
 import java.util.Date
 
