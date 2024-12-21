@@ -5,11 +5,14 @@ import com.core.network.ApiService
 import com.core.network.dataproviders.AuthDataProviders
 import com.core.network.dataproviders.PodcastDataProviders
 import com.core.network.interceptors.AuthTokenInterceptor
+import com.core.network.interceptors.HeaderInjectorInterceptor
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -20,8 +23,12 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideApiService(okHttpClient: OkHttpClient): ApiService {
-        return Retrofit.Builder().baseUrl("http://localhost/api")
-            .addConverterFactory(GsonConverterFactory.create())
+        val gson = GsonBuilder()
+            .setLenient()
+            .create();
+
+        return Retrofit.Builder().baseUrl("http://192.168.0.102/api/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
             .create(ApiService::class.java)
@@ -29,8 +36,17 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(authTokenInterceptor: AuthTokenInterceptor): OkHttpClient {
+    fun provideOkHttpClient(
+        authTokenInterceptor: AuthTokenInterceptor,
+        headerInjectorInterceptor: HeaderInjectorInterceptor
+    ): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            this.level = HttpLoggingInterceptor.Level.BODY
+        }
+
         return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(headerInjectorInterceptor)
             .addInterceptor(authTokenInterceptor)
             .build()
     }
@@ -39,6 +55,12 @@ object NetworkModule {
     @Singleton
     fun provideAuthTokenInterceptor(tokenManager: TokenManager): AuthTokenInterceptor {
         return AuthTokenInterceptor(tokenManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHeaderInjectorInterceptor(): HeaderInjectorInterceptor {
+        return HeaderInjectorInterceptor()
     }
 
     //api parts providing
