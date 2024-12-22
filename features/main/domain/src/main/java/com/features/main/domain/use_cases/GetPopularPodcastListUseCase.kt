@@ -2,6 +2,7 @@ package com.features.main.domain.use_cases
 
 import com.core.common.model.UiEvent
 import com.features.main.domain.model.Podcast
+import com.features.main.domain.model.PodcastList
 import com.features.main.domain.repo.PodcastRepository
 import com.features.main.domain.repo.PodcastType
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class GetPopularPodcastListUseCase @Inject constructor(private val podcastRepository: PodcastRepository) {
-    operator fun invoke() = flow<UiEvent<List<Podcast>>> {
+    operator fun invoke() = flow<UiEvent<PodcastList>> {
         emit(UiEvent.Loading())
         emit(UiEvent.Success(podcastRepository.getPodcastList(PodcastType.Popular)))
     }.catch {

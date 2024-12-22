@@ -1,9 +1,9 @@
 package com.features.main.domain.repo
 
-import com.features.main.domain.model.Podcast
+import com.features.main.domain.model.PodcastList
 
 interface PodcastRepository {
-    suspend fun getPodcastList(podcastType: PodcastType) : List<Podcast>
+    suspend fun getPodcastList(podcastType: PodcastType) : PodcastList
 }
 
 enum class PodcastType { Featured, Popular }
