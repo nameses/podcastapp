@@ -16,11 +16,14 @@ object InternalPodcastFeatureApi : FeatureApi {
             startDestination = MainFeature.mainScreenRoute,
             route = MainFeature.nestedRoute
         ) {
-            composable(MainFeature.mainScreenRoute) {
-
             composable(route=MainFeature.mainScreenRoute) {
+                HelloWorldScreen()
             }
         }
     }
-
+}
+@Composable
+fun HelloWorldScreen() {
+    // Displaying "Hello World" text
+    Text(text = "Hello World")
 }
