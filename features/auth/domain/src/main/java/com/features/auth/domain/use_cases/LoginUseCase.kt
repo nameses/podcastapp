@@ -1,6 +1,6 @@
 package com.features.auth.domain.use_cases
 
-import com.core.common.UiEvent
+import com.core.common.model.UiEvent
 import com.features.auth.domain.model.AuthData
 import com.features.auth.domain.model.AuthResult
 import com.features.auth.domain.repo.AuthRepository

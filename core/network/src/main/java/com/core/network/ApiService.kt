@@ -43,7 +43,7 @@ interface ApiService {
     @Multipart
     @POST("auth/update-user")
     suspend fun updateUser(
-        @Part("email") email: RequestBody,
+        //@Part("email") email: RequestBody,
         @Part("username") username: RequestBody,
         @Part image: MultipartBody.Part?
     ): Response<UpdateUserResponse>

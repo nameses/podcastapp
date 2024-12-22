@@ -2,7 +2,7 @@ package com.features.auth.ui.navigation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.core.common.UiEvent
+import com.core.common.model.UiEvent
 import com.core.common.services.TokenManager
 import com.features.auth.domain.use_cases.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -27,6 +27,10 @@
             <option value="$PROJECT_DIR$/features/podcast_details/data" />
             <option value="$PROJECT_DIR$/features/podcast_details/domain" />
             <option value="$PROJECT_DIR$/features/podcast_details/ui" />
+            <option value="$PROJECT_DIR$/features/profile" />
+            <option value="$PROJECT_DIR$/features/profile/data" />
+            <option value="$PROJECT_DIR$/features/profile/domain" />
+            <option value="$PROJECT_DIR$/features/profile/ui" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

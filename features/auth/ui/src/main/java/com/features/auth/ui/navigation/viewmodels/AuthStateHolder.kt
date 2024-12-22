@@ -7,6 +7,6 @@ data class AuthStateHolder(
     val isSuccess: Boolean = false,
     val isLoading: Boolean = false,
     val data: AuthData? = null,
-    val errors: Map<String, List<String>>? = null,
-    val message: String = ""
+    val message: String = "",
+    val errors: Map<String, List<String>>? = null
 )

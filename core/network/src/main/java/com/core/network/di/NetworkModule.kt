@@ -5,6 +5,7 @@ import com.core.network.ApiService
 import com.core.network.converterfactories.MultipartConverterFactory
 import com.core.network.dataproviders.AuthDataProviders
 import com.core.network.dataproviders.PodcastDataProviders
+import com.core.network.dataproviders.UserDataProviders
 import com.core.network.interceptors.AuthTokenInterceptor
 import com.core.network.interceptors.HeaderInjectorInterceptor
 import com.google.gson.GsonBuilder
@@ -78,5 +79,10 @@ object NetworkModule {
     @Provides
     fun provideAuthDataProviders(apiService: ApiService): AuthDataProviders {
         return AuthDataProviders(apiService)
+    }
+
+    @Provides
+    fun provideUserDataProviders(apiService: ApiService): UserDataProviders {
+        return UserDataProviders(apiService)
     }
 }

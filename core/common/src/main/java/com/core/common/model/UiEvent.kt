@@ -1,4 +1,4 @@
-package com.core.common
+package com.core.common.model
 
 sealed class UiEvent<T>(
     val data: T? = null,
@@ -7,6 +7,5 @@ sealed class UiEvent<T>(
 ) {
     class Loading<T>() : UiEvent<T>()
     class Success<T>(data: T) : UiEvent<T>(data = data)
-    class Error<T>(message: String, errors: Map<String, List<String>>? = null) :
-        UiEvent<T>(message = message, errors = errors)
+    class Error<T>(message: String, errors: Map<String, List<String>>? = null) : UiEvent<T>(message = message, errors = errors)
 }

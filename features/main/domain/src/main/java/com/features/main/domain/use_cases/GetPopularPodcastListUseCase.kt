@@ -1,6 +1,6 @@
 package com.features.main.domain.use_cases
 
-import com.core.common.UiEvent
+import com.core.common.model.UiEvent
 import com.features.main.domain.model.Podcast
 import com.features.main.domain.repo.PodcastRepository
 import com.features.main.domain.repo.PodcastType
