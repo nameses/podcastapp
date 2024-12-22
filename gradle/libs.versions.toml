@@ -3,6 +3,7 @@ agp = "8.6.0"
 coilCompose = "3.0.4"
 coilComposeVersion = "1.3.2"
 datastorePreferences = "1.1.1"
+filepicker = "0.1.9"
 gson = "2.10.1"
 hiltAndroid = "2.51.1"
 hiltAndroidCompiler = "2.51.1"
@@ -26,10 +27,12 @@ navigationCompose = "2.8.5"
 hiltNavigationCompose = "1.2.0"
 datastoreCoreAndroid = "1.1.1"
 datastorePreferencesCoreJvm = "1.1.1"
+uiDesktop = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialZ" }
@@ -62,6 +65,7 @@ androidx-navigation-common-ktx = { group = "androidx.navigation", name = "naviga
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 androidx-datastore-preferences-core-jvm = { group = "androidx.datastore", name = "datastore-preferences-core-jvm", version.ref = "datastorePreferencesCoreJvm" }
+androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "uiDesktop" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
