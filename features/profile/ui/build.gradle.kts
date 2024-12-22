@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+    implementation(project(":core:feature_api"))
+    implementation(project(":core:common"))
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

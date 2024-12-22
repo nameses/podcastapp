@@ -1,4 +1,4 @@
-package com.features.auth.ui.navigation.viewmodels
+package com.podcastapp.profile.ui.navigation.viewmodels
 
 import com.features.auth.domain.model.AuthData
 import com.features.auth.domain.model.AuthResult

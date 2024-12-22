@@ -25,11 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
-import com.features.auth.ui.navigation.viewmodels.AuthStateHolder
-import com.features.auth.ui.navigation.viewmodels.LoginViewModel
 import com.features.auth.ui.navigation.viewmodels.RegisterViewModel
 
 @Composable

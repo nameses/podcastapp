@@ -27,11 +27,6 @@ object InternalAuthFeatureApi : FeatureApi {
                     onSignUpClick = { navController.navigate(AuthFeature.registerScreen) },
                     onSuccess = { navController.navigate(MainFeature.nestedRoute) })
             }
-//        }
-//        navGraphBuilder.navigation(
-//            startDestination = AuthFeature.registerScreen,
-//            route = AuthFeature.nestedRoute
-//        ) {
             composable(AuthFeature.registerScreen) {
                 val viewModel = hiltViewModel<RegisterViewModel>()
                 RegisterScreen(
@@ -41,5 +36,4 @@ object InternalAuthFeatureApi : FeatureApi {
             }
         }
     }
-
 }
