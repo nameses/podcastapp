@@ -2,9 +2,10 @@ package com.core.network
 
 import com.core.common.constants.HeaderName
 import com.core.common.constants.HeaderValue
+import com.core.network.model.podcasts.PodcastDetailedResponse
+import com.core.network.model.podcasts.PodcastListResponse
 import com.core.network.model.user.AuthResponse
 import com.core.network.model.user.LoginRequest
-import com.core.network.model.podcasts.PodcastListResponse
 import com.core.network.model.user.PurchasePremiumRequest
 import com.core.network.model.user.PurchasePremiumResponse
 import com.core.network.model.user.RegisterRequest
@@ -93,9 +94,20 @@ interface ApiService {
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
+    @GET("podcasts/{podcast-id}")
+    suspend fun GetPodcastFull(
+        @Path("podcast-id") podcastId: Int,
+        @Header("Authorization") token: String
+    ): Response<PodcastDetailedResponse>
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
     @GET("podcasts/{podcast-id}/add-to-saved")
     suspend fun AddToSavedPodcast(
         @Path("podcast-id") podcastId: Int,
         @Header("Authorization") token: String
     ): Response<Unit>
+
 }
