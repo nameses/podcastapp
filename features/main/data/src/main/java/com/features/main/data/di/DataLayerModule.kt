@@ -15,7 +15,4 @@ object DataLayerModule {
     fun providePodcastRepo(podcastDataProviders: PodcastDataProviders): PodcastRepository {
         return PodcastRepoImpl(podcastDataProviders)
     }
-
-    //@Binds
-    //abstract fun bindAuthRepository(impl: PodcastRepoImpl): PodcastRepository
 }

@@ -13,16 +13,19 @@ class UserDataProviders @Inject constructor(
 ) {
     suspend fun getUser() =
         apiService.getUser(
-            tokenManager.getFormattedToken().takeIf { tokenManager.containsJwtToken() } ?: "")
+            tokenManager.getFormattedTokenOrEmpty()
+        )
 
     suspend fun editUser(username: RequestBody, image: MultipartBody.Part) =
         apiService.updateUser(
             username = username,
             image = image,
-            tokenManager.getFormattedToken().takeIf { tokenManager.containsJwtToken() } ?: "")
+            tokenManager.getFormattedTokenOrEmpty()
+        )
 
     suspend fun purchasePremium(purchasePremiumRequest: PurchasePremiumRequest) =
         apiService.purchasePremium(
             purchasePremiumRequest,
-            tokenManager.getFormattedToken().takeIf { tokenManager.containsJwtToken() } ?: "")
+            tokenManager.getFormattedTokenOrEmpty()
+        )
 }

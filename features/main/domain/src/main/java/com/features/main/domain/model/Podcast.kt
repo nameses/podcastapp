@@ -1,6 +1,9 @@
 package com.features.main.domain.model
 
 data class Podcast(
+    val id: Int,
     val title: String,
-    val imageUrl: String?
+    val author: String,
+    val imageUrl: String?,
+    val isSaved: Boolean
 )

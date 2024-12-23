@@ -1,7 +1,7 @@
 package com.core.network.model.user
 
 import com.core.network.model.episodes.EpisodeDTO
-import com.core.network.model.podcasts.PodcastListItem
+import com.core.network.model.podcasts.PodcastDTO
 
 data class UserFullDTO(
     val email: String,
@@ -9,5 +9,5 @@ data class UserFullDTO(
     val image_url: String?,
     val premium: Boolean,
     val liked_episodes: List<EpisodeDTO>,
-    val saved_podcasts: List<PodcastListItem>
+    val saved_podcasts: List<PodcastDTO>
 )

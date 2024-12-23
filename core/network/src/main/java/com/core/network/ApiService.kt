@@ -43,7 +43,7 @@ interface ApiService {
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
     @GET("auth/get-user")
-    suspend fun getUser(@Header("Authorization") token : String): Response<UserFullResponse>
+    suspend fun getUser(@Header("Authorization") token: String): Response<UserFullResponse>
 
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
@@ -52,10 +52,9 @@ interface ApiService {
     @Multipart
     @POST("auth/update-user")
     suspend fun updateUser(
-        //@Part("email") email: RequestBody,
         @Part("username") username: RequestBody,
         @Part image: MultipartBody.Part?,
-        @Header("Authorization") token : String
+        @Header("Authorization") token: String
     ): Response<UpdateUserResponse>
 
     @Headers(
@@ -65,7 +64,7 @@ interface ApiService {
     @POST("auth/purchase-premium")
     suspend fun purchasePremium(
         @Body purchasePremiumRequest: PurchasePremiumRequest,
-        @Header("Authorization") token : String
+        @Header("Authorization") token: String
     ): Response<PurchasePremiumResponse>
 
     //podcasts
@@ -76,7 +75,7 @@ interface ApiService {
     @GET("podcasts/get-featured")
     suspend fun GetPodcastListFeatured(
         @Query("page") page: Int,
-        @Header("Authorization") token : String
+        @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
     @Headers(
@@ -86,11 +85,6 @@ interface ApiService {
     @GET("podcasts/get-popular")
     suspend fun GetPodcastListPopular(
         @Query("page") page: Int,
-        @Header("Authorization") token : String
+        @Header("Authorization") token: String
     ): Response<PodcastListResponse>
-
-    //episodes
-    //@Authorized
-    //@GET("podcasts/get-featured")
-    //suspend fun SearchEpisodes(): PodcastListResponse
 }

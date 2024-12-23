@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":features:main:domain"))
     implementation(project(":core:network"))
     implementation(project(":core:common"))
+    implementation(project(":core:common"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

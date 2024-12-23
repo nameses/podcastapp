@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.core.common.constants.MainFeature
 import com.core.feature_api.FeatureApi
+import com.features.main.ui.navigation.screen.MainScreen
 import com.features.main.ui.navigation.screen.PodcastListScreen
 import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
 
@@ -19,9 +20,9 @@ object InternalPodcastFeatureApi : FeatureApi {
             route = MainFeature.nestedRoute
         ) {
             composable(route = MainFeature.mainScreenRoute) {
-                val viewModel = hiltViewModel<PodcastFeaturedViewModel>()
-                PodcastListScreen(
-                    viewModel = viewModel
+                val podcastFeaturedViewModel = hiltViewModel<PodcastFeaturedViewModel>()
+                MainScreen(
+                    podcastFeaturedViewModel = podcastFeaturedViewModel
                 )
             }
         }

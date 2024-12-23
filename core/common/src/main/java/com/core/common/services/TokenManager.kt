@@ -37,6 +37,10 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
         return "Bearer ${token.first()}"
     }
 
+    suspend fun getFormattedTokenOrEmpty():String {
+        return getFormattedToken().takeIf { containsJwtToken() } ?: ""
+    }
+
     suspend fun clearToken() {
         dataStore.edit { preferences ->
             preferences.remove(AUTH_TOKEN_KEY)

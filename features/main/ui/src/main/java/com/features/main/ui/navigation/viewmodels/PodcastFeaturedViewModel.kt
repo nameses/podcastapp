@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
-import com.features.main.domain.model.PodcastDTO
+import com.core.common.ui.HorizontalListItem
+import com.features.main.domain.model.Podcast
 import com.features.main.domain.model.PodcastList
 import com.features.main.domain.use_cases.GetFeaturedPodcastListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,14 +16,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PodcastFeaturedViewModel @Inject constructor(
-    private val podcastUseCase: GetFeaturedPodcastListUseCase
+    private val podcastUseCase: GetFeaturedPodcastListUseCase,
+    private val
 ) : ViewModel() {
-    private val _podcasts = MutableStateFlow<List<PodcastDTO>>(emptyList())
-    val podcasts: MutableStateFlow<List<PodcastDTO>> get() = _podcasts
-    private var currentPage = 1
 
-    private val _loadState = MutableStateFlow(UiStateHolder<PodcastList>())
-    val loadState: StateFlow<UiStateHolder<PodcastList>> get() = _loadState
+    private val _state = MutableStateFlow(UiStateHolder<HorizontalListItem>())
+    val state: StateFlow<UiStateHolder<HorizontalListItem>> get() = _state
+
+    private var currentPage = 1
+    private var lastPage = 1
 
     init {
         loadPodcasts()
@@ -33,19 +35,26 @@ class PodcastFeaturedViewModel @Inject constructor(
         podcastUseCase(currentPage).collect { it ->
             when (it) {
                 is UiEvent.Loading -> {
-                    _loadState.value = UiStateHolder(isLoading = true)
+                    _state.value = UiStateHolder(isLoading = true)
                 }
 
                 is UiEvent.Success -> {
-                    if (it.data?.items?.isNotEmpty() == true) {
-                        _podcasts.value += it.data!!.items
-                        currentPage++
-                    }
-                    _loadState.value = UiStateHolder(isSuccess = true, data = it.data)
+                    if(it.data == null)
+                        return@collect;
+                    currentPage = it.data!!.pagination.currentPage
+                    lastPage = it.data!!.pagination.lastPage
+
+                    _state.value = UiStateHolder(isSuccess = true, data = it.data.items.map { podcast ->
+                        HorizontalListItem(
+                            id = podcast.id,
+                            title = podcast.title,
+                            author = podcast.author,
+                            imageUrl = podcast.imageUrl
+                        ))
                 }
 
                 is UiEvent.Error -> {
-                    _loadState.value =
+                    _state.value =
                         UiStateHolder(message = it.message.toString(), errors = it.errors)
                 }
             }

@@ -15,8 +15,8 @@ class GetPopularPodcastListUseCase @Inject constructor(private val podcastReposi
     operator fun invoke(page: Int) = flow<UiEvent<PodcastList>> {
         emit(UiEvent.Loading())
 
-        when (val response = podcastRepository.getPodcastList(PodcastType.Popular, page)){
-            is RepoEvent.Success -> if(response.data != null) emit(UiEvent.Success(response.data!!))
+        when (val response = podcastRepository.getPodcastList(PodcastType.Popular, page)) {
+            is RepoEvent.Success -> if (response.data != null) emit(UiEvent.Success(response.data!!))
             is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))
         }
     }.catch {

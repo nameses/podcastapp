@@ -9,6 +9,6 @@ data class PodcastListPagination(
 
 data class PodcastListData(
     var pagination: PodcastListPagination,
-    var items: List<PodcastListItem>
+    var items: List<PodcastDTO>
 )
 

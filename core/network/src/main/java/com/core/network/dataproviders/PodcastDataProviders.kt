@@ -11,10 +11,12 @@ class PodcastDataProviders @Inject constructor(
 
     suspend fun getPodcastListFeatured(page: Int) = apiService.GetPodcastListFeatured(
         page,
-        tokenManager.getFormattedToken().takeIf { tokenManager.containsJwtToken() } ?: "")
+        tokenManager.getFormattedTokenOrEmpty()
+    )
 
     suspend fun getPodcastListPopular(page: Int) = apiService.GetPodcastListPopular(
         page,
-        tokenManager.getFormattedToken().takeIf { tokenManager.containsJwtToken() } ?: "")
+        tokenManager.getFormattedTokenOrEmpty()
+    )
 
 }
