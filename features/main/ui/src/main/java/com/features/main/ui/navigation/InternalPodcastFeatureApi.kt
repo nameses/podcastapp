@@ -1,11 +1,13 @@
 package com.features.main.ui.navigation
 
-import androidx.compose.runtime.Composable
+
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.core.common.constants.MainFeature
 import com.core.feature_api.FeatureApi
-import androidx.compose.material3.Text
+import com.features.main.ui.navigation.screen.PodcastListScreen
+import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
 
 object InternalPodcastFeatureApi : FeatureApi {
     override fun registerGraph(
@@ -16,14 +18,13 @@ object InternalPodcastFeatureApi : FeatureApi {
             startDestination = MainFeature.mainScreenRoute,
             route = MainFeature.nestedRoute
         ) {
-            composable(route=MainFeature.mainScreenRoute) {
-                HelloWorldScreen()
+            composable(route = MainFeature.mainScreenRoute) {
+                val viewModel = hiltViewModel<PodcastFeaturedViewModel>()
+                PodcastListScreen(
+                    viewModel = viewModel
+                )
             }
         }
     }
 }
-@Composable
-fun HelloWorldScreen() {
-    // Displaying "Hello World" text
-    Text(text = "Hello World")
-}
+

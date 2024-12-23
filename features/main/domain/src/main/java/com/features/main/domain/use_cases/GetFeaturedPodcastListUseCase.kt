@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetPopularPodcastListUseCase @Inject constructor(private val podcastRepository: PodcastRepository) {
+class GetFeaturedPodcastListUseCase @Inject constructor(private val podcastRepository: PodcastRepository) {
     operator fun invoke(page: Int) = flow<UiEvent<PodcastList>> {
         emit(UiEvent.Loading())
 
-        when (val response = podcastRepository.getPodcastList(PodcastType.Popular, page)){
+        when (val response = podcastRepository.getPodcastList(PodcastType.Featured, page)){
             is RepoEvent.Success -> if(response.data != null) emit(UiEvent.Success(response.data!!))
             is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))
         }

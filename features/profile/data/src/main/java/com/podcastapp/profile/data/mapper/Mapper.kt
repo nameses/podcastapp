@@ -14,7 +14,7 @@ fun UserFullDTO.toUserFull(): UserFull = UserFull(
     imageUrl = image_url,
     premium = premium,
     likedEpisodes = liked_episodes.map { Episode(it.title) },
-    savedPodcasts = saved_podcasts.map { Podcast(it.id, it.title, it.image_url) })
+    savedPodcasts = saved_podcasts.map { Podcast(it.id, it.title, it.imageURL) })
 
 fun UserDTO.toUser(): User = User(
     email = email, username = username, image_url = image_url, premium = premium

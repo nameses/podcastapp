@@ -20,6 +20,7 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Query
 
 interface ApiService {
     //auth
@@ -68,11 +69,25 @@ interface ApiService {
     ): Response<PurchasePremiumResponse>
 
     //podcasts
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
     @GET("podcasts/get-featured")
-    suspend fun GetPodcastListFeatured(): PodcastListResponse
+    suspend fun GetPodcastListFeatured(
+        @Query("page") page: Int,
+        @Header("Authorization") token : String
+    ): Response<PodcastListResponse>
 
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
     @GET("podcasts/get-popular")
-    suspend fun GetPodcastListPopular(): PodcastListResponse
+    suspend fun GetPodcastListPopular(
+        @Query("page") page: Int,
+        @Header("Authorization") token : String
+    ): Response<PodcastListResponse>
 
     //episodes
     //@Authorized

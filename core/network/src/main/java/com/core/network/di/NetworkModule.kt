@@ -57,7 +57,7 @@ object NetworkModule {
         apiService: ApiService,
         tokenManager: TokenManager
     ): PodcastDataProviders {
-        return PodcastDataProviders(apiService)
+        return PodcastDataProviders(apiService, tokenManager)
     }
 
     @Provides
