@@ -1,8 +1,8 @@
 package com.podcastapp.podcast_details.data.di
 
 import com.core.network.dataproviders.PodcastDataProviders
-import com.features.main.data.repo.PodcastRepoImpl
-import com.features.main.domain.repo.PodcastRepository
+import com.podcastapp.podcast_details.data.repo.PodcastRepoImpl
+import com.podcastapp.podcast_details.domain.repo.PodcastRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
