@@ -7,7 +7,6 @@ import androidx.navigation.navigation
 import com.core.common.constants.MainFeature
 import com.core.feature_api.FeatureApi
 import com.features.main.ui.navigation.screen.MainScreen
-import com.features.main.ui.navigation.screen.PodcastListScreen
 import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
 
 object InternalPodcastFeatureApi : FeatureApi {

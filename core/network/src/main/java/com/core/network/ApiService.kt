@@ -4,7 +4,6 @@ import com.core.common.constants.HeaderName
 import com.core.common.constants.HeaderValue
 import com.core.network.model.podcasts.PodcastDetailedResponse
 import com.core.network.model.podcasts.PodcastListResponse
-import com.core.network.model.podcasts.AddToSavedResponse
 import com.core.network.model.user.AuthResponse
 import com.core.network.model.user.LoginRequest
 import com.core.network.model.user.PurchasePremiumRequest

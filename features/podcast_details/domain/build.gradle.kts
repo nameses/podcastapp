@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.features.podcast_details.domain"
+    namespace = "com.podcastapp.podcast_details.domain"
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 30
+        minSdk = 34
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

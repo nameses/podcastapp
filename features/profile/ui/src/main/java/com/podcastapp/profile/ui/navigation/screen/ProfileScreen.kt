@@ -45,9 +45,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.podcastapp.profile.ui.navigation.viewmodels.ProfileViewModel
 import coil.compose.rememberImagePainter
 import com.core.common.theme.Purple500
-import com.core.common.ui.HorizontalScrollableList
 import com.podcastapp.profile.ui.R
-import com.podcastapp.profile.ui.navigation.mapper.toHorizontalListItem
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -117,11 +115,11 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    HorizontalScrollableList(
-                        title = "Saved",
-                        items = state.data?.savedPodcasts.orEmpty().toHorizontalListItem(),
-                        onItemClick = onPodcastClick
-                    )
+//                    HorizontalScrollableList(
+//                        title = "Saved",
+//                        items = state.data?.savedPodcasts.orEmpty().toHorizontalListItem(),
+//                        onItemClick = onPodcastClick
+//                    )
 
 //                    HorizontalScrollableList(
 //                        title = "Downloaded",
