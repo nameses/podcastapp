@@ -64,8 +64,6 @@ dependencies {
     implementation(project(":core:feature_api"))
     implementation(project(":core:common"))
     implementation(project(":features:profile:domain"))
-    implementation(project(":features:profile:domain"))
-    implementation(project(":app"))
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

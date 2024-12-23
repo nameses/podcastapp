@@ -1,5 +1,6 @@
 package com.podcastapp.ui.common
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
@@ -58,6 +59,7 @@ fun BottomNavigationBar(
                             indication = rememberRipple(bounded = true, radius = (iconSize * 2.5f))
                         ) {
                             if (currentDestination != item.route) {
+                                Log.d("TAG", "go to " + item.route)
                                 navController.navigate(item.route)
                             }
                         },

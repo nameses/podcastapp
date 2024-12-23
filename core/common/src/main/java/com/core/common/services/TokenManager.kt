@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -30,6 +31,10 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
 
     val token: Flow<String?> = dataStore.data.map { preferences ->
         preferences[AUTH_TOKEN_KEY]
+    }
+
+    suspend fun getFormattedToken(): String {
+        return "Bearer ${token.first()}"
     }
 
     suspend fun clearToken() {

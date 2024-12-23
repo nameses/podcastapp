@@ -6,8 +6,6 @@ import com.core.network.converterfactories.MultipartConverterFactory
 import com.core.network.dataproviders.AuthDataProviders
 import com.core.network.dataproviders.PodcastDataProviders
 import com.core.network.dataproviders.UserDataProviders
-import com.core.network.interceptors.AuthTokenInterceptor
-import com.core.network.interceptors.HeaderInjectorInterceptor
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -34,7 +32,7 @@ object NetworkModule {
             .create();
 
         return Retrofit.Builder().baseUrl("http://192.168.0.102/api/")
-            .addConverterFactory(MultipartConverterFactory())
+            //.addConverterFactory(MultipartConverterFactory())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
@@ -43,36 +41,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(
-        authTokenInterceptor: AuthTokenInterceptor,
-        headerInjectorInterceptor: HeaderInjectorInterceptor
-    ): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             this.level = HttpLoggingInterceptor.Level.BODY
         }
 
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .addInterceptor(headerInjectorInterceptor)
-            .addInterceptor(authTokenInterceptor)
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthTokenInterceptor(tokenManager: TokenManager): AuthTokenInterceptor {
-        return AuthTokenInterceptor(tokenManager)
-    }
-
-    @Provides
-    @Singleton
-    fun provideHeaderInjectorInterceptor(): HeaderInjectorInterceptor {
-        return HeaderInjectorInterceptor()
     }
 
     //api parts providing
     @Provides
-    fun providePodcastDataProvider(apiService: ApiService): PodcastDataProviders {
+    fun providePodcastDataProvider(
+        apiService: ApiService,
+        tokenManager: TokenManager
+    ): PodcastDataProviders {
         return PodcastDataProviders(apiService)
     }
 
@@ -82,7 +66,10 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideUserDataProviders(apiService: ApiService): UserDataProviders {
-        return UserDataProviders(apiService)
+    fun provideUserDataProviders(
+        apiService: ApiService,
+        tokenManager: TokenManager
+    ): UserDataProviders {
+        return UserDataProviders(apiService, tokenManager)
     }
 }
