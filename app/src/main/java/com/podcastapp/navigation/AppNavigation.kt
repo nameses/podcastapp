@@ -24,5 +24,8 @@ fun AppNavGraph(
         navigationProvider.authApi.registerGraph(
             navController, this
         )
+        navigationProvider.profileApi.registerGraph(
+            navController, this
+        )
     }
 }

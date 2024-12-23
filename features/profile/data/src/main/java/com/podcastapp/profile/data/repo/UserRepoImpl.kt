@@ -1,5 +1,6 @@
 package com.podcastapp.profile.data.repo
 
+import android.util.Log
 import com.core.common.model.RepoEvent
 import com.core.network.dataproviders.UserDataProviders
 import com.core.network.model.common.ValidationErrorResponse
@@ -20,7 +21,9 @@ class UserRepoImpl
 @Inject constructor(private val userDataProvider: UserDataProviders) : UserRepository {
     override suspend fun getProfile(): RepoEvent<UserFull> {
         val response = userDataProvider.getUser()
+        Log.d("TAG", response.body().toString())
         return if (response.isSuccessful && response.body() != null) {
+
             RepoEvent.Success(response.body()!!.data.toUserFull())
         } else {
             val errorResponse = response.errorBody()?.let {

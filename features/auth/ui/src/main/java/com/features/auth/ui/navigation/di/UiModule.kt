@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 @Module
 object UiModule {
     @Provides
-    fun providePodcastApi(): AuthApi {
+    fun provideAuthApi(): AuthApi {
         return AuthApiImpl()
     }
 }

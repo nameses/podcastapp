@@ -5,6 +5,6 @@ import com.features.main.domain.model.Podcast
 
 fun PodcastListResponse.toDomainPodcastList(): List<Podcast> {
     return this.results.map {
-        Podcast(it.title, it.author, it.imagePath)
+        Podcast(it.title,it.image_url)
     }
 }
