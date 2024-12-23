@@ -21,7 +21,8 @@ object InternalPodcastFeatureApi : FeatureApi {
             composable(route = MainFeature.mainScreenRoute) {
                 val podcastFeaturedViewModel = hiltViewModel<PodcastFeaturedViewModel>()
                 MainScreen(
-                    podcastFeaturedViewModel = podcastFeaturedViewModel
+                    podcastFeaturedViewModel = podcastFeaturedViewModel,
+                    navController
                 )
             }
         }
