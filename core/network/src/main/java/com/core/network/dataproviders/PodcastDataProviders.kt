@@ -16,6 +16,10 @@ class PodcastDataProviders @Inject constructor(
         page, tokenManager.getFormattedTokenOrEmpty()
     )
 
+    suspend fun getPodcastFull(id: Int) = apiService.GetPodcastFull(
+        id, tokenManager.getFormattedTokenOrEmpty()
+    )
+
     suspend fun addToSavedPodcast(podcastId: Int) = apiService.AddToSavedPodcast(
         podcastId, tokenManager.getFormattedTokenOrEmpty()
     )
