@@ -5,7 +5,8 @@ import javax.inject.Inject
 
 class PodcastDataProviders @Inject constructor(private val apiService: ApiService) {
 
-    suspend fun getPodcastListFeatured() = apiService.GetPodcastListFeatured()
+    suspend fun getPodcastListFeatured(page: Int) = apiService.GetPodcastListFeatured(page)
 
-    suspend fun getPodcastListPopular() = apiService.GetPodcastListPopular()
+    suspend fun getPodcastListPopular(page: Int) = apiService.GetPodcastListPopular(page)
+
 }

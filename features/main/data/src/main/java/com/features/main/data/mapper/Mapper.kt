@@ -1,7 +1,7 @@
 package com.features.main.data.mapper
 
 import com.core.network.model.podcasts.PodcastListResponse
-import com.features.main.domain.model.Podcast
+import com.features.main.domain.model.PodcastDTO
 import com.features.main.domain.model.PodcastList
 import com.features.main.domain.model.PodcastPagination
 
@@ -14,11 +14,11 @@ fun PodcastListResponse.toDomainPodcastList(): PodcastList {
     )
 
     val mappedItems = this.data.items.map { podcastItem ->
-        Podcast(
+        PodcastDTO(
             id = podcastItem.id,
             title = podcastItem.title,
             description = podcastItem.description,
-            imageURL = podcastItem.imageURL
+            image_url = podcastItem.imageURL
         )
     }
 

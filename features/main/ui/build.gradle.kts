@@ -60,6 +60,7 @@ dependencies {
     implementation(project(":core:feature_api"))
     implementation(project(":features:main:domain"))
     implementation(project(":features:main:domain"))
+    implementation(project(":core:network"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
