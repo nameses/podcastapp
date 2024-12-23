@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
-import com.core.common.ui.HorizontalListItem
-import com.features.main.domain.model.Podcast
-import com.features.main.domain.model.PodcastList
+import com.podcastapp.commonui.HorizontalListItem
 import com.features.main.domain.use_cases.GetFeaturedPodcastListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +18,8 @@ class PodcastFeaturedViewModel @Inject constructor(
     private val
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UiStateHolder<HorizontalListItem>())
-    val state: StateFlow<UiStateHolder<HorizontalListItem>> get() = _state
+    private val _state = MutableStateFlow(UiStateHolder<com.podcastapp.commonui.HorizontalListItem>())
+    val state: StateFlow<UiStateHolder<com.podcastapp.commonui.HorizontalListItem>> get() = _state
 
     private var currentPage = 1
     private var lastPage = 1
@@ -45,7 +43,7 @@ class PodcastFeaturedViewModel @Inject constructor(
                     lastPage = it.data!!.pagination.lastPage
 
                     _state.value = UiStateHolder(isSuccess = true, data = it.data.items.map { podcast ->
-                        HorizontalListItem(
+                        com.podcastapp.commonui.HorizontalListItem(
                             id = podcast.id,
                             title = podcast.title,
                             author = podcast.author,

@@ -1,6 +1,8 @@
 package com.podcastapp.commonrepos.di
 
-import android.content.Context
+import com.core.network.dataproviders.PodcastDataProviders
+import com.podcastapp.commonrepos.repos.CommonPodcastRepoImpl
+import com.podcastapp.commonrepos.repos.CommonPodcastRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +15,7 @@ object CommonReposModule {
 
     @Provides
     @Singleton
-    fun provideTokenManager(@ApplicationContext context: Context): TokenManager {
-        return TokenManager(context)
+    fun provideCommonPodcastRepository(podcastDataProvider: PodcastDataProviders): CommonPodcastRepository {
+        return CommonPodcastRepoImpl(podcastDataProvider)
     }
 }

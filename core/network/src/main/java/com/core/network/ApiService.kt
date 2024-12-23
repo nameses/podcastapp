@@ -20,6 +20,7 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -87,4 +88,14 @@ interface ApiService {
         @Query("page") page: Int,
         @Header("Authorization") token: String
     ): Response<PodcastListResponse>
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("podcasts/{podcast-id}/add-to-saved")
+    suspend fun AddToSavedPodcast(
+        @Path("podcast-id") podcastId: Int,
+        @Header("Authorization") token: String
+    ): Response<Unit>
 }

@@ -1,10 +1,10 @@
 package com.podcastapp.profile.ui.navigation.mapper
 
-import com.core.common.ui.HorizontalListItem
+import com.podcastapp.commonui.HorizontalListItem
 import com.podcastapp.profile.domain.model.Podcast
 
-fun List<Podcast>.toHorizontalListItem(): List<HorizontalListItem> {
+fun List<Podcast>.toHorizontalListItem(): List<com.podcastapp.commonui.HorizontalListItem> {
     return this.map { podcast ->
-        HorizontalListItem(podcast.title, podcast.image_url)
+        com.podcastapp.commonui.HorizontalListItem(podcast.title, podcast.image_url)
     }
 }
