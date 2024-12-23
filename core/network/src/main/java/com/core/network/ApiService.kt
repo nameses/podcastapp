@@ -2,6 +2,7 @@ package com.core.network
 
 import com.core.common.constants.HeaderName
 import com.core.common.constants.HeaderValue
+import com.core.network.model.podcasts.AddToSavedResponse
 import com.core.network.model.user.AuthResponse
 import com.core.network.model.user.LoginRequest
 import com.core.network.model.podcasts.PodcastListResponse
