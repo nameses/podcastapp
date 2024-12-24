@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
 import com.features.main.domain.use_cases.GetFeaturedPodcastListUseCase
+import com.features.main.domain.use_cases.GetPopularPodcastListUseCase
 import com.podcastapp.commonui.model.HorizontalListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PodcastFeaturedViewModel @Inject constructor(
-    private val podcastUseCase: GetFeaturedPodcastListUseCase
+class PodcastPopularViewModel @Inject constructor(
+    private val podcastUseCase: GetPopularPodcastListUseCase
 ) : ViewModel() {
 
     private val _podcasts = MutableStateFlow<List<HorizontalListItem>>(emptyList())

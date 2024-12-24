@@ -2,8 +2,6 @@ package com.podcastapp.commonui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.core.common.model.RepoEvent
-import com.core.common.model.UiStateHolder
 import com.podcastapp.commonrepos.repos.CommonPodcastRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,25 +10,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HorizontalListItemViewModel @Inject constructor(private val podcastRepository: CommonPodcastRepository) : ViewModel() {
-    private val _state = MutableStateFlow(UiStateHolder<Boolean>())
-    val state: StateFlow<UiStateHolder<Boolean>> get() = _state
+class HorizontalListItemViewModel @Inject constructor(private val podcastRepository: CommonPodcastRepository) :
+    ViewModel() {
 
-    fun setInitialSavedState(isInitiallySaved: Boolean) {
-        if (_state.value.data == null) {
-            _state.value = UiStateHolder(isSuccess = true, data = isInitiallySaved)
-        }
+    private val _savedState = MutableStateFlow<Map<Int, Boolean>>(emptyMap())
+    val savedState: StateFlow<Map<Int, Boolean>> get() = _savedState
+
+    fun loadSavedState(mapSavedPodcasts: Map<Int, Boolean>) {
+        _savedState.value = mapSavedPodcasts
     }
 
     fun toggleSaved(id: Int) = viewModelScope.launch {
-        when (val response = podcastRepository.addToSaved(id)) {
-            is RepoEvent.Success -> {
-                _state.value = UiStateHolder(isSuccess = true, data = !_state.value.data!!)
-            }
-            is RepoEvent.Error -> {
-                _state.value =
-                    UiStateHolder(message = response.message.toString(), errors = response.errors)
-            }
-        }
+        podcastRepository.addToSaved(id)
+    }
+
+    fun setNewStatus(id: Int) = viewModelScope.launch {
+        val statusById = podcastRepository.GetPodcast();
+
+        val currentState = _savedState.value
+        val newState = currentState.toMutableMap()
+        val isCurrentlySaved = currentState[id] ?: false
+        newState[id] = !isCurrentlySaved
+        _savedState.value = newState
     }
 }

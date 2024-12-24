@@ -16,6 +16,8 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,8 +42,8 @@ fun BottomNavigationBar(
     iconSize: Dp = 48.dp
 ) {
     val items = listOf(
-        BottomNavItem("Home", Icons.Default.Home, MainFeature.mainScreenRoute),
-        BottomNavItem("Profile", Icons.Default.Person, ProfileFeature.profileScreen),
+        BottomNavItem("Home", Icons.Filled.Home, Icons.Outlined.Home, MainFeature.mainScreenRoute),
+        BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, ProfileFeature.profileScreen),
     )
 
     BottomAppBar(modifier = modifier) {
@@ -59,7 +61,6 @@ fun BottomNavigationBar(
                             indication = rememberRipple(bounded = true, radius = (iconSize * 2.5f))
                         ) {
                             if (currentDestination != item.route) {
-                                Log.d("TAG", "go to " + item.route)
                                 navController.navigate(item.route)
                             }
                         },
@@ -67,9 +68,10 @@ fun BottomNavigationBar(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = item.icon,
+                        imageVector = if(currentDestination == item.route) item.iconChosen else item.iconDefault,
                         contentDescription = item.title,
-                        modifier = Modifier.size(iconSize)
+                        modifier = Modifier.size(iconSize)//,
+                        /*tint = if(currentDestination == item.route) Color(0xFF800080) else Color.Black*/
                     )
                 }
             }
@@ -77,4 +79,4 @@ fun BottomNavigationBar(
     }
 }
 
-data class BottomNavItem(val title: String, val icon: ImageVector, val route: String)
+data class BottomNavItem(val title: String, val iconChosen: ImageVector, val iconDefault: ImageVector, val route: String)

@@ -42,9 +42,11 @@ import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.podcastapp.commonui.model.HorizontalListItem
+import com.podcastapp.commonui.viewmodels.HorizontalListItemViewModel
 
 @Composable
 fun HorizontalList(
+    title: String,
     listState: LazyListState,
     items: List<HorizontalListItem>,
     isLoading: Boolean = false,
@@ -53,36 +55,49 @@ fun HorizontalList(
     routeToDetailedScreen: String,
     showAddToSavedFragment: Boolean
 ) {
-    LazyRow(
-        state = listState,
-        contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(items) { item ->
-            HorizontalListItem(
-                item = item,
-                onClick = { navController.navigate("${routeToDetailedScreen}/${item.id}") },
-                showAddToSavedFragment = showAddToSavedFragment
-            )
-        }
-        item {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.CenterHorizontally, Alignment.CenterVertically)
-                        .padding(8.dp)
+    val horizontalListItemViewModel = hiltViewModel<HorizontalListItemViewModel>()
+
+    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
+        )
+
+        LazyRow(
+            state = listState,
+            contentPadding = PaddingValues(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(items) { item ->
+                HorizontalListItem(
+                    item = item,
+                    viewModel = horizontalListItemViewModel,
+                    onClick = { navController.navigate("${routeToDetailedScreen}/${item.id}") },
+                    showAddToSavedFragment = showAddToSavedFragment
                 )
             }
-        }
-    }
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size }
-            .collect { visibleItems ->
-                if (visibleItems >= items.size && !isLoading) {
-                    onLoadMore()
+            item {
+                if (isLoading) {
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(8.dp)
+                        )
+                    }
                 }
             }
+        }
+
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size }
+                .collect { visibleItems ->
+                    if (visibleItems >= items.size && !isLoading) {
+                        onLoadMore()
+                    }
+                }
+        }
     }
 }
