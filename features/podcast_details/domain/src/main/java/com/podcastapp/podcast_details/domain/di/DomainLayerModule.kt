@@ -1,5 +1,6 @@
 package com.podcastapp.podcast_details.domain.di
 
+import com.podcastapp.commonrepos.repos.CommonPodcastRepository
 import com.podcastapp.podcast_details.domain.repo.PodcastRepository
 import com.podcastapp.podcast_details.domain.use_cases.GetPodcastUseCase
 import dagger.Module
@@ -11,7 +12,10 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object DomainLayerModule {
     @Provides
-    fun provideGetPopularPodcastListUseCase(podcastRepository: PodcastRepository): GetPodcastUseCase {
-        return GetPodcastUseCase(podcastRepository)
+    fun provideGetPodcastUseCase(
+        podcastRepository: PodcastRepository,
+        commonPodcastRepository: CommonPodcastRepository
+    ): GetPodcastUseCase {
+        return GetPodcastUseCase(podcastRepository, commonPodcastRepository)
     }
 }

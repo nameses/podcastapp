@@ -1,8 +1,9 @@
 package com.podcastapp.di
 
 import com.features.auth.ui.navigation.AuthApi
-import com.features.main.ui.navigation.PodcastApi
+import com.features.main.ui.navigation.MainApi
 import com.podcastapp.navigation.NavigationProvider
+import com.podcastapp.podcast_details.ui.navigation.PodcastApi
 import com.podcastapp.profile.ui.navigation.ProfileApi
 import dagger.Module
 import dagger.Provides
@@ -14,10 +15,11 @@ import dagger.hilt.components.SingletonComponent
 object AppModule {
     @Provides
     fun provideNavigationProvider(
-        podcastApi: PodcastApi,
+        mainApi: MainApi,
         authApi: AuthApi,
-        profileApi: ProfileApi
+        profileApi: ProfileApi,
+        podcastApi: PodcastApi
     ): NavigationProvider {
-        return NavigationProvider(podcastApi, authApi, profileApi)
+        return NavigationProvider(mainApi, authApi, profileApi, podcastApi)
     }
 }

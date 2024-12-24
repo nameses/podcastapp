@@ -1,8 +1,5 @@
 package com.core.common.constants
 
-object AppStartPoint{
-    const val startPoint = "auth"
-}
 object MainFeature{
     const val nestedRoute = "main_feature"
     const val mainScreenRoute = "main_screen"

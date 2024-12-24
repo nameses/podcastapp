@@ -1,7 +1,7 @@
 package com.features.main.ui.navigation.di
 
-import com.features.main.ui.navigation.PodcastApi
-import com.features.main.ui.navigation.PodcastApiImpl
+import com.features.main.ui.navigation.MainApi
+import com.features.main.ui.navigation.MainApiImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 @Module
 object UiModule {
     @Provides
-    fun providePodcastApi(): PodcastApi {
-        return PodcastApiImpl()
+    fun provideMainApi(): MainApi {
+        return MainApiImpl()
     }
 }

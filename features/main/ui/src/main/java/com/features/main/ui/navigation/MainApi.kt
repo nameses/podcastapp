@@ -4,12 +4,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.core.feature_api.FeatureApi
 
-interface PodcastApi : FeatureApi {
+interface MainApi : FeatureApi {
 
 }
 
-class PodcastApiImpl : PodcastApi {
+class MainApiImpl : MainApi {
     override fun registerGraph(navController: NavHostController, navGraphBuilder: NavGraphBuilder) {
-        InternalPodcastFeatureApi.registerGraph(navController, navGraphBuilder)
+        InternalMainFeatureApi.registerGraph(navController, navGraphBuilder)
     }
 }

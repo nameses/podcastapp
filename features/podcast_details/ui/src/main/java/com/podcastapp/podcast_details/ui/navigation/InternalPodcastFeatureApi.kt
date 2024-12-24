@@ -3,6 +3,8 @@ package com.podcastapp.podcast_details.ui.navigation
 import androidx.navigation.navigation
 import androidx.navigation.compose.composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.core.common.constants.MainFeature
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.feature_api.FeatureApi
@@ -15,13 +17,18 @@ object InternalPodcastFeatureApi : FeatureApi {
         navGraphBuilder: androidx.navigation.NavGraphBuilder
     ) {
         navGraphBuilder.navigation(
-            startDestination = PodcastDetailedFeature.podcastScreen,
+            startDestination = "${PodcastDetailedFeature.podcastScreen}/{id}",
             route = PodcastDetailedFeature.nestedRoute
         ) {
-            composable(route = MainFeature.mainScreenRoute) {
+            composable(
+                route = "${PodcastDetailedFeature.podcastScreen}/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getInt("id")
+                    ?: throw IllegalArgumentException("Podcast ID is required")
                 val podcastViewModel = hiltViewModel<PodcastViewModel>()
                 PodcastScreen(
-                    podcastViewModel = podcastViewModel
+                    viewModel = podcastViewModel, podcastId = id
                 )
             }
         }

@@ -76,6 +76,9 @@ dependencies {
     implementation(project(":features:profile:data"))
     implementation(project(":features:profile:domain"))
     implementation(project(":features:profile:ui"))
+    implementation(project(":features:podcast_details:data"))
+    implementation(project(":features:podcast_details:domain"))
+    implementation(project(":features:podcast_details:ui"))
 
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)

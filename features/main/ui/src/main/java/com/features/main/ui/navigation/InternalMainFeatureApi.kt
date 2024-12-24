@@ -1,6 +1,5 @@
 package com.features.main.ui.navigation
 
-
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -10,7 +9,7 @@ import com.features.main.ui.navigation.screen.MainScreen
 import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
 import com.features.main.ui.navigation.viewmodels.PodcastPopularViewModel
 
-object InternalPodcastFeatureApi : FeatureApi {
+object InternalMainFeatureApi : FeatureApi {
     override fun registerGraph(
         navController: androidx.navigation.NavHostController,
         navGraphBuilder: androidx.navigation.NavGraphBuilder

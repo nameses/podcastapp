@@ -18,13 +18,16 @@ fun AppNavGraph(
     val startDestination = if (isAuthenticated) MainFeature.nestedRoute else AuthFeature.nestedRoute
 
     NavHost(navController = navController, startDestination = startDestination) {
-        navigationProvider.podcastApi.registerGraph(
+        navigationProvider.mainApi.registerGraph(
             navController, this
         )
         navigationProvider.authApi.registerGraph(
             navController, this
         )
         navigationProvider.profileApi.registerGraph(
+            navController, this
+        )
+        navigationProvider.podcastApi.registerGraph(
             navController, this
         )
     }
