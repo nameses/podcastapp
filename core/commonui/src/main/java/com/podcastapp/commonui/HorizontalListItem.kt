@@ -38,10 +38,10 @@ fun HorizontalListItem(
     item: HorizontalListItem,
     viewModel: HorizontalListItemViewModel,
     onClick: () -> Unit,
-    showAddToSavedFragment: Boolean
+    showAddToSavedFragment: Boolean,
+    onSaveStateChanged: (Int, Boolean) -> Unit
 ) {
     val savedState by viewModel.savedState.collectAsState()
-
     val isSaved = savedState[item.id] ?: item.isInitiallySaved
 
     Column(
@@ -69,7 +69,8 @@ fun HorizontalListItem(
                     id = item.id,
                     viewModel = viewModel,
                     isInitiallySaved = isSaved,//item.isInitiallySaved,
-                    modifier = Modifier.align(Alignment.BottomStart)
+                    modifier = Modifier.align(Alignment.BottomStart),
+                    onSaveStateChanged = onSaveStateChanged
                 )
             }
         }

@@ -8,16 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkAdd
-import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.outlined.Bookmark
-import androidx.compose.material.icons.sharp.Bookmark
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +28,19 @@ fun AddToSavedFragment(
     id: Int,
     viewModel: HorizontalListItemViewModel,
     isInitiallySaved: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSaveStateChanged: (Int, Boolean) -> Unit
 ) {
-    var isSaved by remember { mutableStateOf(isInitiallySaved) }
+    var isSaved by remember { mutableStateOf( viewModel.getSavedStateNullable(id) ?: isInitiallySaved) }
+
+    val savedStateChanged by viewModel.onSaveStateChanged.collectAsState(initial = null)
+    LaunchedEffect(savedStateChanged) {
+        savedStateChanged?.let { (changedId, newState) ->
+            if (changedId == id) {
+                isSaved = newState//isSaved = !isSaved  //viewModel.setNewStatus(id)
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -44,8 +48,8 @@ fun AddToSavedFragment(
             .padding(start = 8.dp, bottom = 8.dp)
             .background(color = Color.White, shape = CircleShape)
             .clickable {
-                viewModel.toggleSaved(id);
-                isSaved = viewModel.setNewStatus(id);
+                viewModel.toggleSaved(id, !isSaved);
+                isSaved = viewModel.getSavedState(id);
             },
         contentAlignment = Alignment.Center
     ) {

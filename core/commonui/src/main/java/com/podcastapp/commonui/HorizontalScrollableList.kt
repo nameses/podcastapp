@@ -53,7 +53,8 @@ fun HorizontalList(
     onLoadMore: () -> Unit = {},
     navController: NavHostController,
     routeToDetailedScreen: String,
-    showAddToSavedFragment: Boolean
+    showAddToSavedFragment: Boolean,
+    onSavePodcastStateChanged: (Int, Boolean) -> Unit
 ) {
     val horizontalListItemViewModel = hiltViewModel<HorizontalListItemViewModel>()
 
@@ -75,7 +76,8 @@ fun HorizontalList(
                     item = item,
                     viewModel = horizontalListItemViewModel,
                     onClick = { navController.navigate("${routeToDetailedScreen}/${item.id}") },
-                    showAddToSavedFragment = showAddToSavedFragment
+                    showAddToSavedFragment = showAddToSavedFragment,
+                    onSaveStateChanged = onSavePodcastStateChanged
                 )
             }
             item {

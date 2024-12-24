@@ -4,23 +4,17 @@ import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.core.common.constants.MainFeature
 import com.core.common.constants.PodcastDetailedFeature
 import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
 import com.features.main.ui.navigation.viewmodels.PodcastPopularViewModel
 import com.podcastapp.commonui.HorizontalList
-import com.podcastapp.commonui.model.HorizontalListItem
 
 @Composable
 fun MainScreen(
@@ -36,6 +30,10 @@ fun MainScreen(
     val podcastPopularState by podcastPopularViewModel.state.collectAsState()
     val podcastPopularLazyListState = rememberLazyListState()
 
+    val handleSavePodcastStateChanged: (Int, Boolean) -> Unit = { id, isSaved ->
+        Log.d("SaveStateChanged", "Podcast ID: $id is now saved: $isSaved")
+    }
+
     LazyColumn {
         item {
             HorizontalList(
@@ -45,8 +43,9 @@ fun MainScreen(
                 items = podcastFeaturedListState,
                 onLoadMore = { podcastFeaturedViewModel.loadPodcasts() },
                 navController = navController,
-                routeToDetailedScreen = PodcastDetailedFeature.podcastDetailedScreen,
-                showAddToSavedFragment = true
+                routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
+                showAddToSavedFragment = true,
+                onSavePodcastStateChanged = handleSavePodcastStateChanged
             )
         }
         item {
@@ -61,8 +60,9 @@ fun MainScreen(
                 items = podcastPopularListState,
                 onLoadMore = { podcastPopularViewModel.loadPodcasts() },
                 navController = navController,
-                routeToDetailedScreen = PodcastDetailedFeature.podcastDetailedScreen,
-                showAddToSavedFragment = true
+                routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
+                showAddToSavedFragment = true,
+                onSavePodcastStateChanged = handleSavePodcastStateChanged
             )
         }
     }

@@ -75,7 +75,7 @@ interface ApiService {
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
     @GET("podcasts/get-featured")
-    suspend fun GetPodcastListFeatured(
+    suspend fun getPodcastListFeatured(
         @Query("page") page: Int,
         @Header("Authorization") token: String
     ): Response<PodcastListResponse>
@@ -85,7 +85,7 @@ interface ApiService {
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
     @GET("podcasts/get-popular")
-    suspend fun GetPodcastListPopular(
+    suspend fun getPodcastListPopular(
         @Query("page") page: Int,
         @Header("Authorization") token: String
     ): Response<PodcastListResponse>
@@ -95,7 +95,7 @@ interface ApiService {
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
     @GET("podcasts/{podcast-id}")
-    suspend fun GetPodcastFull(
+    suspend fun getPodcastFull(
         @Path("podcast-id") podcastId: Int,
         @Header("Authorization") token: String
     ): Response<PodcastDetailedResponse>
@@ -105,7 +105,7 @@ interface ApiService {
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
     @GET("podcasts/{podcast-id}/add-to-saved")
-    suspend fun AddToSavedPodcast(
+    suspend fun addToSavedPodcast(
         @Path("podcast-id") podcastId: Int,
         @Header("Authorization") token: String
     ): Response<Unit>

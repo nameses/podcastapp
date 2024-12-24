@@ -8,19 +8,19 @@ class PodcastDataProviders @Inject constructor(
     private val apiService: ApiService, private val tokenManager: TokenManager
 ) {
 
-    suspend fun getPodcastListFeatured(page: Int) = apiService.GetPodcastListFeatured(
+    suspend fun getPodcastListFeatured(page: Int) = apiService.getPodcastListFeatured(
         page, tokenManager.getFormattedTokenOrEmpty()
     )
 
-    suspend fun getPodcastListPopular(page: Int) = apiService.GetPodcastListPopular(
+    suspend fun getPodcastListPopular(page: Int) = apiService.getPodcastListPopular(
         page, tokenManager.getFormattedTokenOrEmpty()
     )
 
-    suspend fun getPodcastFull(id: Int) = apiService.GetPodcastFull(
+    suspend fun getPodcastFull(id: Int) = apiService.getPodcastFull(
         id, tokenManager.getFormattedTokenOrEmpty()
     )
 
-    suspend fun addToSavedPodcast(podcastId: Int) = apiService.AddToSavedPodcast(
+    suspend fun addToSavedPodcast(podcastId: Int) = apiService.addToSavedPodcast(
         podcastId, tokenManager.getFormattedTokenOrEmpty()
     )
 }
