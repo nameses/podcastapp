@@ -17,7 +17,7 @@ object ProfileFeature{
     const val profileScreen = "profile_screen"
     const val profileEditScreen = "profile_edit_screen"
 }
-object PodcastDetailedFeature{
+object PodcastDetailedFeature {
     const val nestedRoute = "podcast_detailed_feature"
-    const val podcastDetailedScreen = "podcast_detailed_screen"
+    const val podcastScreen = "podcast_screen"
 }
