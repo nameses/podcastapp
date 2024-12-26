@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import com.podcastapp.podcast_details.ui.navigation.viewmodels.PodcastViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,6 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,36 +44,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.core.common.theme.Purple500
 import com.podcastapp.podcast_details.domain.model.Episode
 import com.podcastapp.podcast_details.domain.model.Podcast
 import com.podcastapp.podcast_details.ui.R
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun PodcastScreen(
-    viewModel: PodcastViewModel,
-    podcastId: Int
+    viewModel: PodcastViewModel, podcastId: Int
 ) {
     val state by viewModel.state.collectAsState()
     var savedStatus by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadPodcast(podcastId)
-        if(state.data != null)
-            savedStatus = state.data!!.isSaved
+        if (state.data != null) savedStatus = state.data!!.isSaved
     }
 
     if (state.isLoading) {
         CircularProgressIndicator(modifier = Modifier.fillMaxSize())
     } else if (state.isSuccess && state.data != null) {
-        PodcastContent(podcast = state.data!!, onAddToSavedClick = {
-            viewModel.toggleSaveStatus(podcastId)
-        }, onPlayClick = { /*episodeId ->
-            viewModel.playEpisode(episodeId)
-        */ })
+        PodcastContent(podcast = state.data!!,
+            onAddToSavedClick = { viewModel.toggleSaveStatus(podcastId) },
+            onPlayClick = {})
     } else {
         Text(
             text = state.message.ifEmpty { "Something went wrong" },
@@ -81,17 +87,16 @@ fun PodcastScreen(
 
 @Composable
 fun PodcastContent(
-    podcast: Podcast,
-    onAddToSavedClick: () -> Unit,
-    onPlayClick: (Int) -> Unit
+    podcast: Podcast, onAddToSavedClick: () -> Unit, onPlayClick: (Int) -> Unit
 ) {
+    var isSaved by remember { mutableStateOf(podcast.isSaved) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Podcast Image
         AsyncImage(
             model = podcast.imageUrl,
             contentDescription = podcast.title,
@@ -102,7 +107,6 @@ fun PodcastContent(
             contentScale = ContentScale.Crop
         )
 
-        // Title, Author, and Save Button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -111,48 +115,50 @@ fun PodcastContent(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = podcast.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = podcast.author,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     color = Color.Gray
                 )
             }
             IconButton(
-                onClick = onAddToSavedClick,
-                modifier = Modifier
+                onClick = {
+                    onAddToSavedClick()
+                    isSaved = !isSaved
+                }, modifier = Modifier
                     .background(
-                        color = Color(0xFF6200EE), // Purple background
-                        shape = CircleShape
+                        color = Purple500, shape = CircleShape
                     )
                     .padding(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Favorite,
+                    imageVector = if (isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
                     contentDescription = "Add to Saved",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(48.dp)
                 )
             }
         }
 
-        // Description
         Text(
             text = podcast.description,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Start
         )
 
-        // Episodes Header
         Text(
             text = "Episodes:",
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Start
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        // Episodes List
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -165,17 +171,16 @@ fun PodcastContent(
 
 @Composable
 fun EpisodeItem(
-    episode: Episode,
-    onPlayClick: (Int) -> Unit
+    episode: Episode, onPlayClick: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Episode Image
+        // Left block: Image
         AsyncImage(
             model = episode.imageUrl,
             contentDescription = episode.title,
@@ -185,32 +190,58 @@ fun EpisodeItem(
             contentScale = ContentScale.Crop
         )
 
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = episode.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = episode.description,
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                color = Color.Gray
-            )
-        }
-
-        // Play Button
-        Button(
-            onClick = { onPlayClick(episode.id) },
-            colors = ButtonDefaults.buttonColors(Color(0xFF6200EE))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = "Play",
-                tint = Color.White
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = episode.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${episode.duration}m",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.Gray
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = episode.description,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                )
+                IconButton(
+                    onClick = { onPlayClick(episode.id) }, modifier = Modifier
+                        .background(
+                            color = Purple500, shape = CircleShape
+                        )
+                        .size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Play",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }

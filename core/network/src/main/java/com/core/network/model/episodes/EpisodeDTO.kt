@@ -5,9 +5,10 @@ data class EpisodeDTO(
     var id: Int,
     val title: String,
     var description: String,
+    var image_url: String,
     var duration: Int,
     var episode_number: Int,
     var file_path: String,
-    var podcast_id: Int,
-    var category_id: Int
+    //var podcast_id: Int,
+    //var category_id: Int
 )

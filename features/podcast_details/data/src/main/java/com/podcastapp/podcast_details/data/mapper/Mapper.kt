@@ -23,7 +23,8 @@ fun EpisodeDTO.toDomainEpisode(): Episode {
         id = this.id,
         title = this.title,
         description = this.description,
-//        imageUrl = this.file_path // Assuming you want to use `file_path` for the episode image URL, adjust if needed
-        imageUrl = null // TODO
+        duration = if(this.duration / 60 > 0) (this.duration / 60) else 1,
+        imageUrl = this.image_url,
+        filePath = this.file_path
     )
 }

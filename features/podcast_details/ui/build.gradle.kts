@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.material.icons.extended)
     implementation(project(":core:feature_api"))
     implementation(project(":features:podcast_details:domain"))
     implementation(project(":core:common"))
