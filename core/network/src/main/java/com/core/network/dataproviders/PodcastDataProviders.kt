@@ -16,6 +16,10 @@ class PodcastDataProviders @Inject constructor(
         page, tokenManager.getFormattedTokenOrEmpty()
     )
 
+    suspend fun getPodcastListNew(page: Int) = apiService.getPodcastListNew(
+        page, tokenManager.getFormattedTokenOrEmpty()
+    )
+
     suspend fun getPodcastFull(id: Int) = apiService.getPodcastFull(
         id, tokenManager.getFormattedTokenOrEmpty()
     )

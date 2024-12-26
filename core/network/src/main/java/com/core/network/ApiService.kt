@@ -94,6 +94,16 @@ interface ApiService {
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
     )
+    @GET("podcasts/get-new")
+    suspend fun getPodcastListNew(
+        @Query("page") page: Int,
+        @Header("Authorization") token: String
+    ): Response<PodcastListResponse>
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
     @GET("podcasts/{podcast-id}")
     suspend fun getPodcastFull(
         @Path("podcast-id") podcastId: Int,

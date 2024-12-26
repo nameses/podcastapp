@@ -7,4 +7,4 @@ interface PodcastRepository {
     suspend fun getPodcastList(podcastType: PodcastType, page: Int) : RepoEvent<PodcastList>
 }
 
-enum class PodcastType { Featured, Popular }
+enum class PodcastType { Featured, Popular, New }

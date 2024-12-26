@@ -20,7 +20,8 @@ import com.podcastapp.commonui.HorizontalList
 fun MainScreen(
     navController: NavHostController,
     podcastFeaturedViewModel: PodcastFeaturedViewModel,
-    podcastPopularViewModel: PodcastPopularViewModel
+    podcastPopularViewModel: PodcastPopularViewModel,
+    podcastNewViewModel: PodcastPopularViewModel,
 ) {
     val podcastFeaturedListState by podcastFeaturedViewModel.podcasts.collectAsState()
     val podcastFeaturedState by podcastFeaturedViewModel.state.collectAsState()
@@ -29,6 +30,10 @@ fun MainScreen(
     val podcastPopularListState by podcastPopularViewModel.podcasts.collectAsState()
     val podcastPopularState by podcastPopularViewModel.state.collectAsState()
     val podcastPopularLazyListState = rememberLazyListState()
+
+    val podcastNewListState by podcastPopularViewModel.podcasts.collectAsState()
+    val podcastNewState by podcastPopularViewModel.state.collectAsState()
+    val podcastNewLazyListState = rememberLazyListState()
 
     val handleSavePodcastStateChanged: (Int, Boolean) -> Unit = { id, isSaved ->
         Log.d("SaveStateChanged", "Podcast ID: $id is now saved: $isSaved")
@@ -48,6 +53,7 @@ fun MainScreen(
                 onSavePodcastStateChanged = handleSavePodcastStateChanged
             )
         }
+
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -59,6 +65,24 @@ fun MainScreen(
                 isLoading = podcastPopularState.isLoading,
                 items = podcastPopularListState,
                 onLoadMore = { podcastPopularViewModel.loadPodcasts() },
+                navController = navController,
+                routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
+                showAddToSavedFragment = true,
+                onSavePodcastStateChanged = handleSavePodcastStateChanged
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            HorizontalList(
+                title = "Last added",
+                listState = podcastNewLazyListState,
+                isLoading = podcastNewState.isLoading,
+                items = podcastNewListState,
+                onLoadMore = { podcastNewViewModel.loadPodcasts() },
                 navController = navController,
                 routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
                 showAddToSavedFragment = true,

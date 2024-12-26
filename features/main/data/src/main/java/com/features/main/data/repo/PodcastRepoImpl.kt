@@ -17,6 +17,7 @@ class PodcastRepoImpl
         val response = when (podcastType){
             PodcastType.Featured -> podcastDataProvider.getPodcastListFeatured(page)
             PodcastType.Popular -> podcastDataProvider.getPodcastListPopular(page)
+            PodcastType.New -> podcastDataProvider.getPodcastListNew(page)
         }
         return if (response.isSuccessful && response.body() != null) {
             RepoEvent.Success(response.body()!!.toDomainPodcastList())
