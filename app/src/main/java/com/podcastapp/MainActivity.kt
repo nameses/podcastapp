@@ -6,7 +6,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -60,22 +63,27 @@ fun App(
     val currentRoute = navBackStackEntry?.destination?.route
 
     val showBottomBar = when (currentRoute) {
-        //not showing bar while logging in
         AuthFeature.loginScreen, AuthFeature.registerScreen -> false
         else -> true
     }
 
-    //register app navigation graph
-    Scaffold(modifier = Modifier.fillMaxSize().statusBarsPadding(),
-        bottomBar = {
-            if(showBottomBar && currentRoute != null){
-                BottomNavigationBar(navHostController, currentRoute)
-            }
-        }) {
-        AppNavGraph(
-            navController = navHostController,
-            navigationProvider = navigationProvider,
-            tokenManager = tokenManager
-        )
+    Scaffold(modifier = Modifier
+        .fillMaxSize()
+        .statusBarsPadding(), bottomBar = {
+        if (showBottomBar && currentRoute != null) {
+            BottomNavigationBar(navHostController, currentRoute)
+        }
+    }) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
+        ) {
+            AppNavGraph(
+                navController = navHostController,
+                navigationProvider = navigationProvider,
+                tokenManager = tokenManager
+            )
+        }
     }
 }
