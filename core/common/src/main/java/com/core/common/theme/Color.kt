@@ -2,4 +2,5 @@ package com.core.common.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple500 = Color(0xFF7971EA)
+val ColorPurple500 = Color(0xFF7971EA)
+val ColorWhite = Color(0xFFFFFBFE)

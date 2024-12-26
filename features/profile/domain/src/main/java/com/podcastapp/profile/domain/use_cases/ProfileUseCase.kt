@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flowOn
 class ProfileUseCase(private val userRepository: UserRepository) {
     operator fun invoke() = flow<UiEvent<UserFull>> {
         emit(UiEvent.Loading())
-        Log.d("TAG", "profile use case")
+
         when (val response = userRepository.getProfile()) {
             is RepoEvent.Success -> if(response.data != null) emit(UiEvent.Success(response.data!!))
             is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))

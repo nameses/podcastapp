@@ -7,10 +7,10 @@ data class PodcastDTO(
     val image_url: String?,
     val language: String,
     val featured: Boolean,
-    val author: Author,
+    //val author: Author,
     val is_saved: Boolean,
 )
 
-data class Author(
-    val name: String
-)
+//data class Author(
+//    val name: String
+//)

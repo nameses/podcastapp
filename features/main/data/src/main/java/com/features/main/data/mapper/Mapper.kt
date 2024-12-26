@@ -17,7 +17,7 @@ fun PodcastListResponse.toDomainPodcastList(): PodcastList {
         Podcast(
             id = podcastItem.id,
             title = podcastItem.title,
-            author = podcastItem.author.name,
+            author = "dummy author",//podcastItem.author.name,
             imageUrl = podcastItem.image_url,
             isSaved = podcastItem.is_saved
         )

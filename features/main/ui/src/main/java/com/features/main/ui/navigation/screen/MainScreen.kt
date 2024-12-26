@@ -55,7 +55,7 @@ fun MainScreen(
         }
 
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
         }
 
         item {
@@ -73,7 +73,7 @@ fun MainScreen(
         }
 
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
         }
 
         item {

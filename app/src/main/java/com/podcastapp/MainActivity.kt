@@ -1,8 +1,8 @@
 package com.podcastapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,15 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.core.common.constants.AuthFeature
+import com.core.common.constants.ProfileFeature
 import com.core.common.services.TokenManager
+import com.core.common.theme.ColorPurple500
 import com.podcastapp.navigation.AppNavGraph
 import com.podcastapp.navigation.NavigationProvider
 import com.podcastapp.ui.common.BottomNavigationBar
@@ -66,6 +70,19 @@ fun App(
         AuthFeature.loginScreen, AuthFeature.registerScreen -> false
         else -> true
     }
+
+    //adjust status bar color
+    val statusBarColor = if (listOf(
+            ProfileFeature.profileScreen, ProfileFeature.profileEditScreen
+        ).contains(currentRoute)
+    ) ColorPurple500 else Color(0xFFFFFBFE)
+
+    val window = (LocalView.current.context as Activity).window
+    window.statusBarColor = statusBarColor.toArgb()
+
+    WindowCompat.getInsetsController(
+        window, LocalView.current
+    )
 
     Scaffold(modifier = Modifier
         .fillMaxSize()

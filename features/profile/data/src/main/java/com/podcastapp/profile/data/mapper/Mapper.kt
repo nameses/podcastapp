@@ -8,13 +8,20 @@ import com.podcastapp.profile.domain.model.User
 import com.podcastapp.profile.domain.model.UserFull
 
 
-fun UserFullDTO.toUserFull(): UserFull = UserFull(
-    email = email,
+fun UserFullDTO.toUserFull(): UserFull = UserFull(email = email,
     username = username,
     imageUrl = image_url,
     premium = premium,
-    likedEpisodes = liked_episodes.map { Episode(it.title) },
-    savedPodcasts = saved_podcasts.map { Podcast(it.id, it.title, it.image_url) })
+    likedEpisodes = liked_episodes.map {
+        Episode(
+            it.id, it.title, it.description, it.image_url, it.file_path, it.duration
+        )
+    },
+    savedPodcasts = saved_podcasts.map {
+        Podcast(
+            it.id, it.title, /*it.author.name*/"dummy author", it.image_url, it.is_saved
+        )
+    })
 
 fun UserDTO.toUser(): User = User(
     email = email, username = username, image_url = image_url, premium = premium

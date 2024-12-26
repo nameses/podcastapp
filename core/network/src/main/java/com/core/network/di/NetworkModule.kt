@@ -28,7 +28,7 @@ object NetworkModule {
             .create();
 
         return Retrofit.Builder().baseUrl("http://192.168.0.102/api/")
-            .addConverterFactory(MultipartConverterFactory())
+            //.addConverterFactory(MultipartConverterFactory())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()

@@ -1,6 +1,5 @@
 package com.podcastapp.profile.ui.navigation.screen
 
-import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,39 +8,27 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
-import com.podcastapp.profile.ui.navigation.viewmodels.ProfileViewModel
 import coil.compose.rememberImagePainter
-import com.core.common.theme.Purple500
+import com.core.common.theme.ColorPurple500
+import com.podcastapp.profile.ui.R
 import com.podcastapp.profile.ui.navigation.viewmodels.EditProfileViewModel
 import java.io.File
 
@@ -76,7 +63,7 @@ fun EditProfileScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Purple500)
+                    .background(ColorPurple500)
                     .height(200.dp)
             ) {
                 imageUri.value?.let {
@@ -89,16 +76,17 @@ fun EditProfileScreen(
                             .border(4.dp, Color.White, CircleShape)
                             .align(Alignment.Center)
                     )
-                } ?: Box(
+                } ?: Image(
+                    painter = rememberImagePainter(
+                        data = state.data?.imageUrl ?: R.drawable.default_avatar
+                    ),
+                    contentDescription = "Profile Image",
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(Color.Gray)
-                        .align(Alignment.Center),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("No Image")
-                }
+                        .border(4.dp, Color.White, CircleShape)
+                        .align(Alignment.Center)
+                )
 
                 IconButton(onClick = onBack, modifier = Modifier.align(Alignment.TopStart)) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -108,7 +96,7 @@ fun EditProfileScreen(
                     onClick = { launcher.launch("image/*") },
                     modifier = Modifier
                         .size(40.dp)
-                        .background(Purple500, CircleShape)
+                        .background(ColorPurple500, CircleShape)
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)
                 ) {

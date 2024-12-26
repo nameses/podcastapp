@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
 import com.core.common.services.TokenManager
+import com.podcastapp.commonui.model.HorizontalListItem
 import com.podcastapp.profile.domain.model.UserFull
 import com.podcastapp.profile.domain.use_cases.ProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,24 +22,59 @@ class ProfileViewModel @Inject constructor(
     private val _state = MutableStateFlow(UiStateHolder<UserFull>())
     val state: StateFlow<UiStateHolder<UserFull>> get() = _state
 
-    init{
+    init {
         getProfile()
     }
 
     fun getProfile() = viewModelScope.launch {
-        Log.d("TAG", "profile view model")
         profileUseCase().collect { it ->
             when (it) {
                 is UiEvent.Loading -> {
                     _state.value = UiStateHolder(isLoading = true)
                 }
+
                 is UiEvent.Success -> {
                     _state.value = UiStateHolder(isSuccess = true, data = it.data)
                 }
+
                 is UiEvent.Error -> {
                     _state.value =
                         UiStateHolder(message = it.message.toString(), errors = it.errors)
                 }
+            }
+        }
+    }
+
+    private val _savedPodcasts = MutableStateFlow<List<HorizontalListItem>>(emptyList())
+    val savedPodcasts: StateFlow<List<HorizontalListItem>> get() = _savedPodcasts
+
+    fun loadSavedPodcasts() = viewModelScope.launch {
+        if (_state.value.isSuccess) {
+            _savedPodcasts.value = _state.value.data!!.savedPodcasts.map { podcast ->
+                HorizontalListItem(
+                    id = podcast.id,
+                    title = podcast.title,
+                    author = podcast.author,
+                    imageUrl = podcast.imageUrl,
+                    isInitiallySaved = !podcast.isSaved
+                )
+            }
+        }
+    }
+
+    private val _likedEpisodes = MutableStateFlow<List<HorizontalListItem>>(emptyList())
+    val likedEpisodes: StateFlow<List<HorizontalListItem>> get() = _likedEpisodes
+
+    fun loadLikedEpisodes() = viewModelScope.launch {
+        if (_state.value.isSuccess) {
+            _likedEpisodes.value = _state.value.data!!.likedEpisodes.map { podcast ->
+                HorizontalListItem(
+                    id = podcast.id,
+                    title = podcast.title,
+                    author = "dummy author",//todo
+                    imageUrl = podcast.imageUrl,
+                    isInitiallySaved = false
+                )
             }
         }
     }

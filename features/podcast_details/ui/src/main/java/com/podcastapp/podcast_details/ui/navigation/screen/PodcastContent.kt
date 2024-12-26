@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,7 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.core.common.theme.Purple500
+import com.core.common.theme.ColorPurple500
 import com.podcastapp.podcast_details.domain.model.Podcast
 
 
@@ -90,7 +88,7 @@ fun PodcastContent(
                     isSaved = !isSaved
                 }, modifier = Modifier
                     .background(
-                        color = Purple500, shape = CircleShape
+                        color = ColorPurple500, shape = CircleShape
                     )
                     .padding(8.dp)
             ) {

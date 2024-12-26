@@ -26,10 +26,10 @@ object InternalProfileFeatureApi : FeatureApi {
             composable(route = ProfileFeature.profileScreen) {
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 ProfileScreen(
+                    navController = navController,
                     viewModel = viewModel,
                     onEditClick = { navController.navigate(ProfileFeature.profileEditScreen) },
-                    onLogout = { navController.navigate(AuthFeature.nestedRoute) },
-                    onPodcastClick = { navController.navigate("todo") }
+                    onLogout = { navController.navigate(AuthFeature.nestedRoute) }
                 )
             }
 
