@@ -72,10 +72,11 @@ fun ProfileScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.clearState()
         viewModel.getProfile()
     }
 
-    LaunchedEffect(state.data?.imageUrl) {
+    LaunchedEffect(Unit) {
         context.imageLoader.memoryCache.clear()
     }
 

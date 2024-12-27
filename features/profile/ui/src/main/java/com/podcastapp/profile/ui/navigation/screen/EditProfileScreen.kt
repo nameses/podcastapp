@@ -1,6 +1,7 @@
 package com.podcastapp.profile.ui.navigation.screen
 
 import android.net.Uri
+import android.provider.ContactsContract.Profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -220,6 +221,7 @@ fun EditProfileScreen(
                     Button(
                         onClick = {
                             viewModel.editProfile(usernameState, viewModel.imageFile.value)
+                            navController.navigate(ProfileFeature.profileScreen)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
