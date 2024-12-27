@@ -21,8 +21,10 @@ import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Query
+import kotlin.random.Random
 
 interface ApiService {
     //auth
@@ -42,19 +44,21 @@ interface ApiService {
 
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
-        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}",
+        "Cache-Control: no-cache, no-store, must-revalidate",
+        "Pragma: no-cache"
     )
     @GET("auth/get-user")
     suspend fun getUser(@Header("Authorization") token: String): Response<UserFullResponse>
 
     @Headers(
-        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
-        "${HeaderName.ContentType}: ${HeaderValue.MultipartFormData}"
+        "Accept: application/json"
     )
     @Multipart
     @POST("auth/update-user")
+    @JvmSuppressWildcards
     suspend fun updateUser(
-        @Part("username") username: RequestBody,
+        @PartMap params: Map<String, RequestBody>,
         @Part image: MultipartBody.Part?,
         @Header("Authorization") token: String
     ): Response<UpdateUserResponse>
@@ -65,8 +69,7 @@ interface ApiService {
     )
     @POST("auth/purchase-premium")
     suspend fun purchasePremium(
-        @Body purchasePremiumRequest: PurchasePremiumRequest,
-        @Header("Authorization") token: String
+        @Body purchasePremiumRequest: PurchasePremiumRequest, @Header("Authorization") token: String
     ): Response<PurchasePremiumResponse>
 
     //podcasts
@@ -76,8 +79,7 @@ interface ApiService {
     )
     @GET("podcasts/get-featured")
     suspend fun getPodcastListFeatured(
-        @Query("page") page: Int,
-        @Header("Authorization") token: String
+        @Query("page") page: Int, @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
     @Headers(
@@ -86,8 +88,7 @@ interface ApiService {
     )
     @GET("podcasts/get-popular")
     suspend fun getPodcastListPopular(
-        @Query("page") page: Int,
-        @Header("Authorization") token: String
+        @Query("page") page: Int, @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
     @Headers(
@@ -96,8 +97,7 @@ interface ApiService {
     )
     @GET("podcasts/get-new")
     suspend fun getPodcastListNew(
-        @Query("page") page: Int,
-        @Header("Authorization") token: String
+        @Query("page") page: Int, @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
     @Headers(
@@ -106,8 +106,7 @@ interface ApiService {
     )
     @GET("podcasts/{podcast-id}")
     suspend fun getPodcastFull(
-        @Path("podcast-id") podcastId: Int,
-        @Header("Authorization") token: String
+        @Path("podcast-id") podcastId: Int, @Header("Authorization") token: String
     ): Response<PodcastDetailedResponse>
 
     @Headers(
@@ -116,7 +115,6 @@ interface ApiService {
     )
     @GET("podcasts/{podcast-id}/add-to-saved")
     suspend fun addToSavedPodcast(
-        @Path("podcast-id") podcastId: Int,
-        @Header("Authorization") token: String
+        @Path("podcast-id") podcastId: Int, @Header("Authorization") token: String
     ): Response<Unit>
 }

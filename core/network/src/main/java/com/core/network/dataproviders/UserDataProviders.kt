@@ -16,9 +16,9 @@ class UserDataProviders @Inject constructor(
             tokenManager.getFormattedTokenOrEmpty()
         )
 
-    suspend fun editUser(username: RequestBody, image: MultipartBody.Part) =
+    suspend fun editUser(params: Map<String, RequestBody>, image: MultipartBody.Part) =
         apiService.updateUser(
-            username = username,
+            params = params,
             image = image,
             tokenManager.getFormattedTokenOrEmpty()
         )

@@ -6,5 +6,6 @@ data class Episode(
     var description: String,
     var imageUrl: String?,
     var filePath: String,
-    var duration: Int
+    var duration: Int,
+    var author: String
 )

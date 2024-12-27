@@ -1,7 +1,7 @@
 package com.core.network.model.user
 
-import com.core.network.model.episodes.EpisodeDTO
-import com.core.network.model.podcasts.PodcastDTO
+import com.core.network.model.user.episodes.EpisodeDTO
+import com.core.network.model.user.podcasts.PodcastDTO
 
 data class UserFullDTO(
     val email: String,

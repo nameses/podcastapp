@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -26,8 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.core.common.theme.ColorPurple500
 
 @Composable
 fun PremiumDialog(
@@ -42,8 +51,7 @@ fun PremiumDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
-            .clickable(onClick = onDismiss),
+            .background(Color.Black.copy(alpha = 0.5f)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -53,26 +61,47 @@ fun PremiumDialog(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Upgrade to Premium", fontSize = 20.sp, modifier = Modifier.padding(bottom = 8.dp))
+            Text(
+                "Upgrade to Premium",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
             OutlinedTextField(
                 value = cvv,
-                onValueChange = { cvv = it },
+                onValueChange = { if (it.length <= 3) cvv = it },
                 label = { Text("CVV") },
+                visualTransformation = VisualTransformation.None,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = cardNumber,
-                onValueChange = { cardNumber = it },
+                onValueChange = {
+                    if (it.length <= 16) cardNumber = it
+                },
                 label = { Text("Card Number") },
+                visualTransformation = CardNumberVisualTransformation(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = expirationDate,
-                onValueChange = { expirationDate = it },
+                onValueChange = {
+                    if (it.length <= 4) expirationDate = it
+                },
                 label = { Text("Expiration Date") },
+                visualTransformation = ExpirationDateMask(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -87,16 +116,85 @@ fun PremiumDialog(
 
             Button(
                 onClick = {
-                    onPurchase(cvv, cardNumber, expirationDate, cardHolder)
+                    onPurchase(cvv, cardNumber, "${expirationDate.take(2)}/${expirationDate.drop(2)}", cardHolder)
+                    onDismiss()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(ColorPurple500)
             ) {
                 Text("Purchase")
             }
 
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", color = ColorPurple500)
             }
         }
+    }
+}
+
+class CardNumberVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val trimmed =
+            if (text.text.length >= 16) text.text.substring(0..15) else text.text
+        var out = ""
+        for (i in trimmed.indices) {
+            out += trimmed[i]
+            if (i == 3 || i == 7 || i == 11) out += " "
+        }
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                return when {
+                    offset <= 3 -> offset
+                    offset <= 7 -> offset + 1
+                    offset <= 11 -> offset + 2
+                    offset <= 16 -> offset + 3
+                    else -> 19
+                }
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                return when {
+                    offset <= 4 -> offset
+                    offset <= 9 -> offset - 1
+                    offset <= 14 -> offset - 2
+                    offset <= 19 -> offset - 3
+                    else -> 16
+                }
+            }
+        }
+
+        return TransformedText(AnnotatedString(out), offsetMapping)
+    }
+}
+
+class ExpirationDateMask : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        return makeExpirationFilter(text)
+    }
+
+    private fun makeExpirationFilter(text: AnnotatedString): TransformedText {
+        val trimmed = if (text.text.length >= 4) text.text.substring(0..3) else text.text
+        var out = ""
+        for (i in trimmed.indices) {
+            out += trimmed[i]
+            if (i == 1) out += "/"
+        }
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset <= 1) return offset
+                if (offset <= 4) return offset + 1
+                return 5
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset <= 2) return offset
+                if (offset <= 5) return offset - 1
+                return 4
+            }
+        }
+
+        return TransformedText(AnnotatedString(out), offsetMapping)
     }
 }

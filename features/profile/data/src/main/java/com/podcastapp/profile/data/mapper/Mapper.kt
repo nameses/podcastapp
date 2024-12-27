@@ -14,12 +14,18 @@ fun UserFullDTO.toUserFull(): UserFull = UserFull(email = email,
     premium = premium,
     likedEpisodes = liked_episodes.map {
         Episode(
-            it.id, it.title, it.description, it.image_url, it.file_path, it.duration
+            it.id,
+            it.title,
+            it.description,
+            it.image_url,
+            it.file_path,
+            it.duration,
+            it.podcast.author.name
         )
     },
     savedPodcasts = saved_podcasts.map {
         Podcast(
-            it.id, it.title, /*it.author.name*/"dummy author", it.image_url, it.is_saved
+            it.id, it.title, it.author.name, it.image_url, true
         )
     })
 

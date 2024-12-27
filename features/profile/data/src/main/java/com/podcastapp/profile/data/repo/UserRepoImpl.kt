@@ -34,10 +34,10 @@ class UserRepoImpl
     }
 
     override suspend fun editProfile(
-        username: RequestBody,
+        params: Map<String, RequestBody>,
         image_url: MultipartBody.Part
     ): RepoEvent<User> {
-        val response = userDataProvider.editUser(username, image_url)
+        val response = userDataProvider.editUser(params, image_url)
         return if (response.isSuccessful && response.body() != null) {
             RepoEvent.Success(response.body()!!.data.toUser())
         } else {

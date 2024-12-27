@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.core.common.constants.MainFeature
 import com.core.common.constants.ProfileFeature
+import com.core.common.theme.ColorWhite
 
 @Composable
 fun BottomNavigationBar(
@@ -43,14 +44,18 @@ fun BottomNavigationBar(
 ) {
     val items = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Icons.Outlined.Home, MainFeature.mainScreenRoute),
-        BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, ProfileFeature.profileScreen),
+        BottomNavItem(
+            "Profile", Icons.Filled.Person, Icons.Outlined.Person, ProfileFeature.profileScreen
+        ),
     )
 
-    BottomAppBar(modifier = modifier) {
+    BottomAppBar(modifier = modifier, containerColor = ColorWhite) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(ColorWhite),
             horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             items.forEach { item ->
                 Column(
@@ -68,10 +73,9 @@ fun BottomNavigationBar(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = if(currentDestination == item.route) item.iconChosen else item.iconDefault,
+                        imageVector = if (currentDestination == item.route) item.iconChosen else item.iconDefault,
                         contentDescription = item.title,
-                        modifier = Modifier.size(iconSize)//,
-                        /*tint = if(currentDestination == item.route) Color(0xFF800080) else Color.Black*/
+                        modifier = Modifier.size(iconSize)
                     )
                 }
             }
@@ -79,4 +83,6 @@ fun BottomNavigationBar(
     }
 }
 
-data class BottomNavItem(val title: String, val iconChosen: ImageVector, val iconDefault: ImageVector, val route: String)
+data class BottomNavItem(
+    val title: String, val iconChosen: ImageVector, val iconDefault: ImageVector, val route: String
+)

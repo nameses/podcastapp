@@ -1,5 +1,6 @@
 package com.podcastapp.profile.domain.use_cases
 
+import android.util.Log
 import com.core.common.model.RepoEvent
 import com.core.common.model.UiEvent
 import com.podcastapp.profile.domain.model.User
@@ -11,21 +12,29 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class EditProfileUseCase(private val userRepository: UserRepository) {
-    operator fun invoke(username: String, image: File) = flow<UiEvent<User>> {
+    operator fun invoke(username: String?, image: File) = flow<UiEvent<User>> {
         emit(UiEvent.Loading())
+        val params: HashMap<String, RequestBody> = HashMap()
 
-        val requestBodyUsername = username.toRequestBody("text/plain".toMediaTypeOrNull())
-        val imagePart = image.let { file ->
-            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-            MultipartBody.Part.createFormData("image", file.name, requestFile)
+        val imagePart = MultipartBody.Part
+            .createFormData(
+                "image",
+                image.name,
+                image.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
+
+        if(username != null){
+            val requestBodyUsername = username.toRequestBody("text/plain".toMediaTypeOrNull())
+            params["username"] = requestBodyUsername
         }
-
-        when (val response = userRepository.editProfile(requestBodyUsername, imagePart)) {
+        Log.d("TAG", username.toString())
+        when (val response = userRepository.editProfile(params, imagePart)) {
             is RepoEvent.Success -> if(response.data != null) emit(UiEvent.Success(response.data!!))
             is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))
         }

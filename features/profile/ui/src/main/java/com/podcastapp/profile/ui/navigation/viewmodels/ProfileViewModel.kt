@@ -22,9 +22,9 @@ class ProfileViewModel @Inject constructor(
     private val _state = MutableStateFlow(UiStateHolder<UserFull>())
     val state: StateFlow<UiStateHolder<UserFull>> get() = _state
 
-    init {
-        getProfile()
-    }
+    //init {
+    //    getProfile()
+    //}
 
     fun getProfile() = viewModelScope.launch {
         profileUseCase().collect { it ->
@@ -71,7 +71,7 @@ class ProfileViewModel @Inject constructor(
                 HorizontalListItem(
                     id = podcast.id,
                     title = podcast.title,
-                    author = "dummy author",//todo
+                    author = podcast.author,
                     imageUrl = podcast.imageUrl,
                     isInitiallySaved = false
                 )

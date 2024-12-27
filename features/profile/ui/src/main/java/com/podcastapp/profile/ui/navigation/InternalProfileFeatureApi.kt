@@ -37,7 +37,8 @@ object InternalProfileFeatureApi : FeatureApi {
                 val viewModel = hiltViewModel<EditProfileViewModel>()
                 EditProfileScreen(
                     viewModel = viewModel,
-                    onBack = { navController.navigate(ProfileFeature.profileScreen) }
+                    onBack = { navController.navigate(ProfileFeature.profileScreen) },
+                    navController = navController,
                 )
             }
         }

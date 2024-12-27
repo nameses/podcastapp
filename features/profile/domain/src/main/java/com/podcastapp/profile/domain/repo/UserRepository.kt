@@ -8,7 +8,7 @@ import okhttp3.RequestBody
 
 interface UserRepository {
     suspend fun getProfile(): RepoEvent<UserFull>
-    suspend fun editProfile(username: RequestBody, image_url: MultipartBody.Part): RepoEvent<User>
+    suspend fun editProfile(params: Map<String, RequestBody>, image_url: MultipartBody.Part): RepoEvent<User>
     suspend fun purchasePremium(
         cvv: String,
         cardNumber: String,

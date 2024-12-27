@@ -1,4 +1,4 @@
-package com.core.network.model.podcasts
+package com.core.network.model.user.podcasts
 
 data class PodcastDTO(
     val id: Int,
@@ -8,7 +8,6 @@ data class PodcastDTO(
     val language: String,
     val featured: Boolean,
     val author: Author,
-    val is_saved: Boolean,
 )
 
 data class Author(
