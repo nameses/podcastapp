@@ -21,7 +21,7 @@ class UserRepoImpl
 @Inject constructor(private val userDataProvider: UserDataProviders) : UserRepository {
     override suspend fun getProfile(): RepoEvent<UserFull> {
         val response = userDataProvider.getUser()
-        Log.d("TAG", response.body().toString())
+
         return if (response.isSuccessful && response.body() != null) {
 
             RepoEvent.Success(response.body()!!.data.toUserFull())

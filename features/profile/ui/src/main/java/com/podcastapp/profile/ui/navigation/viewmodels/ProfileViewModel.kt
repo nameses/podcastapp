@@ -22,8 +22,13 @@ class ProfileViewModel @Inject constructor(
     private val _state = MutableStateFlow(UiStateHolder<UserFull>())
     val state: StateFlow<UiStateHolder<UserFull>> get() = _state
 
-    fun clearState() = viewModelScope.launch {
+    init{
+        reloadState()
+    }
+
+    fun reloadState() = viewModelScope.launch {
         _state.value = UiStateHolder(isLoading = true)
+        getProfile()
     }
 
     fun getProfile() = viewModelScope.launch {

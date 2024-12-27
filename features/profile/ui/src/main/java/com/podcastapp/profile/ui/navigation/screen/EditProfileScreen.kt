@@ -34,12 +34,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.core.common.constants.ProfileFeature
 import com.core.common.model.UiStateHolder
+import com.core.common.services.getNavResultCallback
+import com.core.common.services.popBackStackWithResult
+import com.core.common.services.setNavResultCallback
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
 import com.podcastapp.commonui.errorscreen.ErrorScreen
@@ -221,6 +226,8 @@ fun EditProfileScreen(
                     Button(
                         onClick = {
                             viewModel.editProfile(usernameState, viewModel.imageFile.value)
+
+                            //navController.previousBackStackEntry?.savedStateHandle?.set("reload", true)
                             navController.navigate(ProfileFeature.profileScreen)
                         },
                         modifier = Modifier
@@ -243,7 +250,9 @@ fun EditProfileScreen(
                 if (showPremiumDialog.value) {
                     PremiumDialog(onDismiss = {
                         showPremiumDialog.value = false;
-                        navController.navigate(ProfileFeature.profileScreen)
+                        navController.navigate(ProfileFeature.profileScreen) {
+                            popUpTo(ProfileFeature.profileScreen) { inclusive = true }
+                        }
                     }, onPurchase = { cvv, cardNumber, expirationDate, cardHolder ->
                         viewModel.onPurchasePremium(cvv, cardNumber, expirationDate, cardHolder)
                     })

@@ -34,6 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +48,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navOptions
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.imageLoader
@@ -54,6 +61,8 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil3.compose.AsyncImage
 import com.core.common.constants.PodcastDetailedFeature
+import com.core.common.constants.ProfileFeature
+import com.core.common.services.setNavResultCallback
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
 import com.podcastapp.commonui.HorizontalList
@@ -65,19 +74,16 @@ import com.podcastapp.profile.ui.R
 fun ProfileScreen(
     navController: NavHostController,
     viewModel: ProfileViewModel,
-    onEditClick: () -> Unit,
     onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        viewModel.clearState()
-        viewModel.getProfile()
-    }
-
-    LaunchedEffect(Unit) {
-        context.imageLoader.memoryCache.clear()
+    LaunchedEffect(navController.previousBackStackEntry) {
+        Log.d("TAG", navController.previousBackStackEntry?.destination?.route ?: "null previousBackStackEntry")
+        if(navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileEditScreen) {
+            Log.d("TAG", "true")
+            viewModel.reloadState()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -139,7 +145,13 @@ fun ProfileScreen(
                                     color = ColorWhite,
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
-                                        .clickable { onEditClick() }
+                                        .clickable {
+                                            navController.navigate(ProfileFeature.profileEditScreen) {
+                                                popUpTo(ProfileFeature.profileEditScreen) {
+                                                    saveState = false
+                                                }
+                                            }
+                                        }
                                         .align(Alignment.CenterStart)
                                         .padding(start = 8.dp))
                             }

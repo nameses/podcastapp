@@ -33,7 +33,7 @@ class EditProfileUseCase(private val userRepository: UserRepository) {
             val requestBodyUsername = username.toRequestBody("text/plain".toMediaTypeOrNull())
             params["username"] = requestBodyUsername
         }
-        Log.d("TAG", username.toString())
+
         when (val response = userRepository.editProfile(params, imagePart)) {
             is RepoEvent.Success -> if(response.data != null) emit(UiEvent.Success(response.data!!))
             is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))

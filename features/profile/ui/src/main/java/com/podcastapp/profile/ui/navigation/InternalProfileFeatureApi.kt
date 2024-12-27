@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.core.common.constants.AuthFeature
 import com.core.common.constants.ProfileFeature
+import com.core.common.services.setNavResultCallback
 import com.core.feature_api.FeatureApi
 import com.podcastapp.profile.domain.model.Podcast
 import com.podcastapp.profile.ui.navigation.screen.EditProfileScreen
@@ -28,7 +29,6 @@ object InternalProfileFeatureApi : FeatureApi {
                 ProfileScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    onEditClick = { navController.navigate(ProfileFeature.profileEditScreen) },
                     onLogout = { navController.navigate(AuthFeature.nestedRoute) }
                 )
             }

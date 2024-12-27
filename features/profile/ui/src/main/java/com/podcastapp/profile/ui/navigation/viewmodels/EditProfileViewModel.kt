@@ -95,7 +95,6 @@ class EditProfileViewModel @Inject constructor(
             usernameProcessed = null
         }
         profileEditUseCase(usernameProcessed, imageProcessed!!).collect { it ->
-            Log.d("TAG", it.message ?: "message")
             when (it) {
                 is UiEvent.Loading -> {
                     _editState.value = UiStateHolder(isLoading = true)
