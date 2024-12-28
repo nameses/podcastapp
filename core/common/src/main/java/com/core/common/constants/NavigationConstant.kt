@@ -18,3 +18,7 @@ object PodcastDetailedFeature {
     const val nestedRoute = "podcast_detailed_feature"
     const val podcastScreen = "podcast_screen"
 }
+object PlayerFeature {
+    const val nestedRoute = "player_full_screen_feature"
+    const val playerScreen = "player_screen"
+}

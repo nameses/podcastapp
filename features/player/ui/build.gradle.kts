@@ -42,6 +42,7 @@ android {
 
 dependencies {
 
+    implementation("com.github.doublesymmetry:KotlinAudio:v2.1.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -61,6 +62,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.kt.coil.compose)
     implementation(libs.androidx.material.icons.extended)
+    implementation(project(":core:feature_api"))
+    implementation(project(":core:common"))
+    implementation(project(":core:commonrepos"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

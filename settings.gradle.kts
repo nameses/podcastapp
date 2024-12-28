@@ -1,3 +1,5 @@
+import java.net.URI
+
 pluginManagement {
     repositories {
         google {
@@ -16,6 +18,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+        }
+    }
+}
+sourceControl {
+    gitRepository(URI.create("https://github.com/fonnes/JsonKay.git")) {
+        producesModule("JsonKay:JsonKay")
     }
 }
 
