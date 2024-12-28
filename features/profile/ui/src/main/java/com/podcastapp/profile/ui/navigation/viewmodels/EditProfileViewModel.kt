@@ -20,11 +20,17 @@ import com.podcastapp.profile.domain.use_cases.PurchasePremiumUseCase
 import com.podcastapp.profile.ui.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,15 +91,22 @@ class EditProfileViewModel @Inject constructor(
     fun editProfile(username: String?, image: File?) = viewModelScope.launch {
         var usernameProcessed = username
         var imageProcessed = image
-        if (image == null) {
+
+        if (image == null && _state.value.data?.imageUrl == null) {
             val resourceId = R.drawable.default_avatar
             val bitmap = getBitmapFromResource(appContext, resourceId)
 
             imageProcessed = saveBitmapToFile(appContext, bitmap, "temp.png")
         }
-        if(initialUsername == usernameProcessed) {
+
+        if (image == null && _state.value.data?.imageUrl != null) {
+            imageProcessed = urlToFile(_state.value.data?.imageUrl!!, appContext)
+        }
+
+        if (initialUsername == usernameProcessed) {
             usernameProcessed = null
         }
+
         profileEditUseCase(usernameProcessed, imageProcessed!!).collect { it ->
             when (it) {
                 is UiEvent.Loading -> {
@@ -151,6 +164,19 @@ class EditProfileViewModel @Inject constructor(
         return tempFile
     }
 
+    fun urlToFile(urlStr: String, context: Context): File {
+        val file = File(context.cacheDir, "downloaded_image.png")
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val url = URL(urlStr)
+                val imageData = url.readBytes()
+                file.outputStream().use { it.write(imageData) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return file
+    }
 
     private fun getBitmapFromResource(context: Context, resourceId: Int): Bitmap {
         return BitmapFactory.decodeResource(context.resources, resourceId)

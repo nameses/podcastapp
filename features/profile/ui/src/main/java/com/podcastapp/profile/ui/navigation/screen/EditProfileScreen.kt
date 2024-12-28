@@ -198,7 +198,7 @@ fun EditProfileScreen(
                     } else {
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .background(Color(0xFFEEEEEE))
                         ) {
                             Text(
@@ -259,15 +259,13 @@ fun EditProfileScreen(
                         )
                     }
                 }
-
-                if (showPremiumDialog.value) {
-                    PremiumDialog(onDismiss = {
+            }
+            if (showPremiumDialog.value) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    PremiumDialog(navController, viewModel, onDismiss = {
                         showPremiumDialog.value = false;
-                        navController.navigate(ProfileFeature.profileScreen) {
-                            popUpTo(ProfileFeature.profileScreen) { inclusive = true }
-                        }
-                    }, onPurchase = { cvv, cardNumber, expirationDate, cardHolder ->
-                        viewModel.onPurchasePremium(cvv, cardNumber, expirationDate, cardHolder)
                     })
                 }
             }

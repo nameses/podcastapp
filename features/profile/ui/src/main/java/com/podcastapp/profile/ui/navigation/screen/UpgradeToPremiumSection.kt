@@ -36,13 +36,19 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.core.common.constants.ProfileFeature
 import com.core.common.theme.ColorPurple500
+import com.podcastapp.profile.ui.navigation.viewmodels.EditProfileViewModel
 
 @Composable
 fun PremiumDialog(
-    onDismiss: () -> Unit,
-    onPurchase: (cvv: String, cardNumber: String, expirationDate: String, cardHolder: String) -> Unit
+    navController:NavHostController,
+    viewModel: EditProfileViewModel,
+    onDismiss:()->Unit
 ) {
+    val premiumPurchaseState by viewModel.premiumPurchaseState.collectAsState()
+
     var cvv by remember { mutableStateOf("") }
     var cardNumber by remember { mutableStateOf("") }
     var expirationDate by remember { mutableStateOf("") }
@@ -51,7 +57,7 @@ fun PremiumDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)),
+            /*.background(Color.Black.copy(alpha = 0.1f))*/,
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -78,6 +84,9 @@ fun PremiumDialog(
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
+            premiumPurchaseState.errors?.get("cvv")?.forEach { error ->
+                Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            }
 
             OutlinedTextField(
                 value = cardNumber,
@@ -91,6 +100,9 @@ fun PremiumDialog(
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
+            premiumPurchaseState.errors?.get("card_number")?.forEach { error ->
+                Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            }
 
             OutlinedTextField(
                 value = expirationDate,
@@ -104,6 +116,9 @@ fun PremiumDialog(
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
+            premiumPurchaseState.errors?.get("expiration_date")?.forEach { error ->
+                Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            }
 
             OutlinedTextField(
                 value = cardHolder,
@@ -111,13 +126,19 @@ fun PremiumDialog(
                 label = { Text("Card Holder Name") },
                 modifier = Modifier.fillMaxWidth()
             )
-
+            premiumPurchaseState.errors?.get("card_holder")?.forEach { error ->
+                Text(text = error, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
-                    onPurchase(cvv, cardNumber, "${expirationDate.take(2)}/${expirationDate.drop(2)}", cardHolder)
-                    onDismiss()
+                    viewModel.onPurchasePremium(cvv, cardNumber, "${expirationDate.take(2)}/${expirationDate.drop(2)}", cardHolder)
+                    if(premiumPurchaseState.isSuccess){
+                        navController.navigate(ProfileFeature.profileScreen) {
+                            popUpTo(ProfileFeature.profileScreen) { inclusive = true }
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(ColorPurple500)
