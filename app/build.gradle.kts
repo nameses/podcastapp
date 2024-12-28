@@ -82,6 +82,7 @@ dependencies {
     implementation(project(":features:player:data"))
     implementation(project(":features:player:domain"))
     implementation(project(":features:player:ui"))
+    implementation(project(":core:commonui"))
 
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)

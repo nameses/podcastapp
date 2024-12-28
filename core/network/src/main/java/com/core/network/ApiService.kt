@@ -2,6 +2,7 @@ package com.core.network
 
 import com.core.common.constants.HeaderName
 import com.core.common.constants.HeaderValue
+import com.core.network.model.episodes.EpisodeFullDTO
 import com.core.network.model.podcasts.PodcastDetailedResponse
 import com.core.network.model.podcasts.PodcastListResponse
 import com.core.network.model.user.AuthResponse
@@ -27,7 +28,9 @@ import retrofit2.http.Query
 import kotlin.random.Random
 
 interface ApiService {
-    //auth
+    /**
+     * User. Login
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -35,6 +38,9 @@ interface ApiService {
     @POST("auth/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<AuthResponse>
 
+    /**
+     * User. Register
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -42,6 +48,9 @@ interface ApiService {
     @POST("auth/register")
     suspend fun register(@Body registerRequest: RegisterRequest): Response<AuthResponse>
 
+    /**
+     * User. Get user
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}",
@@ -51,6 +60,9 @@ interface ApiService {
     @GET("auth/get-user")
     suspend fun getUser(@Header("Authorization") token: String): Response<UserFullResponse>
 
+    /**
+     * User. Update user with multipart
+     * */
     @Headers(
         "Accept: application/json"
     )
@@ -63,6 +75,9 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<UpdateUserResponse>
 
+    /**
+     * User. Purchase premium
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -72,7 +87,9 @@ interface ApiService {
         @Body purchasePremiumRequest: PurchasePremiumRequest, @Header("Authorization") token: String
     ): Response<PurchasePremiumResponse>
 
-    //podcasts
+    /**
+     * Podcast. List of featured
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -82,6 +99,9 @@ interface ApiService {
         @Query("page") page: Int, @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
+    /**
+     * Podcast. List of popular
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -91,6 +111,9 @@ interface ApiService {
         @Query("page") page: Int, @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
+    /**
+     * Podcast. List of new
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -100,6 +123,9 @@ interface ApiService {
         @Query("page") page: Int, @Header("Authorization") token: String
     ): Response<PodcastListResponse>
 
+    /**
+     * Podcast. Detailed single
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -109,6 +135,9 @@ interface ApiService {
         @Path("podcast-id") podcastId: Int, @Header("Authorization") token: String
     ): Response<PodcastDetailedResponse>
 
+    /**
+     * Podcast. Add to saved(toggle mode)
+     * */
     @Headers(
         "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
         "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
@@ -116,5 +145,29 @@ interface ApiService {
     @GET("podcasts/{podcast-id}/add-to-saved")
     suspend fun addToSavedPodcast(
         @Path("podcast-id") podcastId: Int, @Header("Authorization") token: String
+    ): Response<Unit>
+
+    /**
+     * Episode. Get detailed
+     * */
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("episodes/{episode-id}")
+    suspend fun getEpisode(
+        @Path("episode-id") episodeId: Int, @Header("Authorization") token: String
+    ): Response<EpisodeFullDTO>
+
+    /**
+     * Episode. Like(toggle mode)
+     * */
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("episodes/{episode-id}/like")
+    suspend fun likeEpisode(
+        @Path("episode-id") episodeId: Int, @Header("Authorization") token: String
     ): Response<Unit>
 }

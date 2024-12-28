@@ -4,6 +4,7 @@ import com.core.common.services.TokenManager
 import com.core.network.ApiService
 import com.core.network.converterfactories.MultipartConverterFactory
 import com.core.network.dataproviders.AuthDataProviders
+import com.core.network.dataproviders.EpisodeDataProviders
 import com.core.network.dataproviders.PodcastDataProviders
 import com.core.network.dataproviders.UserDataProviders
 import com.google.gson.GsonBuilder
@@ -67,5 +68,13 @@ object NetworkModule {
         tokenManager: TokenManager
     ): UserDataProviders {
         return UserDataProviders(apiService, tokenManager)
+    }
+
+    @Provides
+    fun provideEpisodeDataProviders(
+        apiService: ApiService,
+        tokenManager: TokenManager
+    ): EpisodeDataProviders {
+        return EpisodeDataProviders(apiService, tokenManager)
     }
 }
