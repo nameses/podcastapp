@@ -58,7 +58,6 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation(libs.coil.kt.coil.compose)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences.core.jvm)
     implementation(libs.androidx.datastore.preferences)

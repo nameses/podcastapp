@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation(libs.coil.kt.coil.compose)
     implementation(libs.androidx.material.icons.extended)
     implementation(project(":core:feature_api"))
     implementation(project(":core:common"))

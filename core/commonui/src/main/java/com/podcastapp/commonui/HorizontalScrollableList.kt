@@ -39,8 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
 import com.podcastapp.commonui.model.HorizontalListItem
 import com.podcastapp.commonui.viewmodels.HorizontalListItemViewModel
 

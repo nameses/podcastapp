@@ -14,10 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavHostController
 
 @Composable
 fun PodcastScreen(
-    viewModel: PodcastViewModel, podcastId: Int
+    navController: NavHostController, viewModel: PodcastViewModel, podcastId: Int
 ) {
     val state by viewModel.state.collectAsState()
     var savedStatus by remember { mutableStateOf(false) }
@@ -30,9 +31,9 @@ fun PodcastScreen(
     if (state.isLoading) {
         CircularProgressIndicator(modifier = Modifier.fillMaxSize())
     } else if (state.isSuccess && state.data != null) {
-        PodcastContent(podcast = state.data!!,
-            onAddToSavedClick = { viewModel.toggleSaveStatus(podcastId) },
-            onPlayClick = {})
+        PodcastContent(navController = navController,
+            podcast = state.data!!,
+            onAddToSavedClick = { viewModel.toggleSaveStatus(podcastId) })
     } else {
         Text(
             text = state.message.ifEmpty { "Something went wrong" },

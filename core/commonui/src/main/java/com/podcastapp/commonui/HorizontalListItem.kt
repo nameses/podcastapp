@@ -22,12 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.podcastapp.commonui.model.HorizontalListItem
 import com.podcastapp.commonui.viewmodels.HorizontalListItemViewModel
 
@@ -50,19 +53,18 @@ fun HorizontalListItem(
             .padding(8.dp)
     ) {
         Box {
-            Image(
-                painter = rememberImagePainter(
-                    data = item.imageUrl ?: R.drawable.default_item_list,
-                    builder = {
-                        crossfade(true)
-                    }
-                ),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.imageUrl ?: R.drawable.default_item_list)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = item.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(120.dp)
                     .clip(RoundedCornerShape(12.dp))
             )
+
 
             if (showAddToSavedFragment) {
                 AddToSavedFragment(

@@ -30,5 +30,8 @@ fun AppNavGraph(
         navigationProvider.podcastApi.registerGraph(
             navController, this
         )
+        navigationProvider.playerApi.registerGraph(
+            navController, this
+        )
     }
 }

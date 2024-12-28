@@ -2,6 +2,7 @@ package com.core.network
 
 import com.core.common.constants.HeaderName
 import com.core.common.constants.HeaderValue
+import com.core.network.model.episodes.EpisodeDetailedResponse
 import com.core.network.model.episodes.EpisodeFullDTO
 import com.core.network.model.podcasts.PodcastDetailedResponse
 import com.core.network.model.podcasts.PodcastListResponse
@@ -157,7 +158,7 @@ interface ApiService {
     @GET("episodes/{episode-id}")
     suspend fun getEpisode(
         @Path("episode-id") episodeId: Int, @Header("Authorization") token: String
-    ): Response<EpisodeFullDTO>
+    ): Response<EpisodeDetailedResponse>
 
     /**
      * Episode. Like(toggle mode)

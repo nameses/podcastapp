@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+
     implementation(project(":core:common"))
     implementation(project(":core:network"))
     implementation(project(":core:feature_api"))

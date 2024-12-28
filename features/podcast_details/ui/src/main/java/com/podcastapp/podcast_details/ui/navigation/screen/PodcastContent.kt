@@ -34,14 +34,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import com.core.common.constants.PlayerFeature
 import com.core.common.theme.ColorPurple500
 import com.podcastapp.podcast_details.domain.model.Podcast
 
 
 @Composable
 fun PodcastContent(
-    podcast: Podcast, onAddToSavedClick: () -> Unit, onPlayClick: (Int) -> Unit
+    navController: NavHostController,
+    podcast: Podcast,
+    onAddToSavedClick: () -> Unit
 ) {
     var isSaved by remember { mutableStateOf(podcast.isSaved) }
     val scrollState = rememberScrollState()
@@ -119,7 +123,9 @@ fun PodcastContent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             podcast.episodes.forEach { episode ->
-                EpisodeItem(episode = episode, onPlayClick = onPlayClick)
+                EpisodeItem(episode = episode, onPlayClick = {
+                    navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
+                })
             }
         }
     }

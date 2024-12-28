@@ -28,7 +28,7 @@ object InternalPodcastFeatureApi : FeatureApi {
                     ?: throw IllegalArgumentException("Podcast ID is required")
                 val podcastViewModel = hiltViewModel<PodcastViewModel>()
                 PodcastScreen(
-                    viewModel = podcastViewModel, podcastId = id
+                    navController = navController, viewModel = podcastViewModel, podcastId = id
                 )
             }
         }

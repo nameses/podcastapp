@@ -53,13 +53,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
-import coil.imageLoader
+import coil3.annotation.ExperimentalCoilApi
 import com.podcastapp.profile.ui.navigation.viewmodels.ProfileViewModel
-import coil.request.CachePolicy
-import coil.request.ImageRequest
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.setNavResultCallback
@@ -116,10 +114,11 @@ fun ProfileScreen(
                                 .align(Alignment.BottomCenter)
                         )
 
-                        Image(
-                            painter = rememberImagePainter(
-                                data = state.data?.imageUrl ?: R.drawable.default_avatar
-                            ),
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(state.data?.imageUrl ?: R.drawable.default_avatar)
+                                .crossfade(true)
+                                .build(),
                             contentDescription = "Profile Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -128,6 +127,7 @@ fun ProfileScreen(
                                 .border(4.dp, ColorWhite, CircleShape)
                                 .align(Alignment.BottomCenter)
                         )
+
 
                         Row(
                             modifier = Modifier

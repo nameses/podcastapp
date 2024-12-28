@@ -38,8 +38,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.core.common.constants.ProfileFeature
 import com.core.common.model.UiStateHolder
 import com.core.common.services.getNavResultCallback
@@ -127,11 +129,11 @@ fun EditProfileScreen(
                                 .size(160.dp)
                                 .align(Alignment.Center)
                         ) {
-                            Image(
-                                painter = rememberImagePainter(
-                                    data = imageUri.value ?: state.data?.imageUrl
-                                    ?: R.drawable.default_avatar
-                                ),
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(imageUri.value ?: state.data?.imageUrl ?: R.drawable.default_avatar)
+                                    .crossfade(true)
+                                    .build(),
                                 contentScale = ContentScale.Crop,
                                 contentDescription = "Profile Image",
                                 modifier = Modifier
@@ -139,6 +141,7 @@ fun EditProfileScreen(
                                     .clip(CircleShape)
                                     .border(4.dp, ColorWhite, CircleShape)
                             )
+
 
                             IconButton(
                                 onClick = { launcher.launch("image/*") },
