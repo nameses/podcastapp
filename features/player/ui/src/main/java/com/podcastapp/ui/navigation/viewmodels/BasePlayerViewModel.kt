@@ -35,5 +35,6 @@ class BasePlayerViewModel(private val context: Context) : ViewModel() {
     val _isLive = MutableStateFlow(false)
     val isLive: StateFlow<Boolean> = _isLive
 
-
+    val _isLiked = MutableStateFlow(false)
+    val isLiked: StateFlow<Boolean> = _isLiked
 }

@@ -112,6 +112,7 @@ fun PlayerScreen(
     val title by viewModel.basePlayer.title.collectAsState()
     val artist by viewModel.basePlayer.artist.collectAsState()
     val artwork by viewModel.basePlayer.artwork.collectAsState()
+    val isLiked by viewModel.basePlayer.isLiked.collectAsState()
 
     var position by remember { mutableStateOf(0L) }
     val duration by viewModel.basePlayer.duration.collectAsState()
@@ -178,7 +179,10 @@ fun PlayerScreen(
                 } else {
                     showDialog.value = true
                 }
-            }, modifier = Modifier
+            }, onLike = {
+                viewModel.likeEpisode()
+                viewModel.basePlayer._isLiked.value = !viewModel.basePlayer._isLiked.value
+            }, isLiked = isLiked, modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 60.dp)
             )

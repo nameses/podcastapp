@@ -23,4 +23,17 @@ class CommonEpisodeRepoImpl @Inject constructor(private val episodeDataProvider:
             RepoEvent.Error(errorResponse?.message ?: "Unknown error", errorResponse?.errors)
         }
     }
+
+    override suspend fun likeEpisode(episodeId: Int): RepoEvent<Unit> {
+        val response = episodeDataProvider.likeEpisode(episodeId)
+
+        return if (response.isSuccessful) {
+            RepoEvent.Success(Unit)
+        } else {
+            val errorResponse = response.errorBody()?.let {
+                Gson().fromJson(it.string(), ValidationErrorResponse::class.java)
+            }
+            RepoEvent.Error(errorResponse?.message ?: "Unknown error", errorResponse?.errors)
+        }
+    }
 }

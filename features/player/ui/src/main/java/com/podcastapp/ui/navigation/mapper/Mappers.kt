@@ -3,6 +3,7 @@ package com.podcastapp.ui.navigation.mapper
 import android.media.MediaMetadataRetriever
 import com.core.network.model.episodes.EpisodeDTO
 import com.core.network.model.episodes.EpisodeFullDTO
+import com.doublesymmetry.kotlinaudio.models.AudioItemOptions
 import com.doublesymmetry.kotlinaudio.models.DefaultAudioItem
 import com.doublesymmetry.kotlinaudio.models.MediaType
 import java.io.IOException
@@ -15,10 +16,9 @@ fun EpisodeFullDTO.toAudioItem(): DefaultAudioItem {
         artwork = image_url,
         artist = podcast.author.name,
         duration = getMp3DurationInSeconds(file_path) * 1000,
+        albumTitle = id.toString()
     )
 }
-
-
 
 fun EpisodeDTO.toAudioItem(authorName: String): DefaultAudioItem {
     return DefaultAudioItem(
@@ -28,6 +28,7 @@ fun EpisodeDTO.toAudioItem(authorName: String): DefaultAudioItem {
         artwork = image_url,
         artist = authorName,
         duration = getMp3DurationInSeconds(file_path) * 1000,
+        albumTitle = id.toString()
     )
 }
 

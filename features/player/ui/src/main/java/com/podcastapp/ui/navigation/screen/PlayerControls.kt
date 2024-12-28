@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.TimerOff
 import androidx.compose.material.icons.rounded.FastForward
@@ -38,13 +40,31 @@ fun PlayerControls(
     isPaused: Boolean,
     onPlayPause: () -> Unit = {},
     isTimerRunning: Boolean = false,
-    onTimerClick: () -> Unit = {}
+    onTimerClick: () -> Unit = {},
+    isLiked: Boolean = false,
+    onLike: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
+        IconButton(
+            onClick = onLike,
+            modifier = Modifier.size(64.dp),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = ColorWhite, contentColor = ColorPurple500
+            )
+        ) {
+            Icon(
+                imageVector = if (isLiked) Icons.Default.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = "Like",
+                modifier = Modifier
+            )
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
         IconButton(
             onClick = onPrevious,
             modifier = Modifier
@@ -62,7 +82,9 @@ fun PlayerControls(
                     .width(48.dp)
             )
         }
+
         Spacer(modifier = Modifier.width(20.dp))
+
         IconButton(
             onClick = onPlayPause,
             modifier = Modifier
@@ -85,7 +107,9 @@ fun PlayerControls(
                     .clip(RoundedCornerShape(50))
             )
         }
+
         Spacer(modifier = Modifier.width(20.dp))
+
         IconButton(
             onClick = onNext,
             modifier = Modifier
@@ -103,10 +127,12 @@ fun PlayerControls(
                     .width(48.dp)
             )
         }
-        Spacer(modifier = Modifier.width(20.dp))
+
+        Spacer(modifier = Modifier.width(10.dp))
+
         IconButton(
             onClick = onTimerClick,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(64.dp),
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = ColorWhite, contentColor = ColorPurple500
             )

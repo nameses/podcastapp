@@ -68,6 +68,10 @@ class PlayerViewModel @Inject constructor(
             basePlayer._artwork.value = basePlayer._state.value.currentItem?.artwork ?: ""
             basePlayer._duration.value = basePlayer._state.value.currentItem?.duration ?: 0
             basePlayer._isLive.value = basePlayer._state.value.isCurrentMediaItemLive == true
+
+            val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt()
+            val isLiked = commonEpisodeRepository.getEpisode(episodeId ?: 0).data?.data?.is_liked ?: false
+            basePlayer._isLiked.value = isLiked
         }.launchIn(viewModelScope)
 
         basePlayer._state.value.event.onPlayerActionTriggeredExternally.onEach {
@@ -110,11 +114,6 @@ class PlayerViewModel @Inject constructor(
     }
 
     init {
-//        if(savedStateHandle.contains("player_state")){
-//            val savedState = savedStateHandle.get<QueuedAudioPlayer>("player_state")
-//            basePlayer._state.value = savedState!!
-//        }
-
         basePlayer._state.value.playerOptions.repeatMode = RepeatMode.ALL
 
         setupNotification()
@@ -150,6 +149,11 @@ class PlayerViewModel @Inject constructor(
 
     fun pausePlayback() {
         basePlayer._state.value.pause()
+    }
+
+    fun likeEpisode() = viewModelScope.launch {
+        val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt() ?: 0
+        var response = commonEpisodeRepository.likeEpisode(episodeId)
     }
 
 //    fun retrieveLastPlayedEpisode() {

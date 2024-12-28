@@ -7,4 +7,5 @@ import com.core.network.model.episodes.EpisodeFullDTO
 
 interface CommonEpisodeRepository {
     suspend fun getEpisode(episodeId:Int): RepoEvent<EpisodeDetailedResponse>
+    suspend fun likeEpisode(episodeId:Int): RepoEvent<Unit>
 }
