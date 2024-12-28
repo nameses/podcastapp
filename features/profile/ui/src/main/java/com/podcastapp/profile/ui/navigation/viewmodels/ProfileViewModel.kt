@@ -61,7 +61,7 @@ class ProfileViewModel @Inject constructor(
                     title = podcast.title,
                     author = podcast.author,
                     imageUrl = podcast.imageUrl,
-                    isInitiallySaved = !podcast.isSaved
+                    isInitiallySaved = podcast.isSaved
                 )
             }
         }

@@ -2,6 +2,7 @@ package com.podcastapp.ui.navigation.screen
 
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.transition.Slide
 import android.util.Log
 import android.widget.TextView
 import androidx.compose.foundation.Image
@@ -39,9 +40,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -80,6 +83,7 @@ import coil3.request.ImageRequest
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.setNavResultCallback
+import com.core.common.theme.ColorLittleBitGray
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
 import com.doublesymmetry.kotlinaudio.models.AudioPlayerState
@@ -87,6 +91,7 @@ import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
 import com.podcastapp.ui.R
 import com.podcastapp.ui.navigation.mapper.millisecondsToString
 import com.podcastapp.ui.navigation.viewmodels.PlayerViewModel
+import com.podcastapp.ui.navigation.viewmodels.TimerViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -98,6 +103,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun PlayerScreen(
     viewModel: PlayerViewModel = hiltViewModel(),
+    timerViewModel: TimerViewModel = hiltViewModel(),
     episodeId: Int = 0,
 ) {
     val playerState =
@@ -109,6 +115,9 @@ fun PlayerScreen(
 
     var position by remember { mutableStateOf(0L) }
     val duration by viewModel.basePlayer.duration.collectAsState()
+
+    val isTimerRunning by timerViewModel.isTimerRunning.collectAsState()
+    val showDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(
         key1 = player,
@@ -123,19 +132,18 @@ fun PlayerScreen(
             viewModel.playEpisode(episodeId)
         }
 
-//        viewModel.startSavingEpisodeDataEverySecond()
-
-//        else {
-//            viewModel.retrieveLastPlayedEpisode()
-//        }
-//
-//        viewModel.startSavingEpisodeDataEverySecond()
-
         while (true) {
             position = player.value.position
-
             delay(1.seconds / 30)
         }
+    }
+
+    if (showDialog.value) {
+        TimerDialog(onDismiss = { showDialog.value = false }, onSetTimer = { duration ->
+            timerViewModel.startTimer(duration) {
+                viewModel.pausePlayback()
+            }
+        })
     }
 
     Surface(
@@ -164,6 +172,12 @@ fun PlayerScreen(
                 } else {
                     player.value.play()
                 }
+            }, isTimerRunning = isTimerRunning, onTimerClick = {
+                if (isTimerRunning) {
+                    timerViewModel.stopTimer()
+                } else {
+                    showDialog.value = true
+                }
             }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 60.dp)
@@ -171,218 +185,5 @@ fun PlayerScreen(
         }
     }
 }
-
-//
-//ActionBottomSheet
-//
-
-@Composable
-@ExperimentalMaterial3Api
-fun ActionBottomSheet(
-    onDismiss: () -> Unit,
-    onRandomMetadata: () -> Unit,
-) {
-    val modalBottomSheetState = rememberModalBottomSheetState()
-
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
-        sheetState = modalBottomSheetState,
-        dragHandle = { BottomSheetDefaults.DragHandle() },
-    ) {
-        InnerSheet(onRandomMetadata = onRandomMetadata)
-    }
-}
-
-@Composable
-fun InnerSheet(onRandomMetadata: () -> Unit = {}) {
-    // Add a button to perform an action when clicked
-    Button(
-        onClick = onRandomMetadata, modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        Text("Metadata: Update Randomly")
-    }
-}
-
-@Preview
-@ExperimentalMaterial3Api
-@Composable
-fun ActionBottomSheetPreview() {
-    InnerSheet()
-}
-
-//
-//PlayerControls
-//
-@Composable
-fun PlayerControls(
-    modifier: Modifier = Modifier,
-    onPrevious: () -> Unit = {},
-    onNext: () -> Unit = {},
-    isPaused: Boolean,
-    onPlayPause: () -> Unit = {},
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = modifier
-    ) {
-        IconButton(
-            onClick = onPrevious, modifier = Modifier
-                .height(48.dp)
-                .width(48.dp)
-        ) {
-            Icon(
-                Icons.Rounded.FastRewind,
-                contentDescription = "Previous",
-                modifier = Modifier
-                    .height(48.dp)
-                    .width(48.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(20.dp))
-        IconButton(
-            onClick = onPlayPause, modifier = Modifier
-                .height(68.dp)
-                .width(68.dp)
-        ) {
-            Icon(
-                if (isPaused) {
-                    Icons.Rounded.PlayCircle
-                } else {
-                    Icons.Rounded.PauseCircle
-                },
-                contentDescription = "Play",
-                modifier = Modifier
-                    .height(68.dp)
-                    .width(68.dp)
-                    .clip(RoundedCornerShape(50))
-            )
-        }
-        Spacer(modifier = Modifier.width(20.dp))
-        IconButton(
-            onClick = onNext, modifier = Modifier
-                .height(48.dp)
-                .width(48.dp)
-        ) {
-            Icon(
-                Icons.Rounded.FastForward,
-                contentDescription = "Next",
-                modifier = Modifier
-                    .height(48.dp)
-                    .width(48.dp)
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PlayerControlsPreview() {
-    Column {
-        PlayerControls(isPaused = true)
-        PlayerControls(isPaused = false)
-    }
-}
-
-//
-//
-//
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-fun TrackDisplay(
-    title: String,
-    artist: String,
-    artwork: String,
-    position: Long,
-    duration: Long,
-    modifier: Modifier = Modifier,
-    onSeek: (Long) -> Unit = {},
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        if (artwork.isEmpty()) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(ColorWhite).build(),
-                contentDescription = "Album Cover",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
-        } else {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(artwork).build(),
-                contentDescription = "Album Cover",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .padding(top = 48.dp)
-            )
-        }
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = artist,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Column {
-            Slider(
-                value = if (duration == 0L) {
-                    0f
-                } else {
-                    position.toFloat() / duration.toFloat()
-                }, onValueChange = {
-                    onSeek((it * duration).toLong())
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp, start = 8.dp, end = 8.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
-            ) {
-                Text(
-                    text = position.millisecondsToString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = duration.millisecondsToString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TrackDisplayPreview() {
-    TrackDisplay(
-        title = "Title",
-        artist = "Artist",
-        artwork = "",
-        position = 1000,
-        duration = 6000,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TrackDisplayLivePreview() {
-    TrackDisplay(
-        title = "Title",
-        artist = "Artist",
-        artwork = "",
-        position = 1000,
-        duration = 6000,
-    )
-}
-
-
 
 

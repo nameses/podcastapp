@@ -148,6 +148,10 @@ class PlayerViewModel @Inject constructor(
         basePlayer._state.value.notificationManager.createNotification(notificationConfig)
     }
 
+    fun pausePlayback() {
+        basePlayer._state.value.pause()
+    }
+
 //    fun retrieveLastPlayedEpisode() {
 //        val sharedPreferences = appContext.getSharedPreferences("LastPlayedEpisode", Context.MODE_PRIVATE)
 //
