@@ -5,6 +5,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.transition.Slide
 import android.util.Log
 import android.widget.TextView
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,19 +87,24 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
+import com.core.common.model.UiStateHolder
 import com.core.common.services.setNavResultCallback
 import com.core.common.theme.ColorLittleBitGray
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
 import com.doublesymmetry.kotlinaudio.models.AudioPlayerState
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
+import com.podcastapp.commonui.errorscreen.ErrorScreen
 import com.podcastapp.ui.R
 import com.podcastapp.ui.navigation.mapper.millisecondsToString
 import com.podcastapp.ui.navigation.viewmodels.PlayerViewModel
 import com.podcastapp.ui.navigation.viewmodels.TimerViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
@@ -108,8 +115,9 @@ fun PlayerScreen(
     viewModel: PlayerViewModel = hiltViewModel(),
     timerViewModel: TimerViewModel = hiltViewModel(),
     episodeId: Int = 0,
-    navController : NavHostController
+    navController: NavHostController
 ) {
+    val loadState = viewModel.loadState.collectAsState()
     val playerState =
         viewModel.basePlayer.state.value.event.stateChange.collectAsState(initial = AudioPlayerState.IDLE)
     val player = viewModel.basePlayer.state.collectAsState()
@@ -125,15 +133,7 @@ fun PlayerScreen(
     val showDialog = remember { mutableStateOf(false) }
 
     // For collapsible bottom sheet
-    val expandedState = remember { mutableStateOf(false) }
-
-    LaunchedEffect(
-        key1 = player,
-        key2 = player.value.event.audioItemTransition,
-        key3 = player.value.event.onPlayerActionTriggeredExternally
-    ) {
-        viewModel.basePlayer.observePlayer()
-    }
+    var isExpanded = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (episodeId != 0) {
@@ -142,118 +142,127 @@ fun PlayerScreen(
 
         while (true) {
             position = player.value.position
-            delay(1.seconds / 30)
+            delay(1.seconds / 2)
         }
     }
 
-    if (showDialog.value) {
-        TimerDialog(onDismiss = { showDialog.value = false }, onSetTimer = { duration ->
-            timerViewModel.startTimer(duration) {
-                viewModel.pausePlayback()
-            }
-        })
-    }
+    if (loadState.value.isLoading) {
+        CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+    } else if (loadState.value.isSuccess || episodeId == 0) {
+        if (showDialog.value) {
+            TimerDialog(onDismiss = { showDialog.value = false }, onSetTimer = { duration ->
+                timerViewModel.startTimer(duration) {
+                    viewModel.pausePlayback()
+                }
+            })
+        }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(
-                title = { Text(text = "") },
-                navigationIcon = {
+        Surface(
+            modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                TopAppBar(title = { Text(text = "") }, navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Back")
                     }
-                },
-                actions = {
-                    IconButton(onClick = {  }) {
+                }, actions = {
+                    IconButton(onClick = { }) {
                         Icon(Icons.Filled.MoreVert, contentDescription = "More options")
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+                }, modifier = Modifier.fillMaxWidth()
+                )
 
-            TrackDisplay(
-                title = title,
-                artist = artist,
-                artwork = artwork,
-                position = position,
-                duration = duration,
-                onSeek = {
-                    player.value.seek(it, TimeUnit.MILLISECONDS)
-                },
-                onBack = {
-                    navController.popBackStack()
-                },
-                modifier = Modifier.padding(top = 46.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            PlayerControls(onPrevious = {
-                player.value.previous()
-            }, onNext = {
-                player.value.next()
-            }, isPaused = playerState.value != AudioPlayerState.PLAYING, onPlayPause = {
-                if (player.value.playerState == AudioPlayerState.PLAYING) {
-                    player.value.pause()
-                } else {
-                    player.value.play()
-                }
-            }, isTimerRunning = isTimerRunning, onTimerClick = {
-                if (isTimerRunning) {
-                    timerViewModel.stopTimer()
-                } else {
-                    showDialog.value = true
-                }
-            }, onLike = {
-                viewModel.likeEpisode()
-                viewModel.basePlayer._isLiked.value = !viewModel.basePlayer._isLiked.value
-            }, isLiked = isLiked, modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 60.dp)
-            )
-
-            // Collapsible bottom sheet for "Next Episodes"
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(16.dp)
-                    .clickable { expandedState.value = !expandedState.value }
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Next Episodes",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    IconButton(
-                        onClick = { expandedState.value = !expandedState.value }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "Expand/Collapse",
-                            modifier = Modifier
-                                .rotate(if (expandedState.value) 180f else 0f)
-                        )
+                TrackDisplay(
+                    title = title,
+                    artist = artist,
+                    artwork = artwork,
+                    position = position,
+                    duration = duration,
+                    onSeek = {
+                        player.value.seek(it, TimeUnit.MILLISECONDS)
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier.padding(top = 46.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                PlayerControls(onPrevious = {
+                    player.value.previous()
+                }, onNext = {
+                    player.value.next()
+                }, isPaused = playerState.value != AudioPlayerState.PLAYING, onPlayPause = {
+                    if (player.value.playerState == AudioPlayerState.PLAYING) {
+                        player.value.pause()
+                    } else {
+                        player.value.play()
                     }
-                }
-            }
-
-            if (expandedState.value) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                }, isTimerRunning = isTimerRunning, onTimerClick = {
+                    if (isTimerRunning) {
+                        timerViewModel.stopTimer()
+                    } else {
+                        showDialog.value = true
+                    }
+                }, onLike = {
+                    viewModel.likeEpisode()
+                    viewModel.basePlayer._isLiked.value = !viewModel.basePlayer._isLiked.value
+                }, isLiked = isLiked, modifier = Modifier.fillMaxWidth().padding(bottom = 60.dp)
+                )
+                //Spacer(modifier = Modifier.weight(1f)) // Makes space above the dialog
+                //Box(Modifier.weight(1f))
+                // Expandable Dialog at the bottom
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).weight(1f)
+                        //.align(Alignment.BottomCenter)
+                        .animateContentSize() // To animate size changes
                 ) {
-                    //todo
+                    Column(
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Color.White)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
+                    ) {
+                        // Header section of the dialog
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                                    // Toggle the expanded state when the header is clicked
+                                    isExpanded.value = !isExpanded.value
+                                },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Next episodes",
+                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowDown,
+                                contentDescription = "Expand/Collapse",
+                                modifier = Modifier.rotate(if (isExpanded.value) 180f else 0f)
+                            )
+                        }
+
+                        // Content of the dialog
+                        if (isExpanded.value) {
+                            LazyColumn(
+                                modifier = Modifier.height(250.dp) // Expandable height when dialog is opened
+                            ) {
+                                items(viewModel.getNextEpisodes()) { item ->
+                                    Text(
+                                        text = "Episode #${item.albumTitle}",
+                                        modifier = Modifier.padding(16.dp),
+                                        style = TextStyle(fontSize = 14.sp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+    } else {
+        ErrorScreen()
     }
+
+
 }
 
 

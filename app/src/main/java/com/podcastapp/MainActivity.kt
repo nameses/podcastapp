@@ -36,6 +36,7 @@ import com.podcastapp.ui.navigation.viewmodels.BasePlayerViewModel
 import com.podcastapp.ui.navigation.viewmodels.PlayerViewModel
 import com.podcastapp.ui.theme.PodcastappTheme
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,6 +55,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        Timber.plant(Timber.DebugTree())
+
         setContent {
             PodcastappTheme {
                 val navController = rememberNavController()

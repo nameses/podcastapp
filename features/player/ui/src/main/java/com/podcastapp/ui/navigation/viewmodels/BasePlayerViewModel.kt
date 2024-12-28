@@ -1,22 +1,34 @@
 package com.podcastapp.ui.navigation.viewmodels
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.core.common.constants.PlayerFeature
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
+import com.doublesymmetry.kotlinaudio.models.NotificationButton
+import com.doublesymmetry.kotlinaudio.models.NotificationConfig
 import com.doublesymmetry.kotlinaudio.models.PlayerConfig
+import com.doublesymmetry.kotlinaudio.models.RepeatMode
 import com.doublesymmetry.kotlinaudio.players.QueuedAudioPlayer
 import com.podcastapp.commonrepos.repos.CommonEpisodeRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class BasePlayerViewModel(
-    private val context: Context, private val commonEpisodeRepository: CommonEpisodeRepository
+    private val context: Context,
+    private val commonEpisodeRepository: CommonEpisodeRepository
 ) : ViewModel() {
 
     val _state = MutableStateFlow(
@@ -50,6 +62,35 @@ class BasePlayerViewModel(
 
     val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> = _isPlaying
+
+    init {
+        _state.value.playerOptions.repeatMode = RepeatMode.ALL
+
+        setupNotification()
+        observePlayer()
+    }
+
+    private fun setupNotification() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(PlayerFeature.playerScreenDeepLink)
+            }
+
+            val notificationConfig = NotificationConfig(
+                listOf(
+                    NotificationButton.PLAY_PAUSE(),
+                    NotificationButton.NEXT(isCompact = true),
+                    NotificationButton.PREVIOUS(isCompact = true),
+                    NotificationButton.SEEK_TO
+                ), accentColor = null, smallIcon = null, pendingIntent = PendingIntent.getActivity(
+                    context, 0, intent, PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+            withContext(Dispatchers.Main) {
+                _state.value.notificationManager.createNotification(notificationConfig)
+            }
+        }
+    }
 
     fun observePlayer() {
         _state.value.event.audioItemTransition.onEach {

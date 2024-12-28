@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore.Audio
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -17,7 +18,9 @@ import androidx.navigation.NavHostController
 import com.core.common.constants.PlayerFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.model.RepoEvent
+import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
+import com.core.network.model.episodes.EpisodeFullDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItem
 import com.doublesymmetry.kotlinaudio.models.DefaultAudioItem
 import com.doublesymmetry.kotlinaudio.models.NotificationButton
@@ -37,84 +40,66 @@ import timber.log.Timber
 import javax.inject.Inject
 import java.util.concurrent.TimeUnit
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
+import com.podcastapp.domain.use_cases.GetEpisodeUseCase
+import com.podcastapp.ui.navigation.model.Episode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     val basePlayer: BasePlayerViewModel,
     private val commonEpisodeRepository: CommonEpisodeRepository,
+    private val getEpisodeUseCase: GetEpisodeUseCase,
     @ApplicationContext private val appContext: Context,
     application: Application,
     private val savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-//    private val _state = MutableStateFlow(
-//        QueuedAudioPlayer(
-//            context = appContext, playerConfig = PlayerConfig(
-//                interceptPlayerActionsTriggeredExternally = true,
-//                handleAudioBecomingNoisy = true,
-//                handleAudioFocus = true
-//            )
-//        )
-//    )
-//    val state: StateFlow<QueuedAudioPlayer> get() = _state
+    private val _loadState = MutableStateFlow(UiStateHolder<EpisodeFullDTO>())
+    val loadState: StateFlow<UiStateHolder<EpisodeFullDTO>> get() = _loadState
+
+    fun getNextEpisodes(): List<AudioItem> {
+        return basePlayer._state.value.nextItems
+    }
 
     fun playEpisode(episodeId: Int) = viewModelScope.launch {
-        var episode = commonEpisodeRepository.getEpisode(episodeId);
-        if (episode is RepoEvent.Error) {
-            //todo
-            Log.d("EPISODE", "Error while episode get: ${episode.message}")
-            return@launch;
+        getEpisodeUseCase(episodeId).collect {
+            when (it) {
+                is UiEvent.Loading -> {
+                    _loadState.value = UiStateHolder(isLoading = true)
+                }
+
+                is UiEvent.Success -> {
+                    basePlayer._state.value.clear()//todo don't know if its right method
+                    basePlayer._state.value.add(it.data!!.toAudioItem())
+                    basePlayer._state.value.play()
+
+                    //add to queue all in episode.next_episodes
+                    if (it.data?.next_episodes?.isNotEmpty() == true) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val nextEpisodes = it.data!!.next_episodes.map { nit ->
+                                nit.toAudioItem(
+                                    it.data!!.podcast.author.name ?: ""
+                                )
+                            }
+                            withContext(Dispatchers.Main) {
+                                basePlayer._state.value.add(nextEpisodes)
+                            }
+                        }
+                    }
+
+                    _loadState.value = UiStateHolder(isSuccess = true, data = it.data)
+                }
+
+                is UiEvent.Error -> {
+                    _loadState.value =
+                        UiStateHolder(message = it.message.toString(), errors = it.errors)
+                }
+            }
         }
-        if (episode.data == null) {
-            //todo
-            Log.d("EPISODE", "Episode data not found")
-            return@launch;
-        }
-
-        basePlayer._state.value.clear()//todo don't know if its right method
-        basePlayer._state.value.add(episode.data!!.data.toAudioItem())
-        basePlayer._state.value.play()
-
-        //add to queue all in episode.next_episodes
-        val nextEpisodes =
-            episode.data!!.data.next_episodes.map { it.toAudioItem(episode.data!!.data.podcast.author.name) }
-        basePlayer._state.value.add(nextEpisodes)
-    }
-
-    init {
-        basePlayer._state.value.playerOptions.repeatMode = RepeatMode.ALL
-
-        setupNotification()
-    }
-
-//    fun startSavingEpisodeDataEverySecond() {
-//        viewModelScope.launch {
-//            while (true) {
-//                delay(800)
-//                savedStateHandle.set("player_state", basePlayer.state.value)
-//            }
-//        }
-//    }
-
-    private fun setupNotification() {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(PlayerFeature.playerScreenDeepLink)
-        }
-
-        val notificationConfig = NotificationConfig(
-            listOf(
-                NotificationButton.PLAY_PAUSE(),
-                NotificationButton.NEXT(isCompact = true),
-                NotificationButton.PREVIOUS(isCompact = true),
-                NotificationButton.SEEK_TO
-            ), accentColor = null, smallIcon = null, pendingIntent = PendingIntent.getActivity(
-                appContext, 0, intent, PendingIntent.FLAG_IMMUTABLE
-            )
-        )
-
-        basePlayer._state.value.notificationManager.createNotification(notificationConfig)
     }
 
     fun pausePlayback() {
@@ -123,7 +108,9 @@ class PlayerViewModel @Inject constructor(
 
     fun likeEpisode() = viewModelScope.launch {
         val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt() ?: 0
-        var response = commonEpisodeRepository.likeEpisode(episodeId)
+        CoroutineScope(Dispatchers.IO).launch {
+            var response = commonEpisodeRepository.likeEpisode(episodeId)
+        }
     }
 
 //    fun retrieveLastPlayedEpisode() {

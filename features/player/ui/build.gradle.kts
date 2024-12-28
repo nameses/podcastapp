@@ -66,6 +66,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:commonrepos"))
     implementation(project(":core:network"))
+    implementation(project(":features:player:domain"))
+    implementation(project(":core:commonui"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
