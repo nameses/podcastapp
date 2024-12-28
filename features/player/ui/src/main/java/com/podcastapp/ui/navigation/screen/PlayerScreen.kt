@@ -62,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -122,6 +123,9 @@ fun PlayerScreen(
 
     val isTimerRunning by timerViewModel.isTimerRunning.collectAsState()
     val showDialog = remember { mutableStateOf(false) }
+
+    // For collapsible bottom sheet
+    val expandedState = remember { mutableStateOf(false) }
 
     LaunchedEffect(
         key1 = player,
@@ -207,6 +211,47 @@ fun PlayerScreen(
                 .fillMaxWidth()
                 .padding(bottom = 60.dp)
             )
+
+            // Collapsible bottom sheet for "Next Episodes"
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp)
+                    .clickable { expandedState.value = !expandedState.value }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Next Episodes",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    IconButton(
+                        onClick = { expandedState.value = !expandedState.value }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "Expand/Collapse",
+                            modifier = Modifier
+                                .rotate(if (expandedState.value) 180f else 0f)
+                        )
+                    }
+                }
+            }
+
+            if (expandedState.value) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                ) {
+                    //todo
+                }
+            }
         }
     }
 }
