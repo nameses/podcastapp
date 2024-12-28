@@ -115,6 +115,16 @@ fun BottomCapedPlayer(
     val author = basePlayerViewModel.artist.collectAsState()
     val isPlaying = basePlayerViewModel.isPlaying.collectAsState()
 
+    val player = basePlayerViewModel.state.collectAsState()
+
+    LaunchedEffect(
+        key1 = player,
+        key2 = player.value.event.audioItemTransition,
+        key3 = player.value.event.onPlayerActionTriggeredExternally
+    ) {
+        basePlayerViewModel.observePlayer()
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

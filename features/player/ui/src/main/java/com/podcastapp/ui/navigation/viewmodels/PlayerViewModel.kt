@@ -60,40 +60,6 @@ class PlayerViewModel @Inject constructor(
 //    )
 //    val state: StateFlow<QueuedAudioPlayer> get() = _state
 
-
-    fun observePlayer() {
-        basePlayer._state.value.event.audioItemTransition.onEach {
-            basePlayer._title.value = basePlayer._state.value.currentItem?.title ?: ""
-            basePlayer._artist.value = basePlayer._state.value.currentItem?.artist ?: ""
-            basePlayer._artwork.value = basePlayer._state.value.currentItem?.artwork ?: ""
-            basePlayer._duration.value = basePlayer._state.value.currentItem?.duration ?: 0
-            basePlayer._isLive.value = basePlayer._state.value.isCurrentMediaItemLive == true
-
-            val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt()
-            val isLiked = commonEpisodeRepository.getEpisode(episodeId ?: 0).data?.data?.is_liked ?: false
-            basePlayer._isLiked.value = isLiked
-        }.launchIn(viewModelScope)
-
-        basePlayer._state.value.event.stateChange.onEach {
-            basePlayer._isPlaying.value = basePlayer._state.value.isPlaying == true
-        }.launchIn(viewModelScope)
-
-        basePlayer._state.value.event.onPlayerActionTriggeredExternally.onEach {
-            when (it) {
-                MediaSessionCallback.PLAY -> basePlayer._state.value.play()
-                MediaSessionCallback.PAUSE -> basePlayer._state.value.pause()
-                MediaSessionCallback.NEXT -> basePlayer._state.value.next()
-                MediaSessionCallback.PREVIOUS -> basePlayer._state.value.previous()
-                MediaSessionCallback.STOP -> basePlayer._state.value.stop()
-                is MediaSessionCallback.SEEK -> basePlayer._state.value.seek(
-                    it.positionMs, TimeUnit.MILLISECONDS
-                )
-
-                else -> Timber.d("Event not handled")
-            }
-        }.launchIn(viewModelScope)
-    }
-
     fun playEpisode(episodeId: Int) = viewModelScope.launch {
         var episode = commonEpisodeRepository.getEpisode(episodeId);
         if (episode is RepoEvent.Error) {
