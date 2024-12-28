@@ -21,5 +21,6 @@ object PodcastDetailedFeature {
 object PlayerFeature {
     const val nestedRoute = "player_full_screen_feature"
     const val playerScreen = "player_screen"
+    const val playerWithIdScreen = "player_screen/{episode_id}"
     const val playerScreenDeepLink = "podcastapp://player_screen_deep_link"
 }

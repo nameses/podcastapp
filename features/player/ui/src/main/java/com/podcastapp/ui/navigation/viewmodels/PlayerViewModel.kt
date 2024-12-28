@@ -74,6 +74,10 @@ class PlayerViewModel @Inject constructor(
             basePlayer._isLiked.value = isLiked
         }.launchIn(viewModelScope)
 
+        basePlayer._state.value.event.stateChange.onEach {
+            basePlayer._isPlaying.value = basePlayer._state.value.isPlaying == true
+        }.launchIn(viewModelScope)
+
         basePlayer._state.value.event.onPlayerActionTriggeredExternally.onEach {
             when (it) {
                 MediaSessionCallback.PLAY -> basePlayer._state.value.play()

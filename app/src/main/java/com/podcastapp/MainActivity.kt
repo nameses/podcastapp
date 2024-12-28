@@ -3,9 +3,11 @@ package com.podcastapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,12 +25,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.core.common.constants.AuthFeature
+import com.core.common.constants.PlayerFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.TokenManager
 import com.core.common.theme.ColorPurple500
 import com.podcastapp.navigation.AppNavGraph
 import com.podcastapp.navigation.NavigationProvider
 import com.podcastapp.ui.common.BottomNavigationBar
+import com.podcastapp.ui.navigation.viewmodels.BasePlayerViewModel
+import com.podcastapp.ui.navigation.viewmodels.PlayerViewModel
 import com.podcastapp.ui.theme.PodcastappTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -42,6 +47,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var tokenManager: TokenManager
 
+    @Inject
+    lateinit var basePlayerViewModel: BasePlayerViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,7 +57,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             PodcastappTheme {
                 val navController = rememberNavController()
-                App(navHostController = navController, navigationProvider, tokenManager)
+                App(
+                    navHostController = navController,
+                    navigationProvider,
+                    tokenManager,
+                    basePlayerViewModel
+                )
             }
         }
     }
@@ -60,14 +73,15 @@ class MainActivity : ComponentActivity() {
 fun App(
     navHostController: NavHostController,
     navigationProvider: NavigationProvider,
-    tokenManager: TokenManager
+    tokenManager: TokenManager,
+    basePlayerViewModel: BasePlayerViewModel
 ) {
     //bottom bar
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
+    Log.d("ROUTES", currentRoute ?: "null")
     val showBottomBar = when (currentRoute) {
-        AuthFeature.loginScreen, AuthFeature.registerScreen -> false
+        AuthFeature.loginScreen, AuthFeature.registerScreen, PlayerFeature.playerScreen, PlayerFeature.playerScreenDeepLink, PlayerFeature.playerWithIdScreen -> false
         else -> true
     }
 
@@ -88,7 +102,9 @@ fun App(
         .fillMaxSize()
         .statusBarsPadding(), bottomBar = {
         if (showBottomBar && currentRoute != null) {
-            BottomNavigationBar(navHostController, currentRoute)
+            BottomNavigationBar(
+                navHostController, currentRoute, basePlayerViewModel = basePlayerViewModel
+            )
         }
     }) { paddingValues ->
         Column(
@@ -96,11 +112,6 @@ fun App(
                 .fillMaxWidth()
                 .padding(paddingValues)
         ) {
-//            // Show Player if episode ID exists
-//            episodeId?.let {
-//                PlayerBottomDisplay(episodeId)
-//            }
-
             AppNavGraph(
                 navController = navHostController,
                 navigationProvider = navigationProvider,

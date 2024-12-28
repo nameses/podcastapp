@@ -37,4 +37,19 @@ class BasePlayerViewModel(private val context: Context) : ViewModel() {
 
     val _isLiked = MutableStateFlow(false)
     val isLiked: StateFlow<Boolean> = _isLiked
+
+    val _isPlaying = MutableStateFlow(false)
+    val isPlaying: StateFlow<Boolean> = _isPlaying
+
+    fun togglePlayStopButton() {
+        if (_state.value.isPlaying) {
+            _state.value.stop()
+        } else {
+            _state.value.play()
+        }
+    }
+
+    fun ifContainsEpisode(): Boolean {
+        return _state.value.items.any()
+    }
 }

@@ -32,13 +32,13 @@ object InternalPlayerFeatureApi : FeatureApi {
                 val id = backStackEntry.arguments?.getInt("episode_id")
                     ?: throw IllegalArgumentException("Podcast ID is required")
 
-                PlayerScreen(episodeId = id)
+                PlayerScreen(episodeId = id, navController = navController)
             }
 
             composable(route = PlayerFeature.playerScreen, deepLinks = listOf(navDeepLink {
                 uriPattern = PlayerFeature.playerScreenDeepLink
             })) {
-                PlayerScreen()
+                PlayerScreen(navController = navController)
             }
         }
     }
