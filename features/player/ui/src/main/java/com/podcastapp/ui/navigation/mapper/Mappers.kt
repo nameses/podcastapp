@@ -1,9 +1,11 @@
 package com.podcastapp.ui.navigation.mapper
 
+import android.media.MediaMetadataRetriever
 import com.core.network.model.episodes.EpisodeDTO
 import com.core.network.model.episodes.EpisodeFullDTO
 import com.doublesymmetry.kotlinaudio.models.DefaultAudioItem
 import com.doublesymmetry.kotlinaudio.models.MediaType
+import java.io.IOException
 
 fun EpisodeFullDTO.toAudioItem(): DefaultAudioItem {
     return DefaultAudioItem(
@@ -12,9 +14,11 @@ fun EpisodeFullDTO.toAudioItem(): DefaultAudioItem {
         title = title,
         artwork = image_url,
         artist = podcast.author.name,
-        duration = duration.toLong() * 1000,
+        duration = getMp3DurationInSeconds(file_path) * 1000,
     )
 }
+
+
 
 fun EpisodeDTO.toAudioItem(authorName: String): DefaultAudioItem {
     return DefaultAudioItem(
@@ -23,7 +27,7 @@ fun EpisodeDTO.toAudioItem(authorName: String): DefaultAudioItem {
         title = title,
         artwork = image_url,
         artist = authorName,
-        duration = duration.toLong() * 1000,
+        duration = getMp3DurationInSeconds(file_path) * 1000,
     )
 }
 
@@ -38,4 +42,27 @@ fun Long.millisecondsToString(): String {
     } else {
         String.format("%02d:%02d", minutes, remainingSeconds)
     }
+}
+
+
+fun getMp3DurationInSeconds(fileUrl: String): Long {
+    val retriever = MediaMetadataRetriever()
+    var durationInSeconds = 0.toLong()
+
+    try {
+        retriever.setDataSource(fileUrl)
+
+        val durationInMicroseconds =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+
+        durationInSeconds = ((durationInMicroseconds ?: 0) % 60000) / 1000//durationInMicroseconds ?: 0//(durationInMicroseconds ?: 0) / 1000000
+    } catch (e: IllegalArgumentException) {
+        e.printStackTrace()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        retriever.release()
+    }
+
+    return durationInSeconds
 }

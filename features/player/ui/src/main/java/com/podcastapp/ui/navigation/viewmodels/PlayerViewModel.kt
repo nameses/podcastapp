@@ -83,7 +83,7 @@ class PlayerViewModel @Inject constructor(
 
                 else -> Timber.d("Event not handled")
             }
-        }?.launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
     }
 
     fun playEpisode(episodeId: Int) = viewModelScope.launch {

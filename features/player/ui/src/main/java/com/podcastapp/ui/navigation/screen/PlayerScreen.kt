@@ -158,7 +158,7 @@ fun PlayerScreen(
                 player.value.previous()
             }, onNext = {
                 player.value.next()
-            }, isPaused = playerState?.value != AudioPlayerState.PLAYING, onPlayPause = {
+            }, isPaused = playerState.value != AudioPlayerState.PLAYING, onPlayPause = {
                 if (player.value.playerState == AudioPlayerState.PLAYING) {
                     player.value.pause()
                 } else {
