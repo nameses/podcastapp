@@ -6,6 +6,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Edit
@@ -70,28 +75,39 @@ import com.podcastapp.profile.ui.R
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileScreen(
-    navController: NavHostController,
-    viewModel: ProfileViewModel,
-    onLogout: () -> Unit
+    navController: NavHostController, viewModel: ProfileViewModel, onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    var offset by remember { mutableStateOf(0f) }
 
     LaunchedEffect(navController.previousBackStackEntry) {
-        Log.d("TAG", navController.previousBackStackEntry?.destination?.route ?: "null previousBackStackEntry")
-        if(navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileEditScreen) {
+        Log.d(
+            "TAG",
+            navController.previousBackStackEntry?.destination?.route
+                ?: "null previousBackStackEntry"
+        )
+        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileEditScreen) {
             Log.d("TAG", "true")
             viewModel.reloadState()
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .scrollable(orientation = Orientation.Vertical,
+                state = rememberScrollableState { delta ->
+                    offset += delta
+                    delta
+                })
+    ) {
         when {
             state.isLoading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
             state.isSuccess -> {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -117,8 +133,7 @@ fun ProfileScreen(
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data(state.data?.imageUrl ?: R.drawable.default_avatar)
-                                .crossfade(true)
-                                .build(),
+                                .crossfade(true).build(),
                             contentDescription = "Profile Image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

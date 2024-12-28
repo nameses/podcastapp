@@ -5,6 +5,9 @@ import android.provider.ContactsContract.Profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -26,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,6 +72,8 @@ fun EditProfileScreen(
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val showPremiumDialog = remember { mutableStateOf(false) }
 
+    val scrollState = rememberScrollState()
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -89,9 +95,13 @@ fun EditProfileScreen(
         }
 
         state.isSuccess -> {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+            ) {
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
                         modifier = Modifier
@@ -130,10 +140,10 @@ fun EditProfileScreen(
                                 .align(Alignment.Center)
                         ) {
                             AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(imageUri.value ?: state.data?.imageUrl ?: R.drawable.default_avatar)
-                                    .crossfade(true)
-                                    .build(),
+                                model = ImageRequest.Builder(LocalContext.current).data(
+                                    imageUri.value ?: state.data?.imageUrl
+                                    ?: R.drawable.default_avatar
+                                ).crossfade(true).build(),
                                 contentScale = ContentScale.Crop,
                                 contentDescription = "Profile Image",
                                 modifier = Modifier

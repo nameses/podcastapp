@@ -28,7 +28,7 @@ object NetworkModule {
             .setLenient()
             .create();
 
-        return Retrofit.Builder().baseUrl("http://192.168.0.103/api/")
+        return Retrofit.Builder().baseUrl("http://ec2-63-176-134-17.eu-central-1.compute.amazonaws.com/api/")
             //.addConverterFactory(MultipartConverterFactory())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
