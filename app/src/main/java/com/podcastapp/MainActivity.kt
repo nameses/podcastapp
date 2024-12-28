@@ -96,6 +96,11 @@ fun App(
                 .fillMaxWidth()
                 .padding(paddingValues)
         ) {
+//            // Show Player if episode ID exists
+//            episodeId?.let {
+//                PlayerBottomDisplay(episodeId)
+//            }
+
             AppNavGraph(
                 navController = navHostController,
                 navigationProvider = navigationProvider,
