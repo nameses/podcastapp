@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import com.core.common.constants.EpisodeDetailedFeature
 import com.core.common.constants.PlayerFeature
 import com.core.common.theme.ColorPurple500
 import com.podcastapp.podcast_details.domain.model.Podcast
@@ -123,9 +124,14 @@ fun PodcastContent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             podcast.episodes.forEach { episode ->
-                EpisodeItem(episode = episode, onPlayClick = {
-                    navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
-                })
+                EpisodeItem(episode = episode,
+                    onPlayClick = {
+                        navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
+                    },
+                    onEpisodeClick = {
+                        navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
+                    }
+                )
             }
         }
     }

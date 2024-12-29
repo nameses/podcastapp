@@ -33,5 +33,8 @@ fun AppNavGraph(
         navigationProvider.playerApi.registerGraph(
             navController, this
         )
+        navigationProvider.episodeApi.registerGraph(
+            navController, this
+        )
     }
 }

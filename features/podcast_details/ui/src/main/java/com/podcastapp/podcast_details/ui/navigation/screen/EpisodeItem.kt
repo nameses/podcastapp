@@ -1,7 +1,9 @@
 package com.podcastapp.podcast_details.ui.navigation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,11 +32,14 @@ import com.podcastapp.podcast_details.domain.model.Episode
 
 @Composable
 fun EpisodeItem(
-    episode: Episode, onPlayClick: (Int) -> Unit
+    episode: Episode,
+    onPlayClick: (Int) -> Unit,
+    onEpisodeClick: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onEpisodeClick(episode.id) } // Handle clicks on the entire row
             .padding(8.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -87,18 +92,25 @@ fun EpisodeItem(
                         .weight(1f)
                         .padding(end = 8.dp)
                 )
-                IconButton(
-                    onClick = { onPlayClick(episode.id) }, modifier = Modifier
-                        .background(
-                            color = ColorPurple500, shape = CircleShape
-                        )
-                        .size(36.dp)
+                Box(
+                    modifier = Modifier
+                        .clickable(enabled = false) {} // Disable parent click for this box
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Play",
-                        tint = Color.White
-                    )
+                    IconButton(
+                        onClick = { onPlayClick(episode.id) },
+                        modifier = Modifier
+                            .background(
+                                color = ColorPurple500,
+                                shape = CircleShape
+                            )
+                            .size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Play",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }

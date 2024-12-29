@@ -1,5 +1,8 @@
 import java.net.URI
 
+include(":features:episode_details:ui")
+
+
 pluginManagement {
     repositories {
         google {
@@ -51,3 +54,7 @@ include(":features:podcast_details:ui")
 include(":features:player:data")
 include(":features:player:domain")
 include(":features:player:ui")
+include(":features:episode_details:domain")
+
+
+include(":features:episode_details:data")

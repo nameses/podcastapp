@@ -63,6 +63,7 @@ import com.podcastapp.profile.ui.navigation.viewmodels.ProfileViewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.core.common.constants.EpisodeDetailedFeature
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.TokenManager
@@ -250,7 +251,7 @@ fun ProfileScreen(
                                 items = episodesListState,
                                 onLoadMore = { viewModel.loadLikedEpisodes() },
                                 navController = navController,
-                                routeToDetailedScreen = "episode", //todo
+                                routeToDetailedScreen = EpisodeDetailedFeature.episodeScreen,
                                 showAddToSavedFragment = false,
                                 onSavePodcastStateChanged = handleSavePodcastStateChanged
                             )

@@ -85,6 +85,9 @@ dependencies {
     implementation(project(":features:player:ui"))
     implementation(project(":core:commonui"))
     implementation(libs.timber)
+    implementation(project(":features:episode_details:data"))
+    implementation(project(":features:episode_details:domain"))
+    implementation(project(":features:episode_details:ui"))
 
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)
