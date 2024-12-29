@@ -1,5 +1,6 @@
 package com.features.main.ui.navigation.screen
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -13,26 +14,25 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.core.common.constants.PodcastDetailedFeature
 import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
+import com.features.main.ui.navigation.viewmodels.PodcastNewViewModel
 import com.features.main.ui.navigation.viewmodels.PodcastPopularViewModel
 import com.podcastapp.commonui.HorizontalList
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun MainScreen(
     navController: NavHostController,
     podcastFeaturedViewModel: PodcastFeaturedViewModel,
     podcastPopularViewModel: PodcastPopularViewModel,
-    podcastNewViewModel: PodcastPopularViewModel,
+    podcastNewViewModel: PodcastNewViewModel,
 ) {
     val podcastFeaturedListState by podcastFeaturedViewModel.podcasts.collectAsState()
-    val podcastFeaturedState by podcastFeaturedViewModel.state.collectAsState()
     val podcastFeaturedLazyListState = rememberLazyListState()
 
     val podcastPopularListState by podcastPopularViewModel.podcasts.collectAsState()
-    val podcastPopularState by podcastPopularViewModel.state.collectAsState()
     val podcastPopularLazyListState = rememberLazyListState()
 
-    val podcastNewListState by podcastPopularViewModel.podcasts.collectAsState()
-    val podcastNewState by podcastPopularViewModel.state.collectAsState()
+    val podcastNewListState by podcastNewViewModel.podcasts.collectAsState()
     val podcastNewLazyListState = rememberLazyListState()
 
     val handleSavePodcastStateChanged: (Int, Boolean) -> Unit = { id, isSaved ->
@@ -44,8 +44,8 @@ fun MainScreen(
             HorizontalList(
                 title = "Featured",
                 listState = podcastFeaturedLazyListState,
-                isLoading = podcastFeaturedState.isLoading,
-                items = podcastFeaturedListState,
+                isLoading = podcastFeaturedViewModel.podcasts.value.isLoading,
+                items = podcastFeaturedListState.data ?: emptyList(),
                 onLoadMore = { podcastFeaturedViewModel.loadPodcasts() },
                 navController = navController,
                 routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
@@ -62,8 +62,8 @@ fun MainScreen(
             HorizontalList(
                 title = "Popular",
                 listState = podcastPopularLazyListState,
-                isLoading = podcastPopularState.isLoading,
-                items = podcastPopularListState,
+                isLoading = podcastPopularViewModel.podcasts.value.isLoading,
+                items = podcastPopularListState.data ?: emptyList(),
                 onLoadMore = { podcastPopularViewModel.loadPodcasts() },
                 navController = navController,
                 routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
@@ -80,8 +80,8 @@ fun MainScreen(
             HorizontalList(
                 title = "Last added",
                 listState = podcastNewLazyListState,
-                isLoading = podcastNewState.isLoading,
-                items = podcastNewListState,
+                isLoading = podcastNewViewModel.podcasts.value.isLoading,
+                items = podcastNewListState.data ?: emptyList(),
                 onLoadMore = { podcastNewViewModel.loadPodcasts() },
                 navController = navController,
                 routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,

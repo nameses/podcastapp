@@ -1,5 +1,6 @@
 package com.podcastapp.profile.ui.navigation.viewmodels
 
+import android.media.session.MediaSession.Token
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,13 +18,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val profileUseCase: ProfileUseCase
+    private val profileUseCase: ProfileUseCase,
+    private val tokenManager:TokenManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(UiStateHolder<UserFull>())
     val state: StateFlow<UiStateHolder<UserFull>> get() = _state
 
     init{
         reloadState()
+    }
+
+    fun clearToken()= viewModelScope.launch {
+        tokenManager.clearToken()
     }
 
     fun reloadState() = viewModelScope.launch {

@@ -101,7 +101,9 @@ fun BottomNavigationBar(
                                 )
                             ) {
                                 if (currentDestination != item.route) {
-                                    navController.navigate(item.route)
+                                    navController.navigate(item.route){
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
                             },
                         horizontalAlignment = Alignment.CenterHorizontally,

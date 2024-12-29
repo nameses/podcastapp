@@ -65,6 +65,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
+import com.core.common.services.TokenManager
 import com.core.common.services.setNavResultCallback
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
@@ -75,7 +76,9 @@ import com.podcastapp.profile.ui.R
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileScreen(
-    navController: NavHostController, viewModel: ProfileViewModel, onLogout: () -> Unit
+    navController: NavHostController,
+    viewModel: ProfileViewModel,
+    onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     var offset by remember { mutableStateOf(0f) }
@@ -176,7 +179,7 @@ fun ProfileScreen(
                             ) {
                                 Text(
                                     text = "Profile",
-                                    color = Color.White,
+                                    color = ColorWhite,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 24.sp,
@@ -191,7 +194,10 @@ fun ProfileScreen(
                                     color = ColorWhite,
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
-                                        .clickable { onLogout() }
+                                        .clickable {
+                                            viewModel.clearToken()
+                                            onLogout()
+                                        }
                                         .align(Alignment.CenterEnd)
                                         .padding(end = 8.dp),
                                     overflow = TextOverflow.Ellipsis)

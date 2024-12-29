@@ -7,6 +7,7 @@ import com.core.common.constants.MainFeature
 import com.core.feature_api.FeatureApi
 import com.features.main.ui.navigation.screen.MainScreen
 import com.features.main.ui.navigation.viewmodels.PodcastFeaturedViewModel
+import com.features.main.ui.navigation.viewmodels.PodcastNewViewModel
 import com.features.main.ui.navigation.viewmodels.PodcastPopularViewModel
 
 object InternalMainFeatureApi : FeatureApi {
@@ -21,7 +22,7 @@ object InternalMainFeatureApi : FeatureApi {
             composable(route = MainFeature.mainScreenRoute) {
                 val podcastFeaturedViewModel = hiltViewModel<PodcastFeaturedViewModel>()
                 val podcastPopularViewModel = hiltViewModel<PodcastPopularViewModel>()
-                val podcastNewViewModel = hiltViewModel<PodcastPopularViewModel>()
+                val podcastNewViewModel = hiltViewModel<PodcastNewViewModel>()
 
                 MainScreen(
                     navController = navController,

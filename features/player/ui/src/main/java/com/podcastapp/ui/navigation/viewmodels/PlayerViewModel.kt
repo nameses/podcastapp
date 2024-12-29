@@ -106,7 +106,7 @@ class PlayerViewModel @Inject constructor(
                         CoroutineScope(Dispatchers.IO).launch {
                             val nextEpisodes = it.data!!.next_episodes.map { nit ->
                                 nit.toAudioItem(
-                                    it.data!!.podcast.author.name ?: ""
+                                    it.data!!.podcast.author.name
                                 )
                             }
                             withContext(Dispatchers.Main) {
@@ -135,7 +135,7 @@ class PlayerViewModel @Inject constructor(
     fun likeEpisode() = viewModelScope.launch {
         val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt() ?: 0
         CoroutineScope(Dispatchers.IO).launch {
-            var response = commonEpisodeRepository.likeEpisode(episodeId)
+            commonEpisodeRepository.likeEpisode(episodeId)
         }
     }
 

@@ -41,8 +41,11 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    if (authState.isSuccess) {
+    var redirected by remember{ mutableStateOf(false) }
+
+    if (authState.isSuccess && !redirected) {
         onSuccess()
+        redirected = true
     }
 
     Column(
@@ -62,8 +65,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = email,
+        OutlinedTextField(value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
@@ -71,16 +73,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = password,
+        OutlinedTextField(value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
             trailingIcon = {
-                Text(
-                    text = if (isPasswordVisible) "Hide" else "Show",
+                Text(text = if (isPasswordVisible) "Hide" else "Show",
                     color = Color(0xFF6200EE),
-                    modifier = Modifier.clickable { isPasswordVisible = !isPasswordVisible }
-                )
+                    modifier = Modifier.clickable { isPasswordVisible = !isPasswordVisible })
             },
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
@@ -89,7 +88,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.login(email, password) },
+            onClick = {
+                viewModel.login(email, password)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),

@@ -40,8 +40,11 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
-    if (authState.isSuccess) {
+    var redirected by remember{ mutableStateOf(false) }
+
+    if (authState.isSuccess && !redirected) {
         onSuccess()
+        redirected = true
     }
 
     Column(

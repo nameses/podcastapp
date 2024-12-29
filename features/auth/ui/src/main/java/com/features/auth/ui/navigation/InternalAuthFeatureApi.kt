@@ -17,22 +17,27 @@ object InternalAuthFeatureApi : FeatureApi {
         navGraphBuilder: androidx.navigation.NavGraphBuilder
     ) {
         navGraphBuilder.navigation(
-            startDestination = AuthFeature.loginScreen,
-            route = AuthFeature.nestedRoute
+            startDestination = AuthFeature.loginScreen, route = AuthFeature.nestedRoute
         ) {
             composable(AuthFeature.loginScreen) {
                 val viewModel = hiltViewModel<LoginViewModel>()
-                LoginScreen(
-                    viewModel = viewModel,
+                LoginScreen(viewModel = viewModel,
                     onSignUpClick = { navController.navigate(AuthFeature.registerScreen) },
-                    onSuccess = { navController.navigate(MainFeature.nestedRoute) })
+                    onSuccess = {
+                        navController.navigate(MainFeature.nestedRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    })
             }
             composable(AuthFeature.registerScreen) {
                 val viewModel = hiltViewModel<RegisterViewModel>()
-                RegisterScreen(
-                    viewModel = viewModel,
+                RegisterScreen(viewModel = viewModel,
                     onLoginClick = { navController.navigate(AuthFeature.loginScreen) },
-                    onSuccess = { navController.navigate(MainFeature.nestedRoute) })
+                    onSuccess = {
+                        navController.navigate(MainFeature.nestedRoute) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    })
             }
         }
     }

@@ -59,7 +59,7 @@ fun EpisodeItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = episode.title ?: "",
+                    text = episode.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -77,7 +77,7 @@ fun EpisodeItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = episode.description ?: "",
+                    text = episode.description,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

@@ -29,7 +29,9 @@ object InternalProfileFeatureApi : FeatureApi {
                 ProfileScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    onLogout = { navController.navigate(AuthFeature.nestedRoute) }
+                    onLogout = { navController.navigate(AuthFeature.nestedRoute) {
+                        popUpTo(0) { inclusive = true }
+                    } }
                 )
             }
 
