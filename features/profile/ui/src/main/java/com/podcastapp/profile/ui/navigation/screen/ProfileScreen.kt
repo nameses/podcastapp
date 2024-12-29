@@ -64,6 +64,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.core.common.constants.EpisodeDetailedFeature
+import com.core.common.constants.PlayerFeature
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.TokenManager
@@ -77,24 +78,13 @@ import com.podcastapp.profile.ui.R
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileScreen(
-    navController: NavHostController,
-    viewModel: ProfileViewModel,
-    onLogout: () -> Unit
+    navController: NavHostController, viewModel: ProfileViewModel, onLogout: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val ifContainsLikedEpisodes by viewModel.ifContainsLikedEpisodes.collectAsState()
+    val ifContainsSavedPodcasts by viewModel.ifContainsSavedPodcasts.collectAsState()
+    val ifContainsDownloadedEpisodes by viewModel.ifContainsDownloadedEpisodes.collectAsState()
     var offset by remember { mutableStateOf(0f) }
-
-    LaunchedEffect(navController.previousBackStackEntry) {
-        Log.d(
-            "TAG",
-            navController.previousBackStackEntry?.destination?.route
-                ?: "null previousBackStackEntry"
-        )
-        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileEditScreen) {
-            Log.d("TAG", "true")
-            viewModel.reloadState()
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -165,11 +155,7 @@ fun ProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
                                         .clickable {
-                                            navController.navigate(ProfileFeature.profileEditScreen) {
-                                                popUpTo(ProfileFeature.profileEditScreen) {
-                                                    saveState = false
-                                                }
-                                            }
+                                            navController.navigate(ProfileFeature.profileEditScreen)
                                         }
                                         .align(Alignment.CenterStart)
                                         .padding(start = 8.dp))
@@ -218,43 +204,72 @@ fun ProfileScreen(
 
                     val podcastsListState by viewModel.savedPodcasts.collectAsState()
                     val podcastsLazyListState = rememberLazyListState()
+
                     val episodesListState by viewModel.likedEpisodes.collectAsState()
                     val episodesLazyListState = rememberLazyListState()
+
+                    val downloadedEpisodesListState by viewModel.downloadedEpisodes.collectAsState()
+                    val downloadedEpisodesLazyListState = rememberLazyListState()
+
                     val handleSavePodcastStateChanged: (Int, Boolean) -> Unit = { id, isSaved ->
                         Log.d("SaveStateChanged", "Podcast ID: $id is now saved: $isSaved")
                     }
 
                     LazyColumn {
-                        item {
-                            HorizontalList(
-                                title = "Saved podcasts",
-                                listState = podcastsLazyListState,
-                                isLoading = false,
-                                items = podcastsListState,
-                                onLoadMore = { viewModel.loadSavedPodcasts() },
-                                navController = navController,
-                                routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
-                                showAddToSavedFragment = true,
-                                onSavePodcastStateChanged = handleSavePodcastStateChanged
-                            )
+                        if (ifContainsSavedPodcasts) {
+                            item {
+                                HorizontalList(
+                                    title = "Saved podcasts",
+                                    listState = podcastsLazyListState,
+                                    isLoading = false,
+                                    items = podcastsListState,
+                                    onLoadMore = { viewModel.loadSavedPodcasts() },
+                                    navController = navController,
+                                    routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
+                                    showAddToSavedFragment = true,
+                                    onSavePodcastStateChanged = handleSavePodcastStateChanged
+                                )
+                            }
+
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
                         }
 
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
+                        if (ifContainsLikedEpisodes) {
+                            item {
+                                HorizontalList(
+                                    title = "Liked episodes",
+                                    listState = episodesLazyListState,
+                                    isLoading = false,
+                                    items = episodesListState,
+                                    onLoadMore = { viewModel.loadLikedEpisodes() },
+                                    navController = navController,
+                                    routeToDetailedScreen = EpisodeDetailedFeature.episodeScreen,
+                                    showAddToSavedFragment = false,
+                                    onSavePodcastStateChanged = handleSavePodcastStateChanged
+                                )
+                            }
+
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
                         }
 
-                        item {
-                            HorizontalList(
-                                title = "Liked episodes",
-                                listState = episodesLazyListState,
-                                isLoading = false,
-                                items = episodesListState,
-                                onLoadMore = { viewModel.loadLikedEpisodes() },
-                                navController = navController,
-                                routeToDetailedScreen = EpisodeDetailedFeature.episodeScreen,
-                                showAddToSavedFragment = false,
-                                onSavePodcastStateChanged = handleSavePodcastStateChanged
-                            )
+                        if (ifContainsDownloadedEpisodes) {
+                            item {
+                                HorizontalList(
+                                    title = "Downloaded episodes",
+                                    listState = downloadedEpisodesLazyListState,
+                                    isLoading = false,
+                                    items = downloadedEpisodesListState,
+                                    onLoadMore = { viewModel.loadDownloadedEpisodes() },
+                                    navController = navController,
+                                    routeToDetailedScreen = PlayerFeature.playerScreen,
+                                    showAddToSavedFragment = false,
+                                    onSavePodcastStateChanged = handleSavePodcastStateChanged
+                                )
+                            }
                         }
                     }
                 }

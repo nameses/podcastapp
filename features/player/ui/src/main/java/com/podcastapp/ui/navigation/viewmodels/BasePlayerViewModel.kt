@@ -49,6 +49,12 @@ class BasePlayerViewModel(
     )
     val state: StateFlow<QueuedAudioPlayer> get() = _state
 
+    val _audioUrl = MutableStateFlow("")
+    val audioUrl: StateFlow<String> = _audioUrl
+
+    val _id = MutableStateFlow("")
+    val id: StateFlow<String> = _id
+
     val _title = MutableStateFlow("")
     val title: StateFlow<String> = _title
 
@@ -72,6 +78,8 @@ class BasePlayerViewModel(
 
     val _nextEpisodesItems = MutableStateFlow<List<EpisodeDTO>>(emptyList())
     val nextEpisodesItems: StateFlow<List<EpisodeDTO>> = _nextEpisodesItems
+
+
 
     init {
         _state.value.playerOptions.repeatMode = RepeatMode.OFF
@@ -116,22 +124,6 @@ class BasePlayerViewModel(
         }
     }
 
-//    fun loadNextEpisodes() = viewModelScope.launch {
-//        //if(_state.value.nextItems.isEmpty() && _state.value.currentItem != null){
-//        //    _nextEpisodesItems.value = _state.value.items.subtract(listOf(_state.value.currentItem!!).toSet()).toList()
-//        //} else {
-//        Timber.tag("NEXTEP").d(state.value.nextItems.toString())
-//        if(state.value.currentItem != null){
-//            val exceptNextItems = state.value.nextItems.toSet().subtract(listOf(state.value.currentItem!!).toSet())
-//            _nextEpisodesItems.value = exceptNextItems.toList()
-//        }
-//        else{
-//            _nextEpisodesItems.value = state.value.nextItems
-//        }
-//
-//        //}
-//    }
-
     private fun setupNotification() {
         CoroutineScope(Dispatchers.IO).launch {
             val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -156,6 +148,8 @@ class BasePlayerViewModel(
 
     fun observePlayer() {
         _state.value.event.audioItemTransition.onEach {
+            _audioUrl.value = _state.value.currentItem?.audioUrl ?: ""
+            _id.value = _state.value.currentItem?.albumTitle ?: ""
             _title.value = _state.value.currentItem?.title ?: ""
             _artist.value = _state.value.currentItem?.artist ?: ""
             _artwork.value = _state.value.currentItem?.artwork ?: ""

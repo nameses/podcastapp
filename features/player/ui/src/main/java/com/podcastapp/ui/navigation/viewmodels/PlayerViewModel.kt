@@ -63,32 +63,6 @@ class PlayerViewModel @Inject constructor(
     private val _loadState = MutableStateFlow(UiStateHolder<EpisodeFullDTO>())
     val loadState: StateFlow<UiStateHolder<EpisodeFullDTO>> get() = _loadState
 
-//    fun loadNextEpisodes() = viewModelScope.launch {
-//        val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt() ?: 0
-//        getEpisodeUseCase(episodeId).collect {
-//            when (it) {
-//                is UiEvent.Loading -> {
-//                    _loadState.value = UiStateHolder(isLoading = true)
-//                }
-//
-//                is UiEvent.Success -> {
-//                    if (it.data?.next_episodes?.isNotEmpty() == true) {
-//                        it.data?.next_episodes!!.forEach { nit ->
-//                            nit.duration = getMp3DurationInSeconds(nit.file_path).toInt()
-//                        }
-//                        nextEpisodesItems.value = it.data?.next_episodes!!
-//                    }
-//                    _loadState.value = UiStateHolder(isSuccess = true, data = it.data)
-//                }
-//
-//                is UiEvent.Error -> {
-//                    _loadState.value =
-//                        UiStateHolder(message = it.message.toString(), errors = it.errors)
-//                }
-//            }
-//        }
-//    }
-
     fun playEpisode(episodeId: Int) = viewModelScope.launch {
         getEpisodeUseCase(episodeId).collect {
             when (it) {

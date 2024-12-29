@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
 import com.core.common.services.TokenManager
+import com.podcastapp.commonrepos.repos.DownloadRepository
 import com.podcastapp.commonui.model.HorizontalListItem
 import com.podcastapp.profile.domain.model.UserFull
 import com.podcastapp.profile.domain.use_cases.ProfileUseCase
@@ -14,21 +15,34 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    private val downloadRepository: DownloadRepository,
     private val profileUseCase: ProfileUseCase,
     private val tokenManager:TokenManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(UiStateHolder<UserFull>())
     val state: StateFlow<UiStateHolder<UserFull>> get() = _state
 
+    val ifContainsLikedEpisodes = MutableStateFlow(false)
+    val ifContainsSavedPodcasts = MutableStateFlow(false)
+    val ifContainsDownloadedEpisodes = MutableStateFlow(false)
+
     init{
         reloadState()
     }
 
-    fun clearToken()= viewModelScope.launch {
+    fun renewListStates() = viewModelScope.launch {
+        if(_state.value.isSuccess){
+            ifContainsLikedEpisodes.value = _state.value.data?.likedEpisodes?.isNotEmpty() ?: false
+            ifContainsSavedPodcasts.value = _state.value.data?.savedPodcasts?.isNotEmpty() ?: false
+        }
+    }
+
+    fun clearToken() = viewModelScope.launch {
         tokenManager.clearToken()
     }
 
@@ -46,6 +60,7 @@ class ProfileViewModel @Inject constructor(
 
                 is UiEvent.Success -> {
                     _state.value = UiStateHolder(isSuccess = true, data = it.data)
+                    renewListStates()
                 }
 
                 is UiEvent.Error -> {
@@ -54,6 +69,9 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
+
+        val downloadedEpisodes = downloadRepository.getEpisodes()
+        if(downloadedEpisodes.isNotEmpty()) ifContainsDownloadedEpisodes.value = true
     }
 
     private val _savedPodcasts = MutableStateFlow<List<HorizontalListItem>>(emptyList())
@@ -87,6 +105,23 @@ class ProfileViewModel @Inject constructor(
                     isInitiallySaved = false
                 )
             }
+        }
+    }
+
+    private val _downloadedEpisodes = MutableStateFlow<List<HorizontalListItem>>(emptyList())
+    val downloadedEpisodes: StateFlow<List<HorizontalListItem>> get() = _downloadedEpisodes
+
+    fun loadDownloadedEpisodes() = viewModelScope.launch {
+        val downloadedEpisodes = downloadRepository.getEpisodes()
+        Timber.tag("DOWNLOADED_EPISODES").d(downloadedEpisodes.toString())
+        _downloadedEpisodes.value = downloadedEpisodes.map { podcast ->
+            HorizontalListItem(
+                id = podcast.id,
+                title = podcast.title,
+                author = podcast.author,
+                imageUrl = podcast.absolutePathImage,
+                isInitiallySaved = false
+            )
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.podcastapp.ui.navigation.screen
 
 
+import android.net.Uri
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,11 +54,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.core.common.constants.PlayerFeature
+import com.core.common.constants.ProfileFeature
 import com.core.common.theme.ColorWhite
 import com.core.network.model.episodes.EpisodeDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItem
 import com.doublesymmetry.kotlinaudio.models.AudioPlayerState
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
+import com.podcastapp.commonrepos.model.EpisodeDownload
+import com.podcastapp.commonui.download.DownloadButton
 import com.podcastapp.commonui.errorscreen.ErrorScreen
 import com.podcastapp.ui.navigation.viewmodels.PlayerViewModel
 import com.podcastapp.ui.navigation.viewmodels.TimerViewModel
@@ -81,6 +88,8 @@ fun PlayerScreen(
     val artist by viewModel.basePlayer.artist.collectAsState()
     val artwork by viewModel.basePlayer.artwork.collectAsState()
     val isLiked by viewModel.basePlayer.isLiked.collectAsState()
+    val id by viewModel.basePlayer.id.collectAsState()
+    val audioUrl by viewModel.basePlayer.audioUrl.collectAsState()
 
     var position by remember { mutableStateOf(0L) }
     val duration by viewModel.basePlayer.duration.collectAsState()
@@ -88,10 +97,24 @@ fun PlayerScreen(
     val isTimerRunning by timerViewModel.isTimerRunning.collectAsState()
     val showTimerDialog = remember { mutableStateOf(false) }
 
-    // For collapsible bottom sheet
     val isExpanded = remember { mutableStateOf(false) }
 
     val nextEpisodes by viewModel.basePlayer.nextEpisodesItems.collectAsState()
+
+    val context = LocalContext.current
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    BackHandler {
+        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen
+            || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink )
+        {
+            navController.navigate(
+                Uri.parse(ProfileFeature.profileScreenDeepLink)
+            )
+        } else {
+            navController.popBackStack()
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (episodeId != 0) {
@@ -100,7 +123,7 @@ fun PlayerScreen(
 
         while (true) {
             position = player.value.position
-            delay(1.seconds / 2)
+            delay(1.seconds / 20)
         }
     }
 
@@ -120,13 +143,25 @@ fun PlayerScreen(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 TopAppBar(title = { Text(text = "") }, navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen
+                            || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink )
+                        {
+                            navController.navigate(
+                                Uri.parse(ProfileFeature.profileScreenDeepLink)
+                            )
+                        } else {
+                            navController.popBackStack()
+                        }
+                    }) {
                         Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Back")
                     }
                 }, actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Filled.MoreVert, contentDescription = "More options")
-                    }
+                    DownloadButton(
+                        EpisodeDownload(
+                            (if (id == "") 0 else id.toInt()), title, artist, audioUrl, artwork
+                        )
+                    )
                 }, modifier = Modifier.fillMaxWidth()
                 )
 

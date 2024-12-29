@@ -11,6 +11,7 @@ fun EpisodeDetailedResponse.toDomainEpisode(): Episode {
         title = this.data.title,
         description = this.data.description,
         imageUrl = this.data.image_url,
+        fileUrl = this.data.file_path,
         guests = this.data.guests.map { it.toDomainGuest() },
         author = this.data.podcast.author.name,
         isLiked = this.data.is_liked,

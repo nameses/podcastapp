@@ -1,5 +1,6 @@
 package com.podcastapp.episode.details.ui.screen
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -14,13 +16,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -39,14 +47,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.core.common.constants.PlayerFeature
+import com.core.common.constants.ProfileFeature
 import com.core.common.theme.ColorPurple500
+import com.podcastapp.commonrepos.model.EpisodeDownload
+import com.podcastapp.commonui.download.DownloadButton
 import com.podcastapp.episode.details.domain.models.Episode
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EpisodeContent(
-    navController: NavHostController,
-    episode: Episode,
-    onLikeClick: () -> Unit
+    navController: NavHostController, episode: Episode, onLikeClick: () -> Unit
 ) {
     var isLiked by remember { mutableStateOf(episode.isLiked) }
     var likeCount by remember { mutableIntStateOf(episode.likesAmount) }
@@ -59,6 +69,25 @@ fun EpisodeContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        TopAppBar(title = { Text(text = "") }, navigationIcon = {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Back")
+            }
+        }, actions = {
+            DownloadButton(
+                EpisodeDownload(
+                    episode.id,
+                    episode.title,
+                    episode.author,
+                    episode.fileUrl,
+                    episode.imageUrl ?: ""
+                )
+            )
+        }, modifier = Modifier.fillMaxWidth().height(32.dp)
+        )
+
         AsyncImage(
             model = episode.imageUrl,
             contentDescription = episode.title,

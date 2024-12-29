@@ -62,6 +62,8 @@ dependencies {
     implementation(project(":core:feature_api"))
     implementation(project(":core:common"))
     implementation(project(":features:episode_details:domain"))
+    implementation(project(":core:commonui"))
+    implementation(project(":core:commonrepos"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

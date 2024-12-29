@@ -239,9 +239,8 @@ fun EditProfileScreen(
                     Button(
                         onClick = {
                             viewModel.editProfile(usernameState, viewModel.imageFile.value)
-
-                            //navController.previousBackStackEntry?.savedStateHandle?.set("reload", true)
-                            navController.navigate(ProfileFeature.profileScreen)
+                            Thread.sleep(1200)
+                            navController.navigate(Uri.parse(ProfileFeature.profileScreenDeepLink))
                         },
                         modifier = Modifier
                             .fillMaxWidth()

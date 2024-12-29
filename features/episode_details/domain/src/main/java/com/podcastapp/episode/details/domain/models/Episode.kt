@@ -4,6 +4,7 @@ data class Episode(
     var id: Int,
     var title: String,
     var description: String,
+    var fileUrl: String,
     var imageUrl: String?,
     var guests: List<Guest>,
     var author: String,

@@ -64,6 +64,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":features:profile:domain"))
     implementation(project(":core:commonui"))
+    implementation(project(":core:commonrepos"))
+    implementation(libs.timber)
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

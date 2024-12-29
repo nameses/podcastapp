@@ -12,6 +12,7 @@ object AuthFeature{
 object ProfileFeature{
     const val nestedRoute = "profile_feature"
     const val profileScreen = "profile_screen"
+    const val profileScreenDeepLink = "podcastapp://profile_screen_deep_link"
     const val profileEditScreen = "profile_edit_screen"
 }
 object PodcastDetailedFeature {

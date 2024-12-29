@@ -4,8 +4,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.core.common.constants.AuthFeature
+import com.core.common.constants.PlayerFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.setNavResultCallback
 import com.core.feature_api.FeatureApi
@@ -24,7 +26,9 @@ object InternalProfileFeatureApi : FeatureApi {
             startDestination = ProfileFeature.profileScreen,
             route = ProfileFeature.nestedRoute
         ) {
-            composable(route = ProfileFeature.profileScreen) {
+            composable(route = ProfileFeature.profileScreen,deepLinks = listOf(navDeepLink {
+                uriPattern = ProfileFeature.profileScreenDeepLink
+            })) {
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 ProfileScreen(
                     navController = navController,

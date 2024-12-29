@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.core.common.constants.PlayerFeature
 import com.podcastapp.commonui.model.HorizontalListItem
 import com.podcastapp.commonui.viewmodels.HorizontalListItemViewModel
 
@@ -56,7 +57,11 @@ fun HorizontalList(
 ) {
     val horizontalListItemViewModel = hiltViewModel<HorizontalListItemViewModel>()
 
-    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
         Text(
             text = title,
             style = MaterialTheme.typography.headlineLarge,
@@ -73,7 +78,9 @@ fun HorizontalList(
                 HorizontalListItem(
                     item = item,
                     viewModel = horizontalListItemViewModel,
-                    onClick = { navController.navigate("${routeToDetailedScreen}/${item.id}") },
+                    onClick = {
+                        navController.navigate("${routeToDetailedScreen}/${item.id}")
+                    },
                     showAddToSavedFragment = showAddToSavedFragment,
                     onSaveStateChanged = onSavePodcastStateChanged
                 )
@@ -92,12 +99,11 @@ fun HorizontalList(
         }
 
         LaunchedEffect(listState) {
-            snapshotFlow { listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size }
-                .collect { visibleItems ->
-                    if (visibleItems >= items.size && !isLoading) {
-                        onLoadMore()
-                    }
+            snapshotFlow { listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size }.collect { visibleItems ->
+                if (visibleItems >= items.size && !isLoading) {
+                    onLoadMore()
                 }
+            }
         }
     }
 }

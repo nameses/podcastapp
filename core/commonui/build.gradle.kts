@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(project(":core:commonrepos"))
     implementation(project(":core:common"))
+    implementation(libs.timber)
     kapt(libs.dagger.hilt.android.compiler)
 
     testImplementation(libs.junit)

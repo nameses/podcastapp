@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -14,12 +15,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,11 +46,10 @@ import com.core.common.theme.ColorPurple500
 import com.podcastapp.podcast_details.domain.model.Podcast
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PodcastContent(
-    navController: NavHostController,
-    podcast: Podcast,
-    onAddToSavedClick: () -> Unit
+    navController: NavHostController, podcast: Podcast, onAddToSavedClick: () -> Unit
 ) {
     var isSaved by remember { mutableStateOf(podcast.isSaved) }
     val scrollState = rememberScrollState()
@@ -58,6 +61,17 @@ fun PodcastContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        TopAppBar(title = { Text(text = "") }, navigationIcon = {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Back")
+            }
+        }, actions = {}, modifier = Modifier
+            .fillMaxWidth()
+            .height(32.dp)
+        )
+
         AsyncImage(
             model = podcast.imageUrl,
             contentDescription = podcast.title,
@@ -124,14 +138,11 @@ fun PodcastContent(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             podcast.episodes.forEach { episode ->
-                EpisodeItem(episode = episode,
-                    onPlayClick = {
-                        navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
-                    },
-                    onEpisodeClick = {
-                        navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
-                    }
-                )
+                EpisodeItem(episode = episode, onPlayClick = {
+                    navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
+                }, onEpisodeClick = {
+                    navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
+                })
             }
         }
     }
