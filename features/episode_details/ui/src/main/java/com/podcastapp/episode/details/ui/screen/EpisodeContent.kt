@@ -14,17 +14,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.filled.ThumbUpOffAlt
-import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,6 +49,7 @@ fun EpisodeContent(
     onLikeClick: () -> Unit
 ) {
     var isLiked by remember { mutableStateOf(episode.isLiked) }
+    var likeCount by remember { mutableIntStateOf(episode.likesAmount) }
     val scrollState = rememberScrollState()
 
     Column(
@@ -90,8 +90,7 @@ fun EpisodeContent(
             }
             IconButton(
                 onClick = {
-                    onLikeClick()
-                    isLiked = !isLiked
+                    navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
                 }, modifier = Modifier
                     .background(
                         color = ColorPurple500, shape = CircleShape
@@ -99,12 +98,70 @@ fun EpisodeContent(
                     .padding(8.dp)
             ) {
                 Icon(
-                    imageVector = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                    contentDescription = "Like",
+                    imageVector = Icons.Filled.PlayArrow,
+                    contentDescription = "Play episode",
                     tint = Color.White,
                     modifier = Modifier.size(48.dp)
                 )
             }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Like Button with Like Count
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                IconButton(
+                    onClick = {
+                        onLikeClick()
+                        isLiked = !isLiked
+                        if (isLiked) {
+                            likeCount++
+                        } else {
+                            likeCount--
+                        }
+                    },
+                    modifier = Modifier
+                        .background(color = ColorPurple500, shape = CircleShape)
+                        .padding(4.dp)
+                        .size(28.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = "Like",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Text(
+                    text = likeCount.toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Text(
+                text = "${episode.duration / 60}h ${episode.duration % 60}m",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Gray,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Text(
+                text = episode.language.uppercase(),
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Gray,
+                fontWeight = FontWeight.SemiBold
+
+            )
         }
 
         Text(
@@ -114,7 +171,7 @@ fun EpisodeContent(
         )
 
         Text(
-            text = "Episodes:",
+            text = "Guests:",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Start,
@@ -122,7 +179,7 @@ fun EpisodeContent(
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             episode.guests.forEach { guest ->
                 GuestItem(guest)

@@ -12,7 +12,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.AsyncImage
 import com.podcastapp.episode.details.domain.models.Guest
 
@@ -21,7 +23,7 @@ fun GuestItem(guest: Guest) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -34,8 +36,9 @@ fun GuestItem(guest: Guest) {
                 model = guest.image,
                 contentDescription = guest.name,
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
+                    .size(28.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
 
             // Guest Name
@@ -43,13 +46,18 @@ fun GuestItem(guest: Guest) {
                 text = guest.name,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
+                Spacer(modifier = Modifier.width(8.dp))
         }
 
         // Job Title
         Text(
             text = guest.jobTitle,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 
