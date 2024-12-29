@@ -8,6 +8,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.core.common.constants.PlayerFeature
+import com.core.common.model.UiEvent
+import com.core.network.model.episodes.EpisodeDTO
+import com.doublesymmetry.kotlinaudio.models.AudioItem
+import com.doublesymmetry.kotlinaudio.models.AudioItemTransitionReason
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
 import com.doublesymmetry.kotlinaudio.models.NotificationButton
 import com.doublesymmetry.kotlinaudio.models.NotificationConfig
@@ -15,6 +19,8 @@ import com.doublesymmetry.kotlinaudio.models.PlayerConfig
 import com.doublesymmetry.kotlinaudio.models.RepeatMode
 import com.doublesymmetry.kotlinaudio.players.QueuedAudioPlayer
 import com.podcastapp.commonrepos.repos.CommonEpisodeRepository
+import com.podcastapp.domain.use_cases.GetEpisodeUseCase
+import com.podcastapp.ui.navigation.mapper.getMp3DurationInSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +34,8 @@ import java.util.concurrent.TimeUnit
 
 class BasePlayerViewModel(
     private val context: Context,
-    private val commonEpisodeRepository: CommonEpisodeRepository
+    private val commonEpisodeRepository: CommonEpisodeRepository,
+    private val getEpisodeUseCase: GetEpisodeUseCase,
 ) : ViewModel() {
 
     val _state = MutableStateFlow(
@@ -63,12 +70,67 @@ class BasePlayerViewModel(
     val _isPlaying = MutableStateFlow(false)
     val isPlaying: StateFlow<Boolean> = _isPlaying
 
+    val _nextEpisodesItems = MutableStateFlow<List<EpisodeDTO>>(emptyList())
+    val nextEpisodesItems: StateFlow<List<EpisodeDTO>> = _nextEpisodesItems
+
     init {
-        _state.value.playerOptions.repeatMode = RepeatMode.ALL
+        _state.value.playerOptions.repeatMode = RepeatMode.OFF
 
         setupNotification()
         observePlayer()
     }
+
+    private var lastLoadTime = 0L
+    fun loadNextEpisodes() = viewModelScope.launch {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastLoadTime < 2000) {
+            Timber.tag("Next episode event").d("Skipped loadNextEpisodes, triggered too soon")
+            return@launch
+        }
+
+        lastLoadTime = currentTime
+
+        val episodeId = _state.value.currentItem?.albumTitle?.toInt() ?: 0
+        getEpisodeUseCase(episodeId).collect {
+            when (it) {
+                is UiEvent.Success -> {
+                    if (it.data?.next_episodes?.isNotEmpty() == true) {
+                        it.data?.next_episodes?.let { episodes ->
+                            episodes.forEach { nit ->
+                                nit.duration = getMp3DurationInSeconds(nit.file_path).toInt()
+                                if (nit.duration / 60 > 0) {
+                                    nit.duration = (nit.duration / 60)
+                                } else {
+                                    nit.duration = 1
+                                }
+                            }
+                        }
+                        _nextEpisodesItems.value = it.data?.next_episodes!!
+                    } else {
+                        _nextEpisodesItems.value = emptyList()
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+//    fun loadNextEpisodes() = viewModelScope.launch {
+//        //if(_state.value.nextItems.isEmpty() && _state.value.currentItem != null){
+//        //    _nextEpisodesItems.value = _state.value.items.subtract(listOf(_state.value.currentItem!!).toSet()).toList()
+//        //} else {
+//        Timber.tag("NEXTEP").d(state.value.nextItems.toString())
+//        if(state.value.currentItem != null){
+//            val exceptNextItems = state.value.nextItems.toSet().subtract(listOf(state.value.currentItem!!).toSet())
+//            _nextEpisodesItems.value = exceptNextItems.toList()
+//        }
+//        else{
+//            _nextEpisodesItems.value = state.value.nextItems
+//        }
+//
+//        //}
+//    }
 
     private fun setupNotification() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -104,10 +166,15 @@ class BasePlayerViewModel(
             val isLiked =
                 commonEpisodeRepository.getEpisode(episodeId ?: 0).data?.data?.is_liked ?: false
             _isLiked.value = isLiked
+
+            CoroutineScope(Dispatchers.IO).launch {
+                loadNextEpisodes()
+            }
         }.launchIn(viewModelScope)
 
         _state.value.event.stateChange.onEach {
             _isPlaying.value = _state.value.isPlaying == true
+//            loadNextEpisodes()
         }.launchIn(viewModelScope)
 
         _state.value.event.onPlayerActionTriggeredExternally.onEach {

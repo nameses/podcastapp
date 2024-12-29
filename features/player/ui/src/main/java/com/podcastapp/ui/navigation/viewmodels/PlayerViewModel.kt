@@ -20,6 +20,7 @@ import com.core.common.constants.ProfileFeature
 import com.core.common.model.RepoEvent
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
+import com.core.network.model.episodes.EpisodeDTO
 import com.core.network.model.episodes.EpisodeFullDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItem
 import com.doublesymmetry.kotlinaudio.models.DefaultAudioItem
@@ -41,6 +42,7 @@ import javax.inject.Inject
 import java.util.concurrent.TimeUnit
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
 import com.podcastapp.domain.use_cases.GetEpisodeUseCase
+import com.podcastapp.ui.navigation.mapper.getMp3DurationInSeconds
 import com.podcastapp.ui.navigation.model.Episode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,9 +63,31 @@ class PlayerViewModel @Inject constructor(
     private val _loadState = MutableStateFlow(UiStateHolder<EpisodeFullDTO>())
     val loadState: StateFlow<UiStateHolder<EpisodeFullDTO>> get() = _loadState
 
-    fun getNextEpisodes(): List<AudioItem> {
-        return basePlayer._state.value.nextItems
-    }
+//    fun loadNextEpisodes() = viewModelScope.launch {
+//        val episodeId = basePlayer._state.value.currentItem?.albumTitle?.toInt() ?: 0
+//        getEpisodeUseCase(episodeId).collect {
+//            when (it) {
+//                is UiEvent.Loading -> {
+//                    _loadState.value = UiStateHolder(isLoading = true)
+//                }
+//
+//                is UiEvent.Success -> {
+//                    if (it.data?.next_episodes?.isNotEmpty() == true) {
+//                        it.data?.next_episodes!!.forEach { nit ->
+//                            nit.duration = getMp3DurationInSeconds(nit.file_path).toInt()
+//                        }
+//                        nextEpisodesItems.value = it.data?.next_episodes!!
+//                    }
+//                    _loadState.value = UiStateHolder(isSuccess = true, data = it.data)
+//                }
+//
+//                is UiEvent.Error -> {
+//                    _loadState.value =
+//                        UiStateHolder(message = it.message.toString(), errors = it.errors)
+//                }
+//            }
+//        }
+//    }
 
     fun playEpisode(episodeId: Int) = viewModelScope.launch {
         getEpisodeUseCase(episodeId).collect {
@@ -86,8 +110,10 @@ class PlayerViewModel @Inject constructor(
                                 )
                             }
                             withContext(Dispatchers.Main) {
-                                basePlayer._state.value.add(nextEpisodes)
+                                nextEpisodes.forEach { nnit -> basePlayer._state.value.add(nnit) }
+
                             }
+                            basePlayer.loadNextEpisodes()
                         }
                     }
 

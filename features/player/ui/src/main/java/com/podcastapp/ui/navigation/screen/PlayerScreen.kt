@@ -1,59 +1,35 @@
 package com.podcastapp.ui.navigation.screen
 
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.transition.Slide
-import android.util.Log
-import android.widget.TextView
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.rounded.FastForward
-import androidx.compose.material.icons.rounded.FastRewind
-import androidx.compose.material.icons.rounded.PauseCircle
-import androidx.compose.material.icons.rounded.PlayCircle
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,48 +39,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navOptions
-import coil3.annotation.ExperimentalCoilApi
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import com.core.common.constants.PodcastDetailedFeature
-import com.core.common.constants.ProfileFeature
-import com.core.common.model.UiStateHolder
-import com.core.common.services.setNavResultCallback
-import com.core.common.theme.ColorLittleBitGray
-import com.core.common.theme.ColorPurple500
+import com.core.common.constants.PlayerFeature
 import com.core.common.theme.ColorWhite
+import com.core.network.model.episodes.EpisodeDTO
+import com.doublesymmetry.kotlinaudio.models.AudioItem
 import com.doublesymmetry.kotlinaudio.models.AudioPlayerState
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
 import com.podcastapp.commonui.errorscreen.ErrorScreen
-import com.podcastapp.ui.R
-import com.podcastapp.ui.navigation.mapper.millisecondsToString
 import com.podcastapp.ui.navigation.viewmodels.PlayerViewModel
 import com.podcastapp.ui.navigation.viewmodels.TimerViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
@@ -130,10 +86,12 @@ fun PlayerScreen(
     val duration by viewModel.basePlayer.duration.collectAsState()
 
     val isTimerRunning by timerViewModel.isTimerRunning.collectAsState()
-    val showDialog = remember { mutableStateOf(false) }
+    val showTimerDialog = remember { mutableStateOf(false) }
 
     // For collapsible bottom sheet
-    var isExpanded = remember { mutableStateOf(false) }
+    val isExpanded = remember { mutableStateOf(false) }
+
+    val nextEpisodes by viewModel.basePlayer.nextEpisodesItems.collectAsState()
 
     LaunchedEffect(Unit) {
         if (episodeId != 0) {
@@ -147,10 +105,10 @@ fun PlayerScreen(
     }
 
     if (loadState.value.isLoading) {
-        CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+        PlayerScreenSilhouette()
     } else if (loadState.value.isSuccess || episodeId == 0) {
-        if (showDialog.value) {
-            TimerDialog(onDismiss = { showDialog.value = false }, onSetTimer = { duration ->
+        if (showTimerDialog.value) {
+            TimerDialog(onDismiss = { showTimerDialog.value = false }, onSetTimer = { duration ->
                 timerViewModel.startTimer(duration) {
                     viewModel.pausePlayback()
                 }
@@ -201,56 +159,102 @@ fun PlayerScreen(
                     if (isTimerRunning) {
                         timerViewModel.stopTimer()
                     } else {
-                        showDialog.value = true
+                        showTimerDialog.value = true
                     }
                 }, onLike = {
                     viewModel.likeEpisode()
                     viewModel.basePlayer._isLiked.value = !viewModel.basePlayer._isLiked.value
-                }, isLiked = isLiked, modifier = Modifier.fillMaxWidth().padding(bottom = 60.dp)
+                }, isLiked = isLiked, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 60.dp)
                 )
-                //Spacer(modifier = Modifier.weight(1f)) // Makes space above the dialog
-                //Box(Modifier.weight(1f))
-                // Expandable Dialog at the bottom
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).weight(1f)
-                        //.align(Alignment.BottomCenter)
-                        .animateContentSize() // To animate size changes
-                ) {
+
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .animateContentSize()
+                    .clickable { isExpanded.value = true }) {
                     Column(
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).background(Color.White)
-                            .border(1.dp, Color.Gray, RoundedCornerShape(16.dp))
+                        modifier = Modifier.fillMaxHeight()
                     ) {
-                        // Header section of the dialog
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-                                    // Toggle the expanded state when the header is clicked
-                                    isExpanded.value = !isExpanded.value
-                                },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 0.dp, horizontal = 16.dp)
+                                .clickable { isExpanded.value = !isExpanded.value },
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "Next episodes",
-                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp)
                             )
                             Icon(
                                 imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "Expand/Collapse",
-                                modifier = Modifier.rotate(if (isExpanded.value) 180f else 0f)
+                                contentDescription = "Expand/Collapse"
                             )
                         }
+                    }
+                }
 
-                        // Content of the dialog
-                        if (isExpanded.value) {
-                            LazyColumn(
-                                modifier = Modifier.height(250.dp) // Expandable height when dialog is opened
-                            ) {
-                                items(viewModel.getNextEpisodes()) { item ->
-                                    Text(
-                                        text = "Episode #${item.albumTitle}",
-                                        modifier = Modifier.padding(16.dp),
-                                        style = TextStyle(fontSize = 14.sp)
-                                    )
+                if (isExpanded.value) {
+                    ShowNextEpisodesDialog(nextEpisodes = nextEpisodes, onDismiss = {
+                        isExpanded.value = false
+                    }, viewModel)
+                }
+            }
+        }
+    } else {
+        ErrorScreen()
+    }
+}
+
+@Composable
+fun ShowNextEpisodesDialog(
+    nextEpisodes: List<EpisodeDTO>, onDismiss: () -> Unit, viewModel: PlayerViewModel
+) {
+    Dialog(
+        onDismissRequest = onDismiss, properties = DialogProperties(
+            dismissOnClickOutside = true, usePlatformDefaultWidth = false
+        )
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .clickable { onDismiss() }) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 300.dp, max = LocalConfiguration.current.screenHeightDp.dp / 2)
+                    .align(Alignment.BottomCenter)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    color = ColorWhite,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Next episodes",
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        if (!nextEpisodes.isEmpty()) {
+                            LazyColumn {
+                                items(nextEpisodes) { episode ->
+                                    EpisodeItem(episode, onPlayClick = {
+                                        viewModel.playEpisode(episode.id)
+                                        onDismiss()
+                                    })
                                 }
                             }
                         }
@@ -258,11 +262,6 @@ fun PlayerScreen(
                 }
             }
         }
-    } else {
-        ErrorScreen()
     }
-
-
 }
-
 

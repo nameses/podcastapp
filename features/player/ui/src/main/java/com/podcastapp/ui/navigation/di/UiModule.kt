@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import com.podcastapp.commonrepos.repos.CommonEpisodeRepository
+import com.podcastapp.domain.use_cases.GetEpisodeUseCase
 import com.podcastapp.ui.navigation.PlayerApi
 import com.podcastapp.ui.navigation.PlayerApiImpl
 import com.podcastapp.ui.navigation.viewmodels.BasePlayerViewModel
@@ -25,9 +26,11 @@ object UiModule {
     @Singleton
     @Provides
     fun provideBasePlayerViewModel(
-        context: Context, commonEpisodeRepository: CommonEpisodeRepository
+        context: Context,
+        commonEpisodeRepository: CommonEpisodeRepository,
+        getEpisodeUseCase: GetEpisodeUseCase
     ): BasePlayerViewModel {
-        return BasePlayerViewModel(context, commonEpisodeRepository)
+        return BasePlayerViewModel(context, commonEpisodeRepository, getEpisodeUseCase)
     }
 
     @Singleton

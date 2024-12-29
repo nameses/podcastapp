@@ -25,12 +25,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.core.common.theme.ColorPurple500
-import com.doublesymmetry.kotlinaudio.models.AudioItem
-import com.podcastapp.ui.navigation.model.Episode
+import com.core.network.model.episodes.EpisodeDTO
 
 @Composable
 fun EpisodeItem(
-    episode: AudioItem, onPlayClick: (Int) -> Unit
+    episode: EpisodeDTO, onPlayClick: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -41,7 +40,7 @@ fun EpisodeItem(
     ) {
         // Left block: Image
         AsyncImage(
-            model = episode.artwork,
+            model = episode.image_url,
             contentDescription = episode.title,
             modifier = Modifier
                 .size(64.dp)
@@ -78,7 +77,7 @@ fun EpisodeItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = episode.artist ?: "",
+                    text = episode.description ?: "",
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -88,7 +87,7 @@ fun EpisodeItem(
                         .padding(end = 8.dp)
                 )
                 IconButton(
-                    onClick = { onPlayClick(episode.albumTitle?.toInt() ?: 0) },
+                    onClick = { onPlayClick(episode.id) },
                     modifier = Modifier
                         .background(
                             color = ColorPurple500, shape = CircleShape
