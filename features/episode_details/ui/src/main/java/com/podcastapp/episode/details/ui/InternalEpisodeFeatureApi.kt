@@ -25,7 +25,9 @@ object InternalEpisodeFeatureApi : FeatureApi {
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getInt("id")
                     ?: throw IllegalArgumentException("Episode ID is required")
+
                 val episodeViewModel = hiltViewModel<EpisodeViewModel>()
+
                 EpisodeScreen(
                     navController = navController, viewModel = episodeViewModel, episodeId = id
                 )
