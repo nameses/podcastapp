@@ -2,6 +2,7 @@ package com.podcastapp.di
 
 import com.features.auth.ui.navigation.AuthApi
 import com.features.main.ui.navigation.MainApi
+import com.podcastapp.episode.details.ui.EpisodeApi
 import com.podcastapp.navigation.NavigationProvider
 import com.podcastapp.podcast_details.ui.navigation.PodcastApi
 import com.podcastapp.profile.ui.navigation.ProfileApi
@@ -20,8 +21,9 @@ object AppModule {
         authApi: AuthApi,
         profileApi: ProfileApi,
         podcastApi: PodcastApi,
+        episodeApi: EpisodeApi,
         playerApi: PlayerApi
     ): NavigationProvider {
-        return NavigationProvider(mainApi, authApi, profileApi, podcastApi, playerApi)
+        return NavigationProvider(mainApi, authApi, profileApi, podcastApi, episodeApi, playerApi)
     }
 }

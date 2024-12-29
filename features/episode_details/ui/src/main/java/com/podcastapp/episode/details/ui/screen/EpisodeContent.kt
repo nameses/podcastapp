@@ -1,4 +1,4 @@
-package com.podcastapp.podcast_details.ui.navigation.screen
+package com.podcastapp.episode.details.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +16,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.ThumbUpOffAlt
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,19 +39,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
-import com.core.common.constants.EpisodeDetailedFeature
 import com.core.common.constants.PlayerFeature
 import com.core.common.theme.ColorPurple500
-import com.podcastapp.podcast_details.domain.model.Podcast
-
+import com.podcastapp.episode.details.domain.models.Episode
 
 @Composable
-fun PodcastContent(
+fun EpisodeContent(
     navController: NavHostController,
-    podcast: Podcast,
-    onAddToSavedClick: () -> Unit
+    episode: Episode,
+    onLikeClick: () -> Unit
 ) {
-    var isSaved by remember { mutableStateOf(podcast.isSaved) }
+    var isLiked by remember { mutableStateOf(episode.isLiked) }
     val scrollState = rememberScrollState()
 
     Column(
@@ -59,8 +60,8 @@ fun PodcastContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         AsyncImage(
-            model = podcast.imageUrl,
-            contentDescription = podcast.title,
+            model = episode.imageUrl,
+            contentDescription = episode.title,
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16 / 10f)
@@ -75,22 +76,22 @@ fun PodcastContent(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = podcast.title,
+                    text = episode.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = podcast.author,
+                    text = episode.author,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Gray
                 )
             }
             IconButton(
                 onClick = {
-                    onAddToSavedClick()
-                    isSaved = !isSaved
+                    onLikeClick()
+                    isLiked = !isLiked
                 }, modifier = Modifier
                     .background(
                         color = ColorPurple500, shape = CircleShape
@@ -98,8 +99,8 @@ fun PodcastContent(
                     .padding(8.dp)
             ) {
                 Icon(
-                    imageVector = if (isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    contentDescription = "Add to Saved",
+                    imageVector = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                    contentDescription = "Like",
                     tint = Color.White,
                     modifier = Modifier.size(48.dp)
                 )
@@ -107,7 +108,7 @@ fun PodcastContent(
         }
 
         Text(
-            text = podcast.description,
+            text = episode.description,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Start
         )
@@ -123,15 +124,8 @@ fun PodcastContent(
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            podcast.episodes.forEach { episode ->
-                EpisodeItem(episode = episode,
-                    onPlayClick = {
-                        navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
-                    },
-                    onEpisodeClick = {
-                        navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
-                    }
-                )
+            episode.guests.forEach { guest ->
+                GuestItem(guest)
             }
         }
     }
