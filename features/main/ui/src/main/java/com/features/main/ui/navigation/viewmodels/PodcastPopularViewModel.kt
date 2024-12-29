@@ -38,7 +38,7 @@ class PodcastPopularViewModel @Inject constructor(
 
         _podcasts.value = UiStateHolder(isLoading = true)
 
-        var response = podcastRepository.getPodcastList(PodcastType.New, currentPage.value)
+        var response = podcastRepository.getPodcastList(PodcastType.Popular, currentPage.value)
 
         when(response){
             is RepoEvent.Success -> {

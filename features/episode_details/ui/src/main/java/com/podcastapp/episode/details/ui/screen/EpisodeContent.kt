@@ -69,7 +69,13 @@ fun EpisodeContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TopAppBar(title = { Text(text = "") }, navigationIcon = {
+        TopAppBar(title = {
+            Text(
+                text = "Episode",
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleLarge
+            )
+        }, navigationIcon = {
             IconButton(onClick = {
                 navController.popBackStack()
             }) {
@@ -85,7 +91,9 @@ fun EpisodeContent(
                     episode.imageUrl ?: ""
                 )
             )
-        }, modifier = Modifier.fillMaxWidth().height(32.dp)
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .height(32.dp)
         )
 
         AsyncImage(
