@@ -119,7 +119,7 @@ fun PlayerScreen(
 
         while (true) {
             position = player.value.position
-            delay(1.seconds / 5)
+            delay(1.seconds / 8)
         }
     }
 
