@@ -51,6 +51,7 @@ fun HorizontalListItem(
         modifier = Modifier
             .width(140.dp)
             .padding(8.dp)
+            .clickable { onClick() }
     ) {
         Box {
             AsyncImage(
@@ -86,7 +87,6 @@ fun HorizontalListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
-                .clickable { onClick() }
         )
 
         Text(
