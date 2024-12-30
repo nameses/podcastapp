@@ -63,6 +63,8 @@ dependencies {
     implementation(project(":core:feature_api"))
     implementation(project(":core:common"))
     implementation(project(":features:search:domain"))
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(project(":core:commonui"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -8,5 +8,5 @@ import com.podcastapp.search.domain.models.EpisodeList
 
 interface SearchRepository {
     suspend fun searchEpisodes(searchParams: SearchParams): RepoEvent<EpisodeList>
-    suspend fun getAvailableFilters():RepoEvent<AvailableFilters>
+    suspend fun getAvailableFilters(): RepoEvent<AvailableFilters>
 }

@@ -13,13 +13,12 @@ import com.podcastapp.search.domain.models.EpisodeList
 import kotlinx.coroutines.Dispatchers
 
 
-class SearchPodcastsUseCase @Inject constructor(private val searchRepository : SearchRepository){
-    operator fun invoke(searchParams: SearchParams) = flow<UiEvent<EpisodeList>>{
+class SearchPodcastsUseCase @Inject constructor(private val searchRepository: SearchRepository) {
+    operator fun invoke(searchParams: SearchParams) = flow<UiEvent<EpisodeList>> {
         emit(UiEvent.Loading())
-        when(val response = searchRepository.searchEpisodes(searchParams))
-        {
-            is RepoEvent.Error -> if (response.data != null) emit(UiEvent.Success(response.data!!))
-            is RepoEvent.Success -> emit(UiEvent.Error(response.message!!, response.errors))
+        when (val response = searchRepository.searchEpisodes(searchParams)) {
+            is RepoEvent.Success -> if (response.data != null) emit(UiEvent.Success(response.data!!))
+            is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))
         }
 
     }.catch {

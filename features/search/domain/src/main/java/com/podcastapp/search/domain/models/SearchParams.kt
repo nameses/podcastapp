@@ -2,7 +2,7 @@ package com.podcastapp.search.domain.models
 
 data class SearchParams(
     val page: Int = 1,
-    val search: String?,
+    var search: String?,
     val category: Int?,
     val topics: List<Int>?,
     val guests: List<Int>?,

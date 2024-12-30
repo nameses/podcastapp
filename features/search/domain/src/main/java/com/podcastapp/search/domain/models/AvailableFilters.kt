@@ -4,8 +4,7 @@ data class AvailableFilters(
     val topics: List<Topic>,
     val categories: List<Category>,
     val guests: List<Guest>,
-
-    )
+)
 
 data class Topic(
     val id: Int,

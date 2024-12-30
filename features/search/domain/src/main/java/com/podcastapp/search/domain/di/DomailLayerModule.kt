@@ -12,14 +12,12 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object DomainLayerModule {
     @Provides
-    fun provideGetAvailableFiltersUseCase(searchRepository: SearchRepository):GetAvailableFiltersUseCase
-    {
+    fun provideGetAvailableFiltersUseCase(searchRepository: SearchRepository): GetAvailableFiltersUseCase {
         return GetAvailableFiltersUseCase(searchRepository)
     }
 
     @Provides
-    fun provideSearchPodcastsUseCase(searchRepository: SearchRepository): SearchPodcastsUseCase
-    {
+    fun provideSearchPodcastsUseCase(searchRepository: SearchRepository): SearchPodcastsUseCase {
         return SearchPodcastsUseCase(searchRepository)
     }
 }

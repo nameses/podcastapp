@@ -13,7 +13,8 @@ import com.podcastapp.search.data.mapper.toAvailableFilters
 import com.podcastapp.search.data.mapper.toEpisodeList
 import com.podcastapp.search.data.mapper.toQueryMap
 
-class SearchRepositoryImpl @Inject constructor(private val searchDataProvider: SearchDataProvider) : SearchRepository {
+class SearchRepositoryImpl @Inject constructor(private val searchDataProvider: SearchDataProvider) :
+    SearchRepository {
     override suspend fun searchEpisodes(searchParams: SearchParams): RepoEvent<EpisodeList> {
         val response = searchDataProvider.getEpisodeSearch(searchParams.toQueryMap())
 
@@ -32,15 +33,16 @@ class SearchRepositoryImpl @Inject constructor(private val searchDataProvider: S
         val categoryResponse = searchDataProvider.getCategories()
         val guestResponse = searchDataProvider.getGuests()
 
-        return if (topicsResponse.isSuccessful && topicsResponse.body() != null &&
-            categoryResponse.isSuccessful && categoryResponse.body() != null &&
-            guestResponse.isSuccessful && guestResponse.body() != null
-                ) {
-            RepoEvent.Success(toAvailableFilters(
-                topicsResponse.body()!!.data,
-                guestResponse.body()!!.data,
-                categoryResponse.body()!!.data
-                ))
+        return if (topicsResponse.isSuccessful && topicsResponse.body() != null
+            && categoryResponse.isSuccessful && categoryResponse.body() != null
+            && guestResponse.isSuccessful && guestResponse.body() != null) {
+            RepoEvent.Success(
+                toAvailableFilters(
+                    topicsResponse.body()!!.data,
+                    guestResponse.body()!!.data,
+                    categoryResponse.body()!!.data
+                )
+            )
         } else {
             RepoEvent.Error("Error when getting available filters")
         }

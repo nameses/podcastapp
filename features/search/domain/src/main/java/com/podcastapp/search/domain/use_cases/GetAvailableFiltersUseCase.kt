@@ -1,5 +1,6 @@
 package com.podcastapp.search.domain.use_cases
 
+import android.util.Log
 import com.core.common.model.RepoEvent
 import com.core.common.model.UiEvent
 import com.podcastapp.search.domain.models.AvailableFilters
@@ -13,9 +14,11 @@ import javax.inject.Inject
 class GetAvailableFiltersUseCase @Inject constructor(private val searchRepository: SearchRepository) {
     operator fun invoke() = flow<UiEvent<AvailableFilters>> {
         emit(UiEvent.Loading())
-        when (val response = searchRepository.getAvailableFilters()) {
-            is RepoEvent.Error -> if (response.data != null) emit(UiEvent.Success(response.data!!))
-            is RepoEvent.Success -> emit(UiEvent.Error(response.message!!, response.errors))
+        val response = searchRepository.getAvailableFilters()
+        Log.d("RESPONSE_FILTERS", response.data.toString())
+        when (response) {
+            is RepoEvent.Success -> if (response.data != null) emit(UiEvent.Success(response.data!!))
+            is RepoEvent.Error -> emit(UiEvent.Error(response.message!!, response.errors))
         }
 
     }.catch {
