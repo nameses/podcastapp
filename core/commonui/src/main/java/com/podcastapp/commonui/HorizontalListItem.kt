@@ -47,17 +47,14 @@ fun HorizontalListItem(
     val savedState by viewModel.savedState.collectAsState()
     val isSaved = savedState[item.id] ?: item.isInitiallySaved
 
-    Column(
-        modifier = Modifier
-            .width(140.dp)
-            .padding(8.dp)
-    ) {
+    Column(modifier = Modifier
+        .width(140.dp)
+        .padding(8.dp)
+        .clickable { onClick() }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.imageUrl ?: R.drawable.default_item_list)
-                    .crossfade(true)
-                    .build(),
+                    .data(item.imageUrl ?: R.drawable.default_item_list).crossfade(true).build(),
                 contentDescription = item.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -86,7 +83,6 @@ fun HorizontalListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
-                .clickable { onClick() }
         )
 
         Text(
