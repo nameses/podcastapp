@@ -6,6 +6,7 @@ import com.core.network.converterfactories.MultipartConverterFactory
 import com.core.network.dataproviders.AuthDataProviders
 import com.core.network.dataproviders.EpisodeDataProviders
 import com.core.network.dataproviders.PodcastDataProviders
+import com.core.network.dataproviders.SearchDataProvider
 import com.core.network.dataproviders.UserDataProviders
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -55,6 +56,14 @@ object NetworkModule {
         tokenManager: TokenManager
     ): PodcastDataProviders {
         return PodcastDataProviders(apiService, tokenManager)
+    }
+
+    @Provides
+    fun provideSearchDataProvider(
+        apiService: ApiService,
+        tokenManager: TokenManager
+    ): SearchDataProvider{
+        return SearchDataProvider(apiService, tokenManager)
     }
 
     @Provides

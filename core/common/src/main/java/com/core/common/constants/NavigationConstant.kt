@@ -28,3 +28,8 @@ object PlayerFeature {
     const val playerWithIdScreen = "player_screen/{episode_id}"
     const val playerScreenDeepLink = "podcastapp://player_screen_deep_link"
 }
+
+object SearchFeature {
+    const val nestedRoute = "search_feature"
+    const val searchScreen = "search_screen"
+}

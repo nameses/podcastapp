@@ -88,6 +88,9 @@ dependencies {
     implementation(project(":features:episode_details:data"))
     implementation(project(":features:episode_details:domain"))
     implementation(project(":features:episode_details:ui"))
+    implementation(project(":features:search:data"))
+    implementation(project(":features:search:domain"))
+    implementation(project(":features:search:ui"))
 
     kapt(libs.dagger.hilt.android.compiler)
     testImplementation(libs.junit)
