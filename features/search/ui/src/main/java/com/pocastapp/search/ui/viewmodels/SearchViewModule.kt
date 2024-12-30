@@ -1,5 +1,6 @@
 package com.pocastapp.search.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.core.common.model.UiEvent
@@ -30,6 +31,35 @@ class SearchViewModule @Inject constructor(
 
     private val _selectedFiltersState = MutableStateFlow(UiStateHolder<SearchParams>())
     val selectedFiltersState: StateFlow<UiStateHolder<SearchParams>> get() = _selectedFiltersState
+
+    fun setQuery(query: String) {
+        if (_selectedFiltersState.value.data != null) _selectedFiltersState.value.data!!.search =
+            query
+    }
+
+    fun setSortOption(sort: SortOption?) {
+        if (_selectedFiltersState.value.data != null && sort != null) _selectedFiltersState.value.data!!.sort =
+            sort
+    }
+
+    fun setNewFilters(filters: SearchParams) = viewModelScope.launch {
+        Log.d("filters", filters.toString())
+        Log.d("filters", _selectedFiltersState.value.data.toString())
+        if (_selectedFiltersState.value.data == null) {
+            _selectedFiltersState.value.data = SearchParams(
+                search = null,
+                category = null,
+                topics = null,
+                guests = null,
+                language = null,
+                sort = null
+            )
+        }
+        _selectedFiltersState.value.data!!.category = filters.category
+        _selectedFiltersState.value.data!!.guests = filters.guests
+        _selectedFiltersState.value.data!!.topics = filters.topics
+        _selectedFiltersState.value.data!!.language = filters.language
+    }
 
     fun refreshSearchResult(query: String) = viewModelScope.launch {
         val searchParams = _selectedFiltersState.value.data ?: SearchParams(

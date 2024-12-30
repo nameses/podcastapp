@@ -21,7 +21,7 @@ object InternalSearchFeatureApi : FeatureApi {
                 route = SearchFeature.searchScreen
             ) {
                 val viewModel: SearchViewModule = hiltViewModel()
-                SearchScreen(viewModel)
+                SearchScreen(viewModel,navController)
             }
         }
     }

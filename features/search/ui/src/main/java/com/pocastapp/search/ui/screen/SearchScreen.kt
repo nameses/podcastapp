@@ -57,7 +57,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import com.core.common.constants.EpisodeDetailedFeature
+import com.core.common.constants.PlayerFeature
 import com.core.common.theme.ColorPurple500
 import com.pocastapp.search.ui.viewmodels.SearchViewModule
 import com.podcastapp.commonui.errorscreen.ErrorScreen
@@ -70,7 +73,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModule
+    viewModel: SearchViewModule,
+    navController: NavHostController
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val filtersState by viewModel.filtersState.collectAsState()
@@ -91,14 +95,47 @@ fun SearchScreen(
 
     if (filtersState.isLoading) {
         CircularProgressIndicator()
-    }
-    else if (filtersState.isSuccess)
-    {
+    } else if (filtersState.isSuccess) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            // Row with Sort on left and Filter on right
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Sort Button on Left
+                var isSortDropdownExpanded by remember { mutableStateOf(false) }
+                Box(modifier = Modifier.fillMaxWidth(0.7f)) {
+                    OutlinedButton(onClick = { isSortDropdownExpanded = !isSortDropdownExpanded }) {
+                        Text(selectedSortOption?.displayName ?: "Sort By")
+                    }
+                    DropdownMenu(
+                        expanded = isSortDropdownExpanded,
+                        onDismissRequest = { isSortDropdownExpanded = false }
+                    ) {
+                        SortOption.entries.forEach { sortOption ->
+                            DropdownMenuItem(text = { Text(sortOption.displayName) }, onClick = {
+                                selectedSortOption = sortOption
+                                viewModel.setSortOption(sortOption)
+                                isSortDropdownExpanded = false
+                                viewModel.refreshSearchResult(searchQuery)
+                            })
+                        }
+                    }
+                }
+
+                // Filter Button on Right
+                Button(onClick = { isFilterPopupVisible = true }) {
+                    Text("Filter")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Search Bar
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -110,33 +147,9 @@ fun SearchScreen(
                     viewModel.refreshSearchResult(searchQuery)
                 }, placeholder = { Text("Search by keyword") }, modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { isFilterPopupVisible = true }) {
-                    Text("Filter")
-                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            // Sort Dropdown
-            var isSortDropdownExpanded by remember { mutableStateOf(false) }
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = { isSortDropdownExpanded = !isSortDropdownExpanded }) {
-                    Text(selectedSortOption?.displayName ?: "Sort By")
-                }
-                DropdownMenu(expanded = isSortDropdownExpanded,
-                    onDismissRequest = { isSortDropdownExpanded = false }) {
-                    SortOption.entries.forEach { sortOption ->
-                        DropdownMenuItem(text = { Text(sortOption.displayName) }, onClick = {
-                            selectedSortOption = sortOption
-                            isSortDropdownExpanded = false
-                            viewModel.refreshSearchResult(searchQuery)
-                        })
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             // Episodes List
             if (searchState.isLoading) {
@@ -148,15 +161,13 @@ fun SearchScreen(
             } else if (searchState.isSuccess) {
                 LazyColumn {
                     if (searchState.data != null) items(searchState.data!!.items) { episode ->
-                        EpisodeItem(episode, {}, {})//todo
+                        EpisodeItem(episode = episode, onPlayClick = {
+                            navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
+                        }, onEpisodeClick = {
+                            navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
+                        }) //todo
                     }
                 }
-            } else {
-                Text(
-                    text = "Error: ${searchState.message}",
-                    color = Color.Red,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
             }
         }
 
@@ -164,8 +175,9 @@ fun SearchScreen(
             FilterPopup(filters = filtersState.data,
                 selectedFilters = selectedFiltersState.data,
                 onApply = { filters ->
-                    viewModel.getAvailableFilters() // Update filters
+                    viewModel.setNewFilters(filters)
                     isFilterPopupVisible = false
+                    viewModel.refreshSearchResult(searchQuery)
                 },
                 onDismiss = { isFilterPopupVisible = false })
         }
@@ -173,6 +185,7 @@ fun SearchScreen(
         ErrorScreen()
     }
 }
+
 
 @Composable
 fun FilterPopup(
@@ -185,13 +198,12 @@ fun FilterPopup(
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
+            shape = RoundedCornerShape(16.dp), modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Filters", style = MaterialTheme.typography.titleMedium)
+                Text("Filters", style = MaterialTheme.typography.titleLarge)
 
                 // Category
                 Text("Category")
@@ -199,88 +211,72 @@ fun FilterPopup(
                 var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
                 Box {
                     OutlinedButton(onClick = { isCategoryDropdownExpanded = true }) {
-                        Text(filters.categories.find { it.id == selectedCategory }?.name ?: "Select Category")
+                        Text(
+                            filters.categories.find { it.id == selectedCategory }?.name
+                                ?: "Select Category"
+                        )
                     }
-                    DropdownMenu(
-                        expanded = isCategoryDropdownExpanded,
-                        onDismissRequest = { isCategoryDropdownExpanded = false }
-                    ) {
+                    DropdownMenu(expanded = isCategoryDropdownExpanded,
+                        onDismissRequest = { isCategoryDropdownExpanded = false }) {
                         filters.categories.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category.name) },
-                                onClick = {
-                                    selectedCategory = category.id
-                                    isCategoryDropdownExpanded = false
-                                }
-                            )
+                            DropdownMenuItem(text = { Text(category.name) }, onClick = {
+                                selectedCategory = category.id
+                                isCategoryDropdownExpanded = false
+                            })
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Topics (Dropdown with multi-selection like Guests)
                 Text("Topics")
-                val selectedTopics = remember { mutableStateListOf<Int>().apply { addAll(selectedFilters?.topics.orEmpty()) } }
+                var selectedTopics =
+                    remember { mutableStateListOf<Int>().apply { addAll(selectedFilters?.topics.orEmpty()) } }
                 var isTopicsDropdownExpanded by remember { mutableStateOf(false) }
                 Box {
                     OutlinedButton(onClick = { isTopicsDropdownExpanded = true }) {
                         Text("Select Topics (${selectedTopics.size})")
                     }
-                    DropdownMenu(
-                        expanded = isTopicsDropdownExpanded,
-                        onDismissRequest = { isTopicsDropdownExpanded = false }
-                    ) {
+                    DropdownMenu(expanded = isTopicsDropdownExpanded,
+                        onDismissRequest = { isTopicsDropdownExpanded = false }) {
                         filters.topics.forEach { topic ->
-                            DropdownMenuItem(
-                                text = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Checkbox(
-                                            checked = selectedTopics.contains(topic.id),
-                                            onCheckedChange = { isChecked ->
-                                                if (isChecked) selectedTopics.add(topic.id)
-                                                else selectedTopics.remove(topic.id)
-                                            }
-                                        )
-                                        Text(topic.name)
-                                    }
-                                },
-                                onClick = {}
-                            )
+                            DropdownMenuItem(text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Checkbox(checked = selectedTopics.contains(topic.id),
+                                        onCheckedChange = { isChecked ->
+                                            if (isChecked) selectedTopics.add(topic.id)
+                                            else selectedTopics.remove(topic.id)
+                                        })
+                                    Text(topic.name)
+                                }
+                            }, onClick = {})
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Guests (Dropdown with multi-selection)
                 Text("Guests")
-                val selectedGuests = remember { mutableStateListOf<Int>().apply { addAll(selectedFilters?.guests.orEmpty()) } }
+                var selectedGuests =
+                    remember { mutableStateListOf<Int>().apply { addAll(selectedFilters?.guests.orEmpty()) } }
                 var isGuestsDropdownExpanded by remember { mutableStateOf(false) }
                 Box {
                     OutlinedButton(onClick = { isGuestsDropdownExpanded = true }) {
                         Text("Select Guests (${selectedGuests.size})")
                     }
-                    DropdownMenu(
-                        expanded = isGuestsDropdownExpanded,
-                        onDismissRequest = { isGuestsDropdownExpanded = false }
-                    ) {
+                    DropdownMenu(expanded = isGuestsDropdownExpanded,
+                        onDismissRequest = { isGuestsDropdownExpanded = false }) {
                         filters.guests.forEach { guest ->
-                            DropdownMenuItem(
-                                text = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Checkbox(
-                                            checked = selectedGuests.contains(guest.id),
-                                            onCheckedChange = { isChecked ->
-                                                if (isChecked) selectedGuests.add(guest.id)
-                                                else selectedGuests.remove(guest.id)
-                                            }
-                                        )
-                                        Text(guest.name)
-                                    }
-                                },
-                                onClick = {}
-                            )
+                            DropdownMenuItem(text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Checkbox(checked = selectedGuests.contains(guest.id),
+                                        onCheckedChange = { isChecked ->
+                                            if (isChecked) selectedGuests.add(guest.id)
+                                            else selectedGuests.remove(guest.id)
+                                        })
+                                    Text(guest.name)
+                                }
+                            }, onClick = {})
                         }
                     }
                 }
@@ -295,37 +291,48 @@ fun FilterPopup(
                     OutlinedButton(onClick = { isLanguageDropdownExpanded = true }) {
                         Text(selectedLanguage?.name ?: "Select Language")
                     }
-                    DropdownMenu(
-                        expanded = isLanguageDropdownExpanded,
-                        onDismissRequest = { isLanguageDropdownExpanded = false }
-                    ) {
+                    DropdownMenu(expanded = isLanguageDropdownExpanded,
+                        onDismissRequest = { isLanguageDropdownExpanded = false }) {
                         Language.entries.forEach { language ->
-                            DropdownMenuItem(
-                                text = { Text(language.name) },
-                                onClick = {
-                                    selectedLanguage = language
-                                    isLanguageDropdownExpanded = false
-                                }
-                            )
+                            DropdownMenuItem(text = { Text(language.name) }, onClick = {
+                                selectedLanguage = language
+                                isLanguageDropdownExpanded = false
+                            })
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Apply Button
-                Button(onClick = {
-                    val newFilters = SearchParams(
-                        search = selectedFilters?.search,
-                        category = selectedCategory,
-                        topics = selectedTopics.toList(),
-                        guests = selectedGuests.toList(),
-                        language = selectedLanguage,
-                        sort = selectedFilters?.sort
-                    )
-                    onApply(newFilters)
-                }) {
-                    Text("Apply")
+                // Buttons Row (Apply and Reset)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(onClick = {
+                        val newFilters = SearchParams(
+                            search = null,
+                            category = selectedCategory,
+                            topics = selectedTopics.toList(),
+                            guests = selectedGuests.toList(),
+                            language = selectedLanguage,
+                            sort = null
+                        )
+                        onApply(newFilters)
+                    }) {
+                        Text("Apply")
+                    }
+
+                    // Reset button on the right
+                    OutlinedButton(onClick = {
+                        selectedCategory = null
+                        selectedTopics.clear()
+                        selectedGuests.clear()
+                        selectedLanguage = null
+
+                    }) {
+                        Text("Reset")
+                    }
                 }
             }
         }
@@ -334,7 +341,9 @@ fun FilterPopup(
 
 @Composable
 fun EpisodeItem(
-    episode: SearchedEpisode, onPlayClick: (Int) -> Unit, onEpisodeClick: (Int) -> Unit
+    episode: SearchedEpisode,
+    onPlayClick: (Int) -> Unit,
+    onEpisodeClick: (Int) -> Unit
 ) {
     Row(modifier = Modifier
         .fillMaxWidth()

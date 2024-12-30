@@ -3,11 +3,11 @@ package com.podcastapp.search.domain.models
 data class SearchParams(
     val page: Int = 1,
     var search: String?,
-    val category: Int?,
-    val topics: List<Int>?,
-    val guests: List<Int>?,
-    val language: Language?,
-    val sort: SortOption?,
+    var category: Int?,
+    var topics: List<Int>?,
+    var guests: List<Int>?,
+    var language: Language?,
+    var sort: SortOption?,
 )
 
 enum class Language(val code: String) {
