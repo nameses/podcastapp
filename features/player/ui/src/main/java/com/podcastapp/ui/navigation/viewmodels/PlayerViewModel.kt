@@ -126,7 +126,7 @@ class PlayerViewModel @Inject constructor(
                 basePlayer._state.value.add(episode.toAudioItem())
                 basePlayer._state.value.play()
                 if (seekToPosition.toInt() != 0) {
-                    basePlayer._state.value.seek(seekToPosition, TimeUnit.SECONDS)
+                    basePlayer._state.value.seek(seekToPosition, TimeUnit.MILLISECONDS)
                 }
 
                 _loadState.value = UiStateHolder(isSuccess = true)
