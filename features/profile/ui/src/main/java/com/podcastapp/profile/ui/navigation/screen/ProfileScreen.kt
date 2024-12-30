@@ -49,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -260,7 +261,7 @@ fun ProfileScreen(
                             }
                         }
 
-                        if (ifContainsDownloadedEpisodes) {
+                        if (ifContainsDownloadedEpisodes && state.data?.premium == true) {
                             item {
                                 HorizontalList(
                                     title = "Downloaded episodes",
@@ -273,6 +274,30 @@ fun ProfileScreen(
                                     showAddToSavedFragment = false,
                                     onSavePodcastStateChanged = handleSavePodcastStateChanged
                                 )
+                            }
+                        }
+                        else {
+                            item{
+                                Column(){
+                                    Text(
+                                        text = "Download Episodes",
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(bottom = 24.dp, start = 16.dp)
+                                    )
+
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "Buy premium to listen to downloaded episodes",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(bottom = 24.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

@@ -100,7 +100,7 @@ fun SearchScreen(
         }
 
         if (filtersState.isLoading) {
-            CircularProgressIndicator()
+            SilhouetteScreen()
         } else if (filtersState.isSuccess) {
             Column(
                 modifier = Modifier
