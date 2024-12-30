@@ -1,7 +1,5 @@
 package com.core.network.model.episodes
 
-import android.adservices.topics.Topic
-
 data class EpisodeFullDTO(
     var id: Int,
     val title: String,
