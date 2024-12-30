@@ -101,9 +101,6 @@ fun PlayerScreen(
 
     val nextEpisodes by viewModel.basePlayer.nextEpisodesItems.collectAsState()
 
-    val context = LocalContext.current
-    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-
     BackHandler {
         if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen
             || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink )

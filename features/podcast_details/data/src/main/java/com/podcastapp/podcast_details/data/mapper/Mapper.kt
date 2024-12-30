@@ -23,7 +23,7 @@ fun EpisodeDTO.toDomainEpisode(): Episode {
         id = this.id,
         title = this.title,
         description = this.description,
-        duration = if(this.duration / 60 > 0) (this.duration / 60) else 1,
+        duration = this.duration,
         imageUrl = this.image_url,
         filePath = this.file_path
     )

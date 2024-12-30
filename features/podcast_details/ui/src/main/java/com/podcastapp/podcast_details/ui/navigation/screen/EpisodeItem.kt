@@ -39,7 +39,7 @@ fun EpisodeItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onEpisodeClick(episode.id) } // Handle clicks on the entire row
+            .clickable { onEpisodeClick(episode.id) }
             .padding(8.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(8.dp)

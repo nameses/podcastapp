@@ -1,5 +1,6 @@
 package com.podcastapp.di
 
+import android.content.Context
 import com.features.auth.ui.navigation.AuthApi
 import com.features.main.ui.navigation.MainApi
 import com.podcastapp.episode.details.ui.EpisodeApi
@@ -10,6 +11,7 @@ import com.podcastapp.ui.navigation.PlayerApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @InstallIn(SingletonComponent::class)

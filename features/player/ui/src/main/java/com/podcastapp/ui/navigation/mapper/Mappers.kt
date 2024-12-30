@@ -54,9 +54,10 @@ fun getMp3DurationInSeconds(fileUrl: String): Long {
         retriever.setDataSource(fileUrl)
 
         val durationInMicroseconds =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
 
-        durationInSeconds = ((durationInMicroseconds ?: 0) % 60000) / 1000//durationInMicroseconds ?: 0//(durationInMicroseconds ?: 0) / 1000000
+        val zero = 0
+        durationInSeconds = if(durationInMicroseconds == zero.toLong()) 0 else (durationInMicroseconds / 1_000)
     } catch (e: IllegalArgumentException) {
         e.printStackTrace()
     } catch (e: IOException) {
