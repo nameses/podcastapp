@@ -42,6 +42,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import java.util.concurrent.TimeUnit
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
+import com.podcastapp.commonrepos.dao.EpisodeTimestampRepository
 import com.podcastapp.commonrepos.repos.DownloadRepository
 import com.podcastapp.domain.use_cases.GetEpisodeUseCase
 import com.podcastapp.ui.navigation.mapper.getMp3DurationInSeconds
@@ -60,14 +61,21 @@ class PlayerViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
     application: Application,
     private val savedStateHandle: SavedStateHandle,
-    private val downloadRepository : DownloadRepository
+    private val downloadRepository: DownloadRepository,
+    private val episodeTimestampRepository: EpisodeTimestampRepository
 ) : AndroidViewModel(application) {
 
     private val _loadState = MutableStateFlow(UiStateHolder<EpisodeFullDTO>())
     val loadState: StateFlow<UiStateHolder<EpisodeFullDTO>> get() = _loadState
 
     fun playEpisode(episodeId: Int) = viewModelScope.launch {
-        if(isNetworkAvailable(appContext)) {
+        val response = episodeTimestampRepository.getTimestampByEpisodeId(episodeId)
+        var seekToPosition: Long = 0
+        if (response != null) {
+            seekToPosition = response.timestamp
+        }
+
+        if (isNetworkAvailable(appContext)) {
             getEpisodeUseCase(episodeId).collect {
                 when (it) {
                     is UiEvent.Loading -> {
@@ -78,6 +86,9 @@ class PlayerViewModel @Inject constructor(
                         basePlayer._state.value.clear()//todo don't know if its right method
                         basePlayer._state.value.add(it.data!!.toAudioItem())
                         basePlayer._state.value.play()
+                        if (seekToPosition.toInt() != 0) {
+                            basePlayer._state.value.seekBy(seekToPosition, TimeUnit.MILLISECONDS)
+                        }
 
                         //add to queue all in episode.next_episodes
                         if (it.data?.next_episodes?.isNotEmpty() == true) {
@@ -108,13 +119,15 @@ class PlayerViewModel @Inject constructor(
             _loadState.value = UiStateHolder(isLoading = true)
 
             val episode = downloadRepository.getEpisodeById(episodeId)
-            if(episode.id == 0){
-                _loadState.value =
-                    UiStateHolder(message = "Episode not found")
+            if (episode.id == 0) {
+                _loadState.value = UiStateHolder(message = "Episode not found")
             } else {
                 basePlayer._state.value.clear()//todo don't know if its right method
                 basePlayer._state.value.add(episode.toAudioItem())
                 basePlayer._state.value.play()
+                if (seekToPosition.toInt() != 0) {
+                    basePlayer._state.value.seek(seekToPosition, TimeUnit.SECONDS)
+                }
 
                 _loadState.value = UiStateHolder(isSuccess = true)
             }

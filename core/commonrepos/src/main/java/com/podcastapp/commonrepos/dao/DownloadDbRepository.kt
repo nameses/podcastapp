@@ -11,7 +11,7 @@ class DownloadDbRepository(private val context: Context) {
         context,
         AppDatabase::class.java,
         "app-database"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     private val downloadedEpisodeDao = db.downloadedEpisodeDao()
 

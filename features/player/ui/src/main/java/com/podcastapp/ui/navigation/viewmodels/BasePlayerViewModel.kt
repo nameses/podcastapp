@@ -19,15 +19,20 @@ import com.doublesymmetry.kotlinaudio.models.NotificationConfig
 import com.doublesymmetry.kotlinaudio.models.PlayerConfig
 import com.doublesymmetry.kotlinaudio.models.RepeatMode
 import com.doublesymmetry.kotlinaudio.players.QueuedAudioPlayer
+import com.podcastapp.commonrepos.dao.EpisodeTimestamp
+import com.podcastapp.commonrepos.dao.EpisodeTimestampRepository
 import com.podcastapp.commonrepos.repos.CommonEpisodeRepository
 import com.podcastapp.domain.use_cases.GetEpisodeUseCase
 import com.podcastapp.ui.navigation.mapper.getMp3DurationInSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -37,6 +42,7 @@ class BasePlayerViewModel(
     private val context: Context,
     private val commonEpisodeRepository: CommonEpisodeRepository,
     private val getEpisodeUseCase: GetEpisodeUseCase,
+    private val episodeTimestampRepository: EpisodeTimestampRepository
 ) : ViewModel() {
 
     val _state = MutableStateFlow(
@@ -85,6 +91,36 @@ class BasePlayerViewModel(
 
         setupNotification()
         observePlayer()
+
+        saveTimestamp()
+    }
+
+    private fun saveTimestamp() = viewModelScope.launch {
+        while (true) {
+            if (_state.value.isPlaying) {
+                var timestamp = _state.value.position
+                val duration = _state.value.duration
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val currentEpisodeId = id.value.toInt()
+
+                        val fivePercent = duration * 0.05
+                        if (timestamp <= fivePercent || timestamp >= duration - fivePercent) {
+                            timestamp = 0L
+                        }
+
+                        Timber.tag("TIME_SAVE").d("${currentEpisodeId}, ${timestamp}")
+                        Timber.tag("TIME_SAVE").d("timestamp=${timestamp}, duration=${duration}")
+
+                        episodeTimestampRepository.saveEpisodeTimestamp(currentEpisodeId, timestamp)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            delay(7_000L)
+        }
     }
 
     private var lastLoadTime = 0L
@@ -156,7 +192,7 @@ class BasePlayerViewModel(
             _isLive.value = _state.value.isCurrentMediaItemLive == true
 
             val episodeId = _state.value.currentItem?.albumTitle?.toInt()
-            if(isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 val isLiked =
                     commonEpisodeRepository.getEpisode(episodeId ?: 0).data?.data?.is_liked ?: false
                 _isLiked.value = isLiked

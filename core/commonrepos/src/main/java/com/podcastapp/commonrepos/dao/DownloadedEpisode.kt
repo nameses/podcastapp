@@ -11,3 +11,9 @@ data class DownloadedEpisode(
     val absolutePathMP3: String,
     val absolutePathImage: String,
 )
+
+@Entity(tableName = "EpisodeTimestamps")
+data class EpisodeTimestamp(
+    @PrimaryKey val episodeId: Int,
+    val timestamp: Long
+)

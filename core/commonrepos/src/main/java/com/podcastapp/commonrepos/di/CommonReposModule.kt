@@ -4,6 +4,7 @@ import android.content.Context
 import com.core.network.dataproviders.EpisodeDataProviders
 import com.core.network.dataproviders.PodcastDataProviders
 import com.podcastapp.commonrepos.dao.DownloadDbRepository
+import com.podcastapp.commonrepos.dao.EpisodeTimestampRepository
 import com.podcastapp.commonrepos.repos.CommonEpisodeRepoImpl
 import com.podcastapp.commonrepos.repos.CommonEpisodeRepository
 import com.podcastapp.commonrepos.repos.CommonPodcastRepoImpl
@@ -37,6 +38,12 @@ object CommonReposModule {
     @Singleton
     fun provideDownloadDbRepository(@ApplicationContext context: Context): DownloadDbRepository {
         return DownloadDbRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEpisodeTimestampRepository(@ApplicationContext context: Context): EpisodeTimestampRepository {
+        return EpisodeTimestampRepository(context)
     }
 
     @Provides
