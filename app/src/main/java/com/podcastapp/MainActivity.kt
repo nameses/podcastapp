@@ -100,7 +100,7 @@ fun App(
 
     WindowCompat.getInsetsController(
         window, LocalView.current
-    )
+    ).isAppearanceLightStatusBars = true
 
     Scaffold(modifier = Modifier
         .fillMaxSize()
