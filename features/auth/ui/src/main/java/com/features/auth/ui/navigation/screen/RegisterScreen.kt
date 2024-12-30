@@ -95,7 +95,7 @@ fun RegisterScreen(
                 label = { Text("Username") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(70.dp)
             )
             authState.errors?.get("username")?.forEach { error ->
                 Text(
@@ -114,7 +114,7 @@ fun RegisterScreen(
                 label = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(70.dp)
             )
             authState.errors?.get("email")?.forEach { error ->
                 Text(
@@ -141,7 +141,7 @@ fun RegisterScreen(
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(70.dp)
             )
             authState.errors?.get("password")?.forEach { error ->
                 Text(
@@ -168,7 +168,7 @@ fun RegisterScreen(
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(70.dp)
             )
             if (password != confirmPassword && confirmPassword.isNotEmpty()) {
                 Text(
@@ -185,7 +185,7 @@ fun RegisterScreen(
                 onClick = { viewModel.register(username, email, password) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(70.dp),
                 shape = RoundedCornerShape(28.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C4DFF))
             ) {

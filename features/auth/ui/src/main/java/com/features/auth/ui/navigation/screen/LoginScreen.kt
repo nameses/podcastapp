@@ -97,7 +97,7 @@ fun LoginScreen(
                 label = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(70.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -117,7 +117,7 @@ fun LoginScreen(
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(70.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
