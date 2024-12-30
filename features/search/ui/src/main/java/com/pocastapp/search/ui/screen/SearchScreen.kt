@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -61,9 +62,11 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.core.common.constants.EpisodeDetailedFeature
 import com.core.common.constants.PlayerFeature
+import com.core.common.services.isNetworkAvailable
 import com.core.common.theme.ColorPurple500
 import com.pocastapp.search.ui.viewmodels.SearchViewModule
 import com.podcastapp.commonui.errorscreen.ErrorScreen
+import com.podcastapp.commonui.errorscreen.NoInternetConnectionScreen
 import com.podcastapp.search.domain.models.AvailableFilters
 import com.podcastapp.search.domain.models.Language
 import com.podcastapp.search.domain.models.SearchParams
@@ -76,113 +79,124 @@ fun SearchScreen(
     viewModel: SearchViewModule,
     navController: NavHostController
 ) {
-    val searchState by viewModel.searchState.collectAsState()
-    val filtersState by viewModel.filtersState.collectAsState()
-    val selectedFiltersState by viewModel.selectedFiltersState.collectAsState()
+    if (!isNetworkAvailable(LocalContext.current)) {
+        NoInternetConnectionScreen()
+    } else {
+        val searchState by viewModel.searchState.collectAsState()
+        val filtersState by viewModel.filtersState.collectAsState()
+        val selectedFiltersState by viewModel.selectedFiltersState.collectAsState()
 
-    var searchQuery by remember { mutableStateOf("") }
-    var isFilterPopupVisible by remember { mutableStateOf(false) }
-    var selectedSortOption by remember { mutableStateOf<SortOption?>(null) }
+        var searchQuery by remember { mutableStateOf("") }
+        var isFilterPopupVisible by remember { mutableStateOf(false) }
+        var selectedSortOption by remember { mutableStateOf<SortOption?>(null) }
 
-    LaunchedEffect(Unit) {
-        viewModel.getAvailableFilters()
-    }
+        LaunchedEffect(Unit) {
+            viewModel.getAvailableFilters()
+        }
 
-    LaunchedEffect(searchQuery) {
-        delay(2000L)
-        viewModel.refreshSearchResult(searchQuery)
-    }
+        LaunchedEffect(searchQuery) {
+            delay(2000L)
+            viewModel.refreshSearchResult(searchQuery)
+        }
 
-    if (filtersState.isLoading) {
-        CircularProgressIndicator()
-    } else if (filtersState.isSuccess) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            // Row with Sort on left and Filter on right
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        if (filtersState.isLoading) {
+            CircularProgressIndicator()
+        } else if (filtersState.isSuccess) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                // Sort Button on Left
-                var isSortDropdownExpanded by remember { mutableStateOf(false) }
-                Box(modifier = Modifier.fillMaxWidth(0.7f)) {
-                    OutlinedButton(onClick = { isSortDropdownExpanded = !isSortDropdownExpanded }) {
-                        Text(selectedSortOption?.displayName ?: "Sort By")
+                // Row with Sort on left and Filter on right
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Sort Button on Left
+                    var isSortDropdownExpanded by remember { mutableStateOf(false) }
+                    Box(modifier = Modifier.fillMaxWidth(0.7f)) {
+                        OutlinedButton(onClick = {
+                            isSortDropdownExpanded = !isSortDropdownExpanded
+                        }) {
+                            Text(selectedSortOption?.displayName ?: "Sort By")
+                        }
+                        DropdownMenu(
+                            expanded = isSortDropdownExpanded,
+                            onDismissRequest = { isSortDropdownExpanded = false }
+                        ) {
+                            SortOption.entries.forEach { sortOption ->
+                                DropdownMenuItem(
+                                    text = { Text(sortOption.displayName) },
+                                    onClick = {
+                                        selectedSortOption = sortOption
+                                        viewModel.setSortOption(sortOption)
+                                        isSortDropdownExpanded = false
+                                        viewModel.refreshSearchResult(searchQuery)
+                                    })
+                            }
+                        }
                     }
-                    DropdownMenu(
-                        expanded = isSortDropdownExpanded,
-                        onDismissRequest = { isSortDropdownExpanded = false }
-                    ) {
-                        SortOption.entries.forEach { sortOption ->
-                            DropdownMenuItem(text = { Text(sortOption.displayName) }, onClick = {
-                                selectedSortOption = sortOption
-                                viewModel.setSortOption(sortOption)
-                                isSortDropdownExpanded = false
-                                viewModel.refreshSearchResult(searchQuery)
-                            })
+
+                    // Filter Button on Right
+                    Button(onClick = { isFilterPopupVisible = true }) {
+                        Text("Filter")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Search Bar
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(value = searchQuery,
+                        onValueChange = {
+                            searchQuery = it
+                            viewModel.refreshSearchResult(searchQuery)
+                        },
+                        placeholder = { Text("Search by keyword") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Episodes List
+                if (searchState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(
+                            Alignment.CenterHorizontally
+                        )
+                    )
+                } else if (searchState.isSuccess) {
+                    LazyColumn {
+                        if (searchState.data != null) items(searchState.data!!.items) { episode ->
+                            EpisodeItem(episode = episode, onPlayClick = {
+                                navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
+                            }, onEpisodeClick = {
+                                navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
+                            }) //todo
                         }
                     }
                 }
-
-                // Filter Button on Right
-                Button(onClick = { isFilterPopupVisible = true }) {
-                    Text("Filter")
-                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Search Bar
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(value = searchQuery, onValueChange = {
-                    searchQuery = it
-                    viewModel.refreshSearchResult(searchQuery)
-                }, placeholder = { Text("Search by keyword") }, modifier = Modifier.weight(1f)
-                )
+            if (isFilterPopupVisible) {
+                FilterPopup(filters = filtersState.data,
+                    selectedFilters = selectedFiltersState.data,
+                    onApply = { filters ->
+                        viewModel.setNewFilters(filters)
+                        isFilterPopupVisible = false
+                        viewModel.refreshSearchResult(searchQuery)
+                    },
+                    onDismiss = { isFilterPopupVisible = false })
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Episodes List
-            if (searchState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(
-                        Alignment.CenterHorizontally
-                    )
-                )
-            } else if (searchState.isSuccess) {
-                LazyColumn {
-                    if (searchState.data != null) items(searchState.data!!.items) { episode ->
-                        EpisodeItem(episode = episode, onPlayClick = {
-                            navController.navigate("${PlayerFeature.playerScreen}/${episode.id}")
-                        }, onEpisodeClick = {
-                            navController.navigate("${EpisodeDetailedFeature.episodeScreen}/${episode.id}")
-                        }) //todo
-                    }
-                }
-            }
+        } else {
+            ErrorScreen()
         }
-
-        if (isFilterPopupVisible) {
-            FilterPopup(filters = filtersState.data,
-                selectedFilters = selectedFiltersState.data,
-                onApply = { filters ->
-                    viewModel.setNewFilters(filters)
-                    isFilterPopupVisible = false
-                    viewModel.refreshSearchResult(searchQuery)
-                },
-                onDismiss = { isFilterPopupVisible = false })
-        }
-    } else {
-        ErrorScreen()
     }
 }
 
