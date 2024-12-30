@@ -55,6 +55,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.core.common.constants.PlayerFeature
 import com.core.common.constants.ProfileFeature
+import com.core.common.services.isNetworkAvailable
 import com.core.common.theme.ColorWhite
 import com.core.network.model.episodes.EpisodeDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItem
@@ -102,9 +103,7 @@ fun PlayerScreen(
     val nextEpisodes by viewModel.basePlayer.nextEpisodesItems.collectAsState()
 
     BackHandler {
-        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen
-            || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink )
-        {
+        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink) {
             navController.navigate(
                 Uri.parse(ProfileFeature.profileScreenDeepLink)
             )
@@ -134,16 +133,14 @@ fun PlayerScreen(
                 }
             })
         }
-
+        val context = LocalContext.current
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 TopAppBar(title = { Text(text = "") }, navigationIcon = {
                     IconButton(onClick = {
-                        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen
-                            || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink )
-                        {
+                        if (navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreen || navController.previousBackStackEntry?.destination?.route == ProfileFeature.profileScreenDeepLink) {
                             navController.navigate(
                                 Uri.parse(ProfileFeature.profileScreenDeepLink)
                             )
@@ -200,39 +197,41 @@ fun PlayerScreen(
                     .fillMaxWidth()
                     .padding(bottom = 60.dp)
                 )
-
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .animateContentSize()
-                    .clickable { isExpanded.value = true }) {
-                    Column(
-                        modifier = Modifier.fillMaxHeight()
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 0.dp, horizontal = 16.dp)
-                                .clickable { isExpanded.value = !isExpanded.value },
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                if (isNetworkAvailable(context)) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .animateContentSize()
+                        .clickable { isExpanded.value = true }) {
+                        Column(
+                            modifier = Modifier.fillMaxHeight()
                         ) {
-                            Text(
-                                text = "Next episodes",
-                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                            )
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = "Expand/Collapse"
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 0.dp, horizontal = 16.dp)
+                                    .clickable { isExpanded.value = !isExpanded.value },
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Next episodes", style = TextStyle(
+                                        fontWeight = FontWeight.Bold, fontSize = 24.sp
+                                    )
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowDown,
+                                    contentDescription = "Expand/Collapse"
+                                )
+                            }
                         }
                     }
-                }
 
-                if (isExpanded.value) {
-                    ShowNextEpisodesDialog(nextEpisodes = nextEpisodes, onDismiss = {
-                        isExpanded.value = false
-                    }, viewModel)
+                    if (isExpanded.value) {
+                        ShowNextEpisodesDialog(nextEpisodes = nextEpisodes, onDismiss = {
+                            isExpanded.value = false
+                        }, viewModel)
+                    }
                 }
             }
         }

@@ -27,6 +27,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.core.common.services.isNetworkAvailable
 import com.core.common.theme.ColorLittleBitGray
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
@@ -39,7 +41,7 @@ fun DownloadButton(episode: EpisodeDownload) {
     val viewModel: DownloadViewModel = hiltViewModel()
 
     val downloadState by viewModel.downloadState.collectAsState()
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.changeToDownloadedStateIfDownloaded(episode.id)
     }
@@ -49,15 +51,16 @@ fun DownloadButton(episode: EpisodeDownload) {
     ) {
         IconButton(
             onClick = {
-                when (downloadState) {
-                    DownloadState.NOT_DOWNLOADED -> viewModel.download(episode)
-                    DownloadState.DOWNLOADED -> viewModel.cancelDownload(episode.id)
-                    else -> Unit
-                }
-            },
-            enabled = downloadState != DownloadState.DOWNLOADING && downloadState != DownloadState.CANCELING,
-            modifier = Modifier.fillMaxWidth(),
-            colors = IconButtonColors(
+                if (isNetworkAvailable(context)) {
+                    when (downloadState) {
+                        DownloadState.NOT_DOWNLOADED -> viewModel.download(episode)
+                        DownloadState.DOWNLOADED -> viewModel.cancelDownload(episode.id)
+                        else -> Unit
+                    }
+                } else Unit
+            }, enabled = if (isNetworkAvailable(context)) {
+                downloadState != DownloadState.DOWNLOADING && downloadState != DownloadState.CANCELING
+            } else false, modifier = Modifier.fillMaxWidth(), colors = IconButtonColors(
                 containerColor = ColorWhite,
                 contentColor = ColorPurple500,
                 disabledContainerColor = ColorWhite,
@@ -68,29 +71,25 @@ fun DownloadButton(episode: EpisodeDownload) {
                 when (downloadState) {
                     DownloadState.DOWNLOADING -> {
                         Icon(
-                            Icons.Default.Downloading,
-                            contentDescription = "Cancel Download"
+                            Icons.Default.Downloading, contentDescription = "Cancel Download"
                         )
                     }
 
                     DownloadState.DOWNLOADED -> {
                         Icon(
-                            Icons.Default.DownloadDone,
-                            contentDescription = "Cancel Download"
+                            Icons.Default.DownloadDone, contentDescription = "Cancel Download"
                         )
                     }
 
                     DownloadState.NOT_DOWNLOADED -> {
                         Icon(
-                            Icons.Default.Download,
-                            contentDescription = "Download"
+                            Icons.Default.Download, contentDescription = "Download"
                         )
                     }
 
                     DownloadState.CANCELING -> {
                         Icon(
-                            Icons.Default.Cancel,
-                            contentDescription = "Download"
+                            Icons.Default.Cancel, contentDescription = "Download"
                         )
                     }
                 }

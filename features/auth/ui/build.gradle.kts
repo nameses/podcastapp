@@ -74,6 +74,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":features:auth:domain"))
     implementation(project(":features:profile:domain"))
+    implementation(project(":core:commonui"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

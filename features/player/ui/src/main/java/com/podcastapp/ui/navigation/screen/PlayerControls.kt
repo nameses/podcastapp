@@ -25,10 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.core.common.services.isNetworkAvailable
+import com.core.common.theme.ColorLittleBitGray
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
 
@@ -44,20 +48,27 @@ fun PlayerControls(
     isLiked: Boolean = false,
     onLike: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
         IconButton(
+            enabled = isNetworkAvailable(context),
             onClick = onLike,
             modifier = Modifier.size(64.dp),
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = ColorWhite, contentColor = ColorPurple500
+                containerColor = ColorWhite, contentColor = if(isNetworkAvailable(context)) ColorPurple500 else Color.Gray
             )
         ) {
             Icon(
-                imageVector = if (isLiked) Icons.Default.Favorite else Icons.Filled.FavoriteBorder,
+                imageVector = if(isNetworkAvailable(context)){
+                    if (isLiked)
+                        Icons.Default.Favorite
+                    else
+                        Icons.Filled.FavoriteBorder
+                } else Icons.Default.Favorite,
                 contentDescription = "Like",
                 modifier = Modifier
             )

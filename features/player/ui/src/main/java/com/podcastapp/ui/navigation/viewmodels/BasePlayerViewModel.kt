@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.core.common.constants.PlayerFeature
 import com.core.common.model.UiEvent
+import com.core.common.services.isNetworkAvailable
 import com.core.network.model.episodes.EpisodeDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItem
 import com.doublesymmetry.kotlinaudio.models.AudioItemTransitionReason
@@ -78,8 +79,6 @@ class BasePlayerViewModel(
 
     val _nextEpisodesItems = MutableStateFlow<List<EpisodeDTO>>(emptyList())
     val nextEpisodesItems: StateFlow<List<EpisodeDTO>> = _nextEpisodesItems
-
-
 
     init {
         _state.value.playerOptions.repeatMode = RepeatMode.OFF
@@ -157,12 +156,14 @@ class BasePlayerViewModel(
             _isLive.value = _state.value.isCurrentMediaItemLive == true
 
             val episodeId = _state.value.currentItem?.albumTitle?.toInt()
-            val isLiked =
-                commonEpisodeRepository.getEpisode(episodeId ?: 0).data?.data?.is_liked ?: false
-            _isLiked.value = isLiked
+            if(isNetworkAvailable(context)) {
+                val isLiked =
+                    commonEpisodeRepository.getEpisode(episodeId ?: 0).data?.data?.is_liked ?: false
+                _isLiked.value = isLiked
 
-            CoroutineScope(Dispatchers.IO).launch {
-                loadNextEpisodes()
+                CoroutineScope(Dispatchers.IO).launch {
+                    loadNextEpisodes()
+                }
             }
         }.launchIn(viewModelScope)
 

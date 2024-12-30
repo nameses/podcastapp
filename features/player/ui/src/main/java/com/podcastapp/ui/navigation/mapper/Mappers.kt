@@ -6,6 +6,8 @@ import com.core.network.model.episodes.EpisodeFullDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItemOptions
 import com.doublesymmetry.kotlinaudio.models.DefaultAudioItem
 import com.doublesymmetry.kotlinaudio.models.MediaType
+import com.podcastapp.commonrepos.dao.DownloadedEpisode
+import java.io.File
 import java.io.IOException
 
 fun EpisodeFullDTO.toAudioItem(): DefaultAudioItem {
@@ -28,6 +30,18 @@ fun EpisodeDTO.toAudioItem(authorName: String): DefaultAudioItem {
         artwork = image_url,
         artist = authorName,
         duration = getMp3DurationInSeconds(file_path) * 1000,
+        albumTitle = id.toString()
+    )
+}
+
+fun DownloadedEpisode.toAudioItem(): DefaultAudioItem {
+    return DefaultAudioItem(
+        absolutePathMP3,
+        MediaType.DEFAULT,
+        title = title,
+        artwork = absolutePathImage,
+        artist = author,
+        duration = getMp3DurationInSecondsFromFile(absolutePathMP3) * 1000,
         albumTitle = id.toString()
     )
 }
@@ -58,6 +72,28 @@ fun getMp3DurationInSeconds(fileUrl: String): Long {
 
         val zero = 0
         durationInSeconds = if(durationInMicroseconds == zero.toLong()) 0 else (durationInMicroseconds / 1_000)
+    } catch (e: IllegalArgumentException) {
+        e.printStackTrace()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        retriever.release()
+    }
+
+    return durationInSeconds
+}
+
+fun getMp3DurationInSecondsFromFile(filePath: String): Long {
+    val retriever = MediaMetadataRetriever()
+    var durationInSeconds = 0L
+
+    try {
+        retriever.setDataSource(filePath)//todo check
+
+        val durationInMicroseconds =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0L
+
+        durationInSeconds = if (durationInMicroseconds == 0L) 0 else (durationInMicroseconds / 1_000)
     } catch (e: IllegalArgumentException) {
         e.printStackTrace()
     } catch (e: IOException) {

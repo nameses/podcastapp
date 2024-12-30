@@ -20,6 +20,7 @@ import com.core.common.constants.ProfileFeature
 import com.core.common.model.RepoEvent
 import com.core.common.model.UiEvent
 import com.core.common.model.UiStateHolder
+import com.core.common.services.isNetworkAvailable
 import com.core.network.model.episodes.EpisodeDTO
 import com.core.network.model.episodes.EpisodeFullDTO
 import com.doublesymmetry.kotlinaudio.models.AudioItem
@@ -41,6 +42,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import java.util.concurrent.TimeUnit
 import com.doublesymmetry.kotlinaudio.models.MediaSessionCallback
+import com.podcastapp.commonrepos.repos.DownloadRepository
 import com.podcastapp.domain.use_cases.GetEpisodeUseCase
 import com.podcastapp.ui.navigation.mapper.getMp3DurationInSeconds
 import com.podcastapp.ui.navigation.model.Episode
@@ -57,47 +59,64 @@ class PlayerViewModel @Inject constructor(
     private val getEpisodeUseCase: GetEpisodeUseCase,
     @ApplicationContext private val appContext: Context,
     application: Application,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val downloadRepository : DownloadRepository
 ) : AndroidViewModel(application) {
 
     private val _loadState = MutableStateFlow(UiStateHolder<EpisodeFullDTO>())
     val loadState: StateFlow<UiStateHolder<EpisodeFullDTO>> get() = _loadState
 
     fun playEpisode(episodeId: Int) = viewModelScope.launch {
-        getEpisodeUseCase(episodeId).collect {
-            when (it) {
-                is UiEvent.Loading -> {
-                    _loadState.value = UiStateHolder(isLoading = true)
-                }
-
-                is UiEvent.Success -> {
-                    basePlayer._state.value.clear()//todo don't know if its right method
-                    basePlayer._state.value.add(it.data!!.toAudioItem())
-                    basePlayer._state.value.play()
-
-                    //add to queue all in episode.next_episodes
-                    if (it.data?.next_episodes?.isNotEmpty() == true) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val nextEpisodes = it.data!!.next_episodes.map { nit ->
-                                nit.toAudioItem(
-                                    it.data!!.podcast.author.name
-                                )
-                            }
-                            withContext(Dispatchers.Main) {
-                                nextEpisodes.forEach { nnit -> basePlayer._state.value.add(nnit) }
-
-                            }
-                            basePlayer.loadNextEpisodes()
-                        }
+        if(isNetworkAvailable(appContext)) {
+            getEpisodeUseCase(episodeId).collect {
+                when (it) {
+                    is UiEvent.Loading -> {
+                        _loadState.value = UiStateHolder(isLoading = true)
                     }
 
-                    _loadState.value = UiStateHolder(isSuccess = true, data = it.data)
-                }
+                    is UiEvent.Success -> {
+                        basePlayer._state.value.clear()//todo don't know if its right method
+                        basePlayer._state.value.add(it.data!!.toAudioItem())
+                        basePlayer._state.value.play()
 
-                is UiEvent.Error -> {
-                    _loadState.value =
-                        UiStateHolder(message = it.message.toString(), errors = it.errors)
+                        //add to queue all in episode.next_episodes
+                        if (it.data?.next_episodes?.isNotEmpty() == true) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val nextEpisodes = it.data!!.next_episodes.map { nit ->
+                                    nit.toAudioItem(
+                                        it.data!!.podcast.author.name
+                                    )
+                                }
+                                withContext(Dispatchers.Main) {
+                                    nextEpisodes.forEach { nnit -> basePlayer._state.value.add(nnit) }
+
+                                }
+                                basePlayer.loadNextEpisodes()
+                            }
+                        }
+
+                        _loadState.value = UiStateHolder(isSuccess = true, data = it.data)
+                    }
+
+                    is UiEvent.Error -> {
+                        _loadState.value =
+                            UiStateHolder(message = it.message.toString(), errors = it.errors)
+                    }
                 }
+            }
+        } else {
+            _loadState.value = UiStateHolder(isLoading = true)
+
+            val episode = downloadRepository.getEpisodeById(episodeId)
+            if(episode.id == 0){
+                _loadState.value =
+                    UiStateHolder(message = "Episode not found")
+            } else {
+                basePlayer._state.value.clear()//todo don't know if its right method
+                basePlayer._state.value.add(episode.toAudioItem())
+                basePlayer._state.value.play()
+
+                _loadState.value = UiStateHolder(isSuccess = true)
             }
         }
     }

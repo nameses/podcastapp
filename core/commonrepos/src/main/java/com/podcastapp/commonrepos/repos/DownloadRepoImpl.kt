@@ -19,8 +19,7 @@ import kotlinx.coroutines.withContext
 
 class DownloadRepoImpl
 @Inject constructor(
-    private val context: Context,
-    private val downloadDbRepository: DownloadDbRepository
+    private val context: Context, private val downloadDbRepository: DownloadDbRepository
 ) : DownloadRepository {
 
     private val client = OkHttpClient()
@@ -108,5 +107,9 @@ class DownloadRepoImpl
 
     override suspend fun getEpisodes(): List<DownloadedEpisode> {
         return downloadDbRepository.getEpisodes()
+    }
+
+    override suspend fun getEpisodeById(id: Int): DownloadedEpisode {
+        return downloadDbRepository.getEpisodeById(id) ?: DownloadedEpisode(0, "", "", "", "")
     }
 }

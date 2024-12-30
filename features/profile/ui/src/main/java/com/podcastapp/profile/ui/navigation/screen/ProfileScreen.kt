@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -68,6 +67,7 @@ import com.core.common.constants.PlayerFeature
 import com.core.common.constants.PodcastDetailedFeature
 import com.core.common.constants.ProfileFeature
 import com.core.common.services.TokenManager
+import com.core.common.services.isNetworkAvailable
 import com.core.common.services.setNavResultCallback
 import com.core.common.theme.ColorPurple500
 import com.core.common.theme.ColorWhite
@@ -107,7 +107,6 @@ fun ProfileScreen(
                             .fillMaxWidth()
                             .background(ColorPurple500)
                             .height(240.dp),
-
                         ) {
                         Box(
                             modifier = Modifier
@@ -150,12 +149,14 @@ fun ProfileScreen(
                                     .weight(1f)
                                     .padding(start = 8.dp)
                             ) {
+                                val isNetworkAvailable = LocalContext.current
                                 Text(text = "Edit",
                                     color = ColorWhite,
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier
                                         .clickable {
-                                            navController.navigate(ProfileFeature.profileEditScreen)
+                                            if(isNetworkAvailable(isNetworkAvailable))
+                                                navController.navigate(ProfileFeature.profileEditScreen)
                                         }
                                         .align(Alignment.CenterStart)
                                         .padding(start = 8.dp))
@@ -215,44 +216,47 @@ fun ProfileScreen(
                         Log.d("SaveStateChanged", "Podcast ID: $id is now saved: $isSaved")
                     }
 
+                    val isNetworkAvailable = isNetworkAvailable(LocalContext.current)
                     LazyColumn {
-                        if (ifContainsSavedPodcasts) {
-                            item {
-                                HorizontalList(
-                                    title = "Saved podcasts",
-                                    listState = podcastsLazyListState,
-                                    isLoading = false,
-                                    items = podcastsListState,
-                                    onLoadMore = { viewModel.loadSavedPodcasts() },
-                                    navController = navController,
-                                    routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
-                                    showAddToSavedFragment = true,
-                                    onSavePodcastStateChanged = handleSavePodcastStateChanged
-                                )
+                        if (isNetworkAvailable) {
+                            if (ifContainsSavedPodcasts) {
+                                item {
+                                    HorizontalList(
+                                        title = "Saved podcasts",
+                                        listState = podcastsLazyListState,
+                                        isLoading = false,
+                                        items = podcastsListState,
+                                        onLoadMore = { viewModel.loadSavedPodcasts() },
+                                        navController = navController,
+                                        routeToDetailedScreen = PodcastDetailedFeature.podcastScreen,
+                                        showAddToSavedFragment = true,
+                                        onSavePodcastStateChanged = handleSavePodcastStateChanged
+                                    )
+                                }
+
+                                item {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
                             }
 
-                            item {
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
+                            if (ifContainsLikedEpisodes) {
+                                item {
+                                    HorizontalList(
+                                        title = "Liked episodes",
+                                        listState = episodesLazyListState,
+                                        isLoading = false,
+                                        items = episodesListState,
+                                        onLoadMore = { viewModel.loadLikedEpisodes() },
+                                        navController = navController,
+                                        routeToDetailedScreen = EpisodeDetailedFeature.episodeScreen,
+                                        showAddToSavedFragment = false,
+                                        onSavePodcastStateChanged = handleSavePodcastStateChanged
+                                    )
+                                }
 
-                        if (ifContainsLikedEpisodes) {
-                            item {
-                                HorizontalList(
-                                    title = "Liked episodes",
-                                    listState = episodesLazyListState,
-                                    isLoading = false,
-                                    items = episodesListState,
-                                    onLoadMore = { viewModel.loadLikedEpisodes() },
-                                    navController = navController,
-                                    routeToDetailedScreen = EpisodeDetailedFeature.episodeScreen,
-                                    showAddToSavedFragment = false,
-                                    onSavePodcastStateChanged = handleSavePodcastStateChanged
-                                )
-                            }
-
-                            item {
-                                Spacer(modifier = Modifier.height(16.dp))
+                                item {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
                             }
                         }
 
