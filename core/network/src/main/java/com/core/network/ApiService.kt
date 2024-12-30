@@ -4,8 +4,12 @@ import com.core.common.constants.HeaderName
 import com.core.common.constants.HeaderValue
 import com.core.network.model.episodes.EpisodeDetailedResponse
 import com.core.network.model.episodes.EpisodeFullDTO
+import com.core.network.model.podcasts.CategoryResponseData
+import com.core.network.model.podcasts.GuestResponseData
 import com.core.network.model.podcasts.PodcastDetailedResponse
 import com.core.network.model.podcasts.PodcastListResponse
+import com.core.network.model.podcasts.SearchEpisodesData
+import com.core.network.model.podcasts.TopicResponseData
 import com.core.network.model.user.AuthResponse
 import com.core.network.model.user.LoginRequest
 import com.core.network.model.user.PurchasePremiumRequest
@@ -26,6 +30,7 @@ import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 import kotlin.random.Random
 
 interface ApiService {
@@ -171,4 +176,44 @@ interface ApiService {
     suspend fun likeEpisode(
         @Path("episode-id") episodeId: Int, @Header("Authorization") token: String
     ): Response<Unit>
+
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("episodes/search")
+    suspend fun searchEpisode(
+        @QueryMap options: Map<String, String> , @Header("Authorization") token: String
+    ): Response<SearchEpisodesData>
+
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("guests")
+    suspend fun getGuests(
+        @Header("Authorization") token: String
+    ): Response<GuestResponseData>
+
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("categories")
+    suspend fun getCategories(
+        @Header("Authorization") token: String
+    ): Response<CategoryResponseData>
+
+
+    @Headers(
+        "${HeaderName.Accept}: ${HeaderValue.ApplicationJson}",
+        "${HeaderName.ContentType}: ${HeaderValue.ApplicationJson}"
+    )
+    @GET("topics")
+    suspend fun getTopics(
+        @Header("Authorization") token: String
+    ): Response<TopicResponseData>
 }

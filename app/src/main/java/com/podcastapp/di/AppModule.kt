@@ -3,6 +3,7 @@ package com.podcastapp.di
 import android.content.Context
 import com.features.auth.ui.navigation.AuthApi
 import com.features.main.ui.navigation.MainApi
+import com.pocastapp.search.ui.SearchApi
 import com.podcastapp.episode.details.ui.EpisodeApi
 import com.podcastapp.navigation.NavigationProvider
 import com.podcastapp.podcast_details.ui.navigation.PodcastApi
@@ -24,8 +25,9 @@ object AppModule {
         profileApi: ProfileApi,
         podcastApi: PodcastApi,
         episodeApi: EpisodeApi,
-        playerApi: PlayerApi
+        playerApi: PlayerApi,
+        searchApi: SearchApi
     ): NavigationProvider {
-        return NavigationProvider(mainApi, authApi, profileApi, podcastApi, episodeApi, playerApi)
+        return NavigationProvider(mainApi, authApi, profileApi, podcastApi, episodeApi, playerApi, searchApi)
     }
 }

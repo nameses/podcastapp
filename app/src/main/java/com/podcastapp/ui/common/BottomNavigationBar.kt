@@ -19,8 +19,10 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ import androidx.navigation.NavHostController
 import com.core.common.constants.MainFeature
 import com.core.common.constants.PlayerFeature
 import com.core.common.constants.ProfileFeature
+import com.core.common.constants.SearchFeature
 import com.core.common.theme.ColorWhite
 import com.podcastapp.ui.navigation.screen.BottomCapedPlayer
 import com.podcastapp.ui.navigation.viewmodels.BasePlayerViewModel
@@ -52,6 +55,9 @@ fun BottomNavigationBar(
 ) {
     val items = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Icons.Outlined.Home, MainFeature.mainScreenRoute),
+        BottomNavItem(
+            "Search", Icons.Filled.Search, Icons.Outlined.Search, SearchFeature.searchScreen
+        ),
         BottomNavItem(
             "Profile", Icons.Filled.Person, Icons.Outlined.Person, ProfileFeature.profileScreen
         ),

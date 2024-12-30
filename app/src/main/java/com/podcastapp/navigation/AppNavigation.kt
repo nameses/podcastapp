@@ -36,5 +36,8 @@ fun AppNavGraph(
         navigationProvider.episodeApi.registerGraph(
             navController, this
         )
+        navigationProvider.searchApi.registerGraph(
+            navController, this
+        )
     }
 }

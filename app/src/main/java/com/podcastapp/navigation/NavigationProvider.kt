@@ -2,6 +2,7 @@ package com.podcastapp.navigation
 
 import com.features.auth.ui.navigation.AuthApi
 import com.features.main.ui.navigation.MainApi
+import com.pocastapp.search.ui.SearchApi
 import com.podcastapp.podcast_details.ui.navigation.PodcastApi
 import com.podcastapp.episode.details.ui.EpisodeApi
 import com.podcastapp.profile.ui.navigation.ProfileApi
@@ -13,5 +14,6 @@ data class NavigationProvider(
     val profileApi: ProfileApi,
     val podcastApi: PodcastApi,
     val episodeApi: EpisodeApi,
-    val playerApi: PlayerApi
+    val playerApi: PlayerApi,
+    val searchApi: SearchApi
 )

@@ -1,5 +1,14 @@
 import java.net.URI
 
+include(":features:search:data")
+
+
+include(":features:search:domain")
+
+
+include(":features:search:ui")
+
+
 include(":features:episode_details:ui")
 
 
